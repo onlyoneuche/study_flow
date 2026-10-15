@@ -113,7 +113,7 @@ async def archive_previous(db, now):
     )
     gids = {g.id for g in groups}
     if any(g.owner_id not in ids for g in groups):
-        raise RuntimeError("A demo group now has a non-demo owner. Nothing was reset.")
+        raise RuntimeError("A demo squad now has a non-demo owner. Nothing was reset.")
     mixed = await db.scalar(
         select(GroupMember.id)
         .where(
@@ -366,7 +366,7 @@ async def seed_demo(database, now=None, frontend_url="http://localhost:3000"):
             main = [people[name] for name in SQUAD_NAMES]
             rivals = [people[name] for name in RIVAL_NAMES]
             squad = await create_squad(db, "Study Squad", main, first)
-            rival = await create_squad(db, "Lagos Brainiacs", rivals, last - timedelta(days=6))
+            rival = await create_squad(db, "Unilag Brainiacs", rivals, last - timedelta(days=6))
             focus_demo = None
             for day_offset in range(13):
                 day = first + timedelta(days=day_offset)
@@ -503,7 +503,7 @@ async def main():
         print(f"Evaluated through: {summary['evaluated_through']} (Lagos)")
         print(
             f"Scheduled live: {summary['scheduled_at']} (Lagos)\n"
-            f"Group: {origin}/groups/{summary['group_id']}"
+            f"Squad: {origin}/groups/{summary['group_id']}"
         )
         print(
             "Prepared quiz (20-minute timer starts at seed): "

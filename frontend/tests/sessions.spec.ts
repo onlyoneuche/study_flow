@@ -40,7 +40,7 @@ test("live room shows members on independent topics through the frontend socket 
   await page.goto(`/study?group=${group.id}`);
   await page.getByLabel("What are you studying?", { exact: true }).fill("Alkenes");
   await page.getByLabel("Subject", { exact: true }).fill("Chemistry");
-  await expect(page.getByLabel("Study group", { exact: true })).toHaveValue(String(group.id));
+  await expect(page.getByLabel("Study squad", { exact: true })).toHaveValue(String(group.id));
   await page.getByRole("button", { name: "Start live session", exact: true }).click();
   await expect(page.getByRole("heading", { name: "Alkenes", level: 1, exact: true })).toBeVisible();
   const room = new URL(page.url()).pathname;

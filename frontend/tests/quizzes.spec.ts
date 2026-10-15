@@ -67,10 +67,10 @@ engine.dispose()
   await page.getByRole("button", { name: "Submit quiz", exact: true }).click();
   await expect(page.getByRole("heading", { name: "Nice work!", exact: true })).toBeVisible();
   await expect(page.getByRole("heading", { name: "Review your answers", exact: true })).toBeVisible();
-  await expect(page.getByRole("heading", { name: "Points saved to your groups", exact: true })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Points saved to your squads", exact: true })).toBeVisible();
   const scoreBox = await page.getByRole("heading", { name: "Your quiz result", exact: true }).boundingBox();
-  const pointsBox = await page.getByRole("heading", { name: "Points saved to your groups", exact: true }).boundingBox();
-  const progress = page.getByRole("region", { name: "Current group progress", exact: true });
+  const pointsBox = await page.getByRole("heading", { name: "Points saved to your squads", exact: true }).boundingBox();
+  const progress = page.getByRole("region", { name: "Current squad progress", exact: true });
   await expect(progress).toBeVisible();
   if ((page.viewportSize()?.width ?? 0) > 1024) {
     const progressBox = await progress.boundingBox();
@@ -93,12 +93,12 @@ engine.dispose()
   expect(detail.completed_today).toBeGreaterThan(0);
   await page.goto("/");
   await expect(page.getByRole("heading", { name: "Quiz Learner", exact: false })).toBeVisible();
-  await expect(page.getByRole("progressbar", { name: "Weekly group points", exact: true })).toHaveAttribute("aria-valuenow", String(detail.weekly_points));
-  await expect(page.getByRole("region", { name: "Today's group goal", exact: true })).toContainText(`${detail.completed_today} / 1`);
+  await expect(page.getByRole("progressbar", { name: "Weekly squad points", exact: true })).toHaveAttribute("aria-valuenow", String(detail.weekly_points));
+  await expect(page.getByRole("region", { name: "Today's squad goal", exact: true })).toContainText(`${detail.completed_today} / 1`);
   await page.getByRole("link", { name: "View result", exact: true }).click();
   await expect(page.getByRole("heading", { name: "Nice work!", exact: true })).toBeVisible();
   await page.goto("/ranks");
-  await expect(page.getByRole("heading", { name: "In my group", exact: true })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "In my squad", exact: true })).toBeVisible();
   await expect(page.getByText("Personal improvement points", { exact: true })).toBeVisible();
   await page.screenshot({ path: testInfo.outputPath("rankings.png"), fullPage: true });
   await page.getByRole("link", { name: "See your points history", exact: false }).click();

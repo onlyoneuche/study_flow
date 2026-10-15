@@ -65,7 +65,7 @@ async def create_group(data: CreateGroup, request: Request, db: DB, user: Learne
     if await group_count(db, user.id) >= 3:
         fail(
             "group_limit",
-            "You can belong to at most 3 groups. Leave a group before creating another.",
+            "You can belong to at most 3 squads. Leave a squad before creating another.",
         )
     group = Group(
         name=data.name,
@@ -114,7 +114,7 @@ async def preview_invite(code: str, db: DB):
     check_invite(invite, group, utc_now())
     members = await active_members(db, group.id)
     if len(members) >= group.max_members:
-        fail("full", "This group is full. Ask the owner to make a place for you.")
+        fail("full", "This squad is full. Ask the owner to make a place for you.")
     return dict(name=group.name, member_count=len(members))
 
 
@@ -129,16 +129,16 @@ async def accept_invite(code: str, db: DB, user: Learner):
     if audience_for_level(user.level) != group.audience_band:
         fail(
             "wrong_band",
-            "This group is in a different audience band. "
-            "Secondary learners and university/adult learners cannot join the same group.",
+            "This squad is in a different audience band. "
+            "Secondary learners and university/adult learners cannot join the same squad.",
             403,
         )
     if len(members) >= group.max_members:
-        fail("full", "This group is full. Ask the owner to make a place for you.")
+        fail("full", "This squad is full. Ask the owner to make a place for you.")
     if await group_count(db, user.id) >= 3:
         fail(
             "group_limit",
-            "You can belong to at most 3 groups. Leave a group before joining another.",
+            "You can belong to at most 3 squads. Leave a squad before joining another.",
         )
     db.add(GroupMember(group_id=group.id, user_id=user.id, role=MemberRole.MEMBER))
     invite.uses += 1

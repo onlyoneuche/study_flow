@@ -12,8 +12,8 @@ test("create squad, share invite, sign up from invite, auto-join and owner remov
   await page.goto("/");
   await page.evaluate(token => sessionStorage.setItem("studyflow-token", token), token);
   await page.goto("/squad");
-  await page.getByLabel("Group name", { exact: true }).fill("Browser Study Squad");
-  await page.getByRole("button", { name: "Create group", exact: true }).click();
+  await page.getByLabel("Squad name", { exact: true }).fill("Browser Study Squad");
+  await page.getByRole("button", { name: "Create a squad", exact: true }).click();
   await expect(page.getByRole("heading", { name: "Browser Study Squad", exact: true })).toBeVisible();
   await page.getByRole("button", { name: "Create invite", exact: true }).click();
   const invite = page.getByLabel("Invite link", { exact: true });

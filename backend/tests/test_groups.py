@@ -64,7 +64,9 @@ def test_invite_preview_privacy_link_expiry_and_share(auth_client, actor, db_eng
     link = invite(auth_client, owner, group, 4)
     assert len(link["code"]) == 8 and not set(link["code"]) & set("01ILO")
     assert link["url"].endswith("/join/" + link["code"])
-    assert parse_qs(urlparse(link["whatsapp_url"]).query)["text"][0].endswith(link["url"])
+    assert parse_qs(urlparse(link["whatsapp_url"]).query)["text"] == [
+        f"Join my StudyFlow squad: {link['url']}"
+    ]
     preview = auth_client.get(f"/api/v1/invites/{link['code'].lower()}")
     assert preview.json() == {"name": "Study Squad", "member_count": 1}
     with Session(db_engine) as db:

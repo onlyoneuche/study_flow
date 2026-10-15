@@ -18,8 +18,8 @@ test("Ada's seeded demo goes from dashboard and live room to quiz, points and ra
   expect(squad.streak).toBe(12);
   expect(squad.weekly_target).toBe(600);
   expect(ready).toBeTruthy();
-  await expect(page.getByRole("region", { name: "Group streak", exact: true })).toContainText("12");
-  await expect(page.getByRole("progressbar", { name: "Weekly group points", exact: true })).toHaveAttribute("aria-valuenow", String(squad.weekly_points));
+  await expect(page.getByRole("region", { name: "Squad streak", exact: true })).toContainText("12");
+  await expect(page.getByRole("progressbar", { name: "Weekly squad points", exact: true })).toHaveAttribute("aria-valuenow", String(squad.weekly_points));
   await page.screenshot({ path: testInfo.outputPath("demo-dashboard.png") });
   await page.getByRole("link", { name: "Visit your squad", exact: false }).click();
   await expect(page.getByRole("heading", { name: "Study Squad", exact: true })).toBeVisible();
@@ -56,9 +56,9 @@ test("Ada's seeded demo goes from dashboard and live room to quiz, points and ra
   expect(updated.streak).toBe(12);
   await page.screenshot({ path: testInfo.outputPath("demo-results.png") });
   await page.goto("/ranks");
-  await expect(page.getByRole("heading", { name: "In my group", exact: true })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "In my squad", exact: true })).toBeVisible();
   await expect(page.getByText("Ada (you)", { exact: true })).toBeVisible();
-  await expect(page.getByText("Lagos Brainiacs", { exact: true })).toBeVisible();
+  await expect(page.getByText("Unilag Brainiacs", { exact: true })).toBeVisible();
   await page.screenshot({ path: testInfo.outputPath("demo-rankings.png") });
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBeTruthy();
 });

@@ -34,11 +34,11 @@ test("dashboard uses real squad data, handles connection errors and opens the li
   await expect(page.getByRole("main").getByRole("alert")).toContainText("Please try again");
   fail = false;
   await page.getByRole("button", { name: "Refresh dashboard", exact: true }).click();
-  const weekly = page.getByRole("region", { name: "Weekly group progress", exact: true });
+  const weekly = page.getByRole("region", { name: "Weekly squad progress", exact: true });
   await expect(weekly).toContainText("Responsive Squad");
   await expect(weekly).toContainText("/ 300 pts");
-  await expect(page.getByRole("progressbar", { name: "Weekly group points", exact: true })).toHaveAttribute("aria-valuenow", "0");
-  await expect(page.getByRole("region", { name: "Today's group goal", exact: true })).toContainText("0 / 3");
+  await expect(page.getByRole("progressbar", { name: "Weekly squad points", exact: true })).toHaveAttribute("aria-valuenow", "0");
+  await expect(page.getByRole("region", { name: "Today's squad goal", exact: true })).toContainText("0 / 3");
   await expect(page.getByText("0 of 3", { exact: true })).toBeVisible();
   await expect(page.getByText("Tunde", { exact: true })).toBeVisible();
   await expect(page.getByText(/going|raw quiz score|Nudge on WhatsApp/)).toHaveCount(0);
@@ -50,7 +50,7 @@ test("dashboard uses real squad data, handles connection errors and opens the li
   await page.getByLabel("Your topic", { exact: true }).fill("Mole concept");
   await page.getByRole("button", { name: "Join live session", exact: true }).click();
   await expect(page.getByRole("heading", { name: "Mole concept", level: 1, exact: true })).toBeVisible();
-  await expect(page.getByRole("progressbar", { name: "Weekly group points", exact: true })).toHaveAttribute("aria-valuenow", "0");
+  await expect(page.getByRole("progressbar", { name: "Weekly squad points", exact: true })).toHaveAttribute("aria-valuenow", "0");
   const timer = await page.getByLabel("Session timer", { exact: true }).boundingBox();
   const members = await page.getByRole("heading", { name: "Studying with you", exact: true }).boundingBox();
   if ((page.viewportSize()?.width ?? 0) >= 768) expect(members!.x).toBeGreaterThan(timer!.x);

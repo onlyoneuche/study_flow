@@ -58,9 +58,9 @@ async def require_group(db: AsyncSession, group_id: int, user_id: int, owner=Fal
         )
     )
     if not group or not group.is_active or not member:
-        fail("not_member", "This group is available to its current members only.", 403)
+        fail("not_member", "This squad is available to its current members only.", 403)
     if owner and group.owner_id != user_id:
-        fail("owner_only", "Only the group owner can do this.", 403)
+        fail("owner_only", "Only the squad owner can do this.", 403)
     return group
 
 
@@ -89,8 +89,7 @@ def invite_view(invite: Invite, group: Group, frontend_url: str):
         max_uses=invite.max_uses,
         uses=invite.uses,
         revoked_at=invite.revoked_at,
-        whatsapp_url="https://wa.me/?"
-        + urlencode({"text": f"Join {group.name} on StudyFlow! Let’s study together. {url}"}),
+        whatsapp_url="https://wa.me/?" + urlencode({"text": f"Join my StudyFlow squad: {url}"}),
     )
 
 

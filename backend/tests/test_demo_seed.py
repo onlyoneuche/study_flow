@@ -261,7 +261,7 @@ def test_demo_sign_in_quiz_submission_and_rankings_use_real_routes(auth_client, 
     assert group["weekly_points"] == 365
     assert group["streak"] == 12  # The next streak evaluation is still at 02:00.
     ranks = auth_client.get("/api/v1/leaderboard/groups", headers=headers).json()["groups"]
-    assert ranks[0]["name"] == "Lagos Brainiacs"
+    assert ranks[0]["name"] == "Unilag Brainiacs"
     assert "score_pct" not in str(ranks)
 
 

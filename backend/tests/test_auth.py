@@ -154,7 +154,7 @@ def test_profile_band_change_reports_group_conflict_without_partial_update(auth_
         headers=auth,
         json={"level": "OTHER", "adult_confirmation": True},
     )
-    assert response.status_code == 409 and "groups" in response.json()["detail"]
+    assert response.status_code == 409 and "squads" in response.json()["detail"]
     unchanged = auth_client.get("/api/v1/users/me", headers=auth).json()
     assert unchanged["level"] == "SS2" and unchanged["adult_confirmed_at"] is None
 

@@ -1,8 +1,10 @@
 # StudyFlow
 
-Study together on your own subjects, take a topic quiz, and grow a shared weekly bar through study time and personal improvement. The hackathon MVP covers sign-up, groups/invites, solo/live sessions, quizzes, points, streaks and rankings. All services run locally; no paid APIs or hosted backend.
+Study together on your own subjects, take a topic quiz, and grow a shared weekly bar through study time and personal improvement. The hackathon MVP covers sign-up, squads/invites, solo/live sessions, quizzes, points, streaks and rankings. All services run locally; no paid APIs or hosted backend.
 
 The [design](docs/studyflow-design.md) is the source of truth. UI references: [mobile](docs/mockups/mobile.html) and [desktop](docs/mockups/desktop.html). [Implementation notes](docs/implementation-notes.md) record decisions and verification. For presenting, use the [2–3 minute demo script](docs/demo.md). The optional [minimal Focus Tracker](docs/focus-tracker.md) is now implemented behind a runtime flag.
+
+Squads are stored as groups internally.
 
 ## Native setup
 
@@ -54,7 +56,7 @@ The stack uses FastAPI, SQLAlchemy/SQLModel, Alembic, SQLite in WAL mode, fastap
 | Emeka | Economics — Demand |
 | Funmi | English — Parts of speech |
 
-Friends use their lowercase names at `demo.studyflow.example.com` and the same password. These are fictional verified **SS2 / secondary-band** accounts with fixture consent. The competing **Lagos Brainiacs** has Ife, Musa and Bisi in the same band.
+Friends use their lowercase names at `demo.studyflow.example.com` and the same password. These are fictional verified **SS2 / secondary-band** accounts with fixture consent. The competing **Unilag Brainiacs** has Ife, Musa and Bisi in the same band.
 
 The seed replays heartbeat, session transition, quiz grading, ledger and streak services. Thirteen evaluated days produce a **12-day streak and one freeze used**, with seven recent days of live/solo history and quiz attempts. Today’s extra study brings the weekly bar near **340/600**: six members × the documented 100-point target. The rival has a competing points-per-member average, and a live session is scheduled tonight (19:00 Lagos, or shortly after seed if later).
 
@@ -62,7 +64,7 @@ Actual points and remaining freezes follow the current Lagos calendar. Sunday hi
 
 Ada’s prepared quiz belongs to an **already-studied 25-minute solo session**. Its real 20-minute quiz timer starts at seed time: refresh the seed immediately before presenting. New sessions retain their normal **25/45/60-minute** timers. The [short demo](docs/demo.md) explicitly switches from a newly started live room to this prepared participation.
 
-Reset creates a fresh active demo generation and archives the old accounts/groups, disables their invites and cancels their open rooms. Immutable points and study history remain. An ownership registry prevents claiming other accounts by name/email. Non-demo users, groups, existing quiz variants and flags are preserved. Mixed demo/non-demo membership or session history, transferred ownership, or a reserved email collision makes the entire reset refuse safely. For a repeatable pitch, share/copy the invite without joining a real account to the fixture; use another demo member for live presence. Archived generations intentionally remain in the database.
+Reset creates a fresh active demo generation and archives the old accounts/squads, disables their invites and cancels their open rooms. Immutable points and study history remain. An ownership registry prevents claiming other accounts by name/email. Non-demo users, squads, existing quiz variants and flags are preserved. Mixed demo/non-demo membership or session history, transferred ownership, or a reserved email collision makes the entire reset refuse safely. For a repeatable pitch, share/copy the invite without joining a real account to the fixture; use another demo member for live presence. Archived generations intentionally remain in the database.
 
 ## Docker option
 
@@ -92,15 +94,15 @@ Compose overrides `DATABASE_URL`, `BACKEND_URL` and Ollama’s address to use th
 
 ## Using the MVP
 
-**Accounts.** Sign up with email/password and education level. Secondary levels require guardian consent; university/OTHER requires 18+ confirmation. OTHER maps to the adult band. Groups cannot cross bands. Verification and password reset screens print their email links to the backend console; open those links in the same local app. No external mail service is used. Demo accounts are already verified.
+**Accounts.** Sign up with email/password and education level. Secondary levels require guardian consent; university/OTHER requires 18+ confirmation. OTHER maps to the adult band. Squads cannot cross bands. Verification and password reset screens print their email links to the backend console; open those links in the same local app. No external mail service is used. Demo accounts are already verified.
 
-**Groups.** Create a group under Squad; the creator owns it. Group capacity is 3–8, each user can belong to at most three groups, and invites expire after seven days with an owner-selected use limit. Copy or share via the prefilled WhatsApp link. Logged-out invitees return after sign-up/login and auto-join. Expired, disabled, exhausted, full and wrong-band states show clear messages; existing membership does not consume another use. Owners can regenerate/disable invites or remove members. Members can leave; ownership transfers to the longest-standing remaining member. Empty groups archive, preserving points/history.
+**Squads.** Create a squad under Squad; the creator owns it. Squad capacity is 3–8, each user can belong to at most three squads, and invites expire after seven days with an owner-selected use limit. Copy or share via the prefilled WhatsApp link. Logged-out invitees return after sign-up/login and auto-join. Expired, disabled, exhausted, full and wrong-band states show clear messages; existing membership does not consume another use. Owners can regenerate/disable invites or remove members. Members can leave; ownership transfers to the longest-standing remaining member. Empty squads archive, preserving points/history.
 
 **Study.** Start solo or live on your own subject/topic. Live members can choose different topics. Scheduled rooms start at server time; join within ten minutes for live eligibility, or observe/start solo afterward. Active time must reach 80% of the required duration. Heartbeats run every 15 seconds, including hidden tabs; gaps up to 120 seconds receive full credit, longer gaps receive 15 seconds. Leave/rejoin preserves earned active time without counting the break. Hidden tabs pause only future Focus Tracker sampling; they are never labelled away. The tracker is off by default; when enabled globally, each session requires a fresh opt-in. See [Focus Tracker](docs/focus-tracker.md).
 
 **Quiz.** At session start, background work checks cache and calls local Ollama with the documented prompt and JSON schema. It validates exactly 15 questions, retries once, then uses exact/related same-level cache or time-only completion. Correct indices stay on the server until submission. Quiz time is the earlier of **start + 20 minutes** and **participant end + 30 minutes**; reload does not extend it. On desktop, 1–4 chooses and Enter advances. Allow browser notifications from the room to hear when a quiz is ready. Flag questions after submission; flags never change earned scores.
 
-**Progress.** Results save base, quiz and improvement ledger entries. Improvement compares only with your own same-subject/level history. First-three-completions-per-Lagos-day and up-to-three-group rules apply; the +5 live bonus goes only to the host group. Group rankings use points per current member; in-group rankings use improvement points only. Other people’s raw quiz scores are never shown or compared. The daily goal counts group sessions completed today versus members, so it can exceed the denominator.
+**Progress.** Results save base, quiz and improvement ledger entries. Improvement compares only with your own same-subject/level history. First-three-completions-per-Lagos-day and up-to-three-squad rules apply; the +5 live bonus goes only to the host squad. Squad rankings use points per current member; in-squad rankings use improvement points only. Other people’s raw quiz scores are never shown or compared. The daily goal counts squad sessions completed today versus members, so it can exceed the denominator.
 
 **Streaks and weeks.** At 02:00 Africa/Lagos, the previous day is kept if every member eligible at that day’s midnight completed study. A missed positive streak consumes a freeze if available, up to two per Lagos week; otherwise it resets. Fewer than three eligible members pauses the day. Startup catches up every due date, including paused days; before 02:00 it stops at today−2, otherwise today−1. Quiz submission updates points immediately; streaks wait for nightly evaluation. Weekly bars and freeze allowances switch Monday 00:00 Lagos without deleting history. Past weeks come from ledger queries, with no stored MVP snapshots.
 
@@ -119,7 +121,7 @@ make test-demo        # seeded pitch, Chrome 390px + WebKit 1440px
 make test-focus       # optional tracker + synthetic/mocked worker checks
 ```
 
-Google Chrome must be installed for Chrome tests. Browser runners create disposable `/tmp/studyflow-…` databases and migrate them; the seeded demo checks each start with fresh data. Tests cover scoring’s worked example, daily/multi-group caps, all invite acceptance edge cases, streak/freezes/catch-up/idempotency, auth, sessions, quiz retries/timeouts and safe seed resets.
+Google Chrome must be installed for Chrome tests. Browser runners create disposable `/tmp/studyflow-…` databases and migrate them; the seeded demo checks each start with fresh data. Tests cover scoring’s worked example, daily/multi-squad caps, all invite acceptance edge cases, streak/freezes/catch-up/idempotency, auth, sessions, quiz retries/timeouts and safe seed resets.
 
 Current verification: **231 backend tests**, backend/frontend checks, production build, migration agreement, repeated native/Docker seed runs, and the seeded end-to-end walkthrough pass. The earlier full responsive suite passed 80 checks. All four widths are covered in Chrome and WebKit. A native Safari desktop visual smoke check passed; full native Safari/device testing at each width remains manual because native input/window automation was intermittent.
 
@@ -128,13 +130,13 @@ For PWA installation, run the production frontend with `make build` then `npm --
 ## Known limitations and backlog
 
 - Run **one backend instance/worker per database**: WebSocket connections live in memory. An OS lock beside SQLite (`.jobs.lock`) prevents duplicate scheduler owners and seed/server overlap; never remove it while the server runs.
-- Local generation can take up to 120 seconds per try and depends on hardware/model availability. Health returns HTTP 200 with `ok` or `degraded` and Ollama details; it is a liveness/dependency check, not a generation-quality or database-readiness check. Cached demo topics work with Ollama unavailable. `make seed-quizzes` adds SS2 Chemistry/Mole concept, Chemistry/Alkenes and Mathematics/Indices without the group fixture. Reseeding does not revive flagged variants.
+- Local generation can take up to 120 seconds per try and depends on hardware/model availability. Health returns HTTP 200 with `ok` or `degraded` and Ollama details; it is a liveness/dependency check, not a generation-quality or database-readiness check. Cached demo topics work with Ollama unavailable. `make seed-quizzes` adds SS2 Chemistry/Mole concept, Chemistry/Alkenes and Mathematics/Indices without the squad fixture. Reseeding does not revive flagged variants.
 - Email delivery is console-only. Guardian consent is a recorded checkbox; guardian email workflows are v2. This is a local hackathon setup with public fictional demo credentials.
 - Browser JWTs use session storage. Sign-out clears the browser token, while an issued token remains valid until expiry; logout/password reset do not revoke it server-side. Reset demo generations are inactive and cannot authenticate.
 - **Account anonymisation:** resolve the conflict between tombstoning user IDs and append-only ledger history before exposing account deletion.
 - **Focus Tracker:** the approved minimal version uses local face presence/head pose at 1 fps, 10-second calibration, pause/forgiveness rules and anonymous post-session comparison. It is disabled globally by default and opt-in per session when enabled. Physical-camera accuracy/performance needs manual checking; retention jobs, blink/gaze and adaptive rates remain deferred. [Details and switch-off instructions](docs/focus-tracker.md).
 - **Weekly snapshots:** backlog only. MVP historical weeks are derived from the ledger using Lagos boundaries.
 - **Nudges and RSVPs:** omitted for MVP; nudges are v2.
-- **Full-group live bonus G:** v2; no MVP awards.
+- **Full-squad live bonus G:** v2; no MVP awards.
 
 Steps 1–11 and the approved minimal Focus Tracker are complete. Further tracker features remain out of scope.

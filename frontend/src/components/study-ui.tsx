@@ -14,8 +14,8 @@ export function Avatar({ name, id = 0, muted = false }: { name: string; id?: num
 }
 
 export function StreakCard({ group }: { group: Group }) {
-  return <section aria-label="Group streak" className="card flex h-full flex-col p-4 md:p-6">
-    <h2 className="text-sm font-semibold text-slate-500">Group streak</h2>
+  return <section aria-label="Squad streak" className="card flex h-full flex-col p-4 md:p-6">
+    <h2 className="text-sm font-semibold text-slate-500">Squad streak</h2>
     <p className="mt-3 flex flex-wrap items-baseline gap-2"><span aria-hidden="true" className="self-center text-2xl md:text-3xl">🔥</span><b className="text-4xl text-amber-600 md:text-5xl">{group.streak}</b><span className="font-bold">days</span></p>
     {!!group.streak_history?.length && <div aria-label="Recent streak days" className="mt-4 flex gap-1.5">{group.streak_history.map(day => <span key={day.date} title={`${day.date}: ${day.outcome}`} aria-label={`${day.date}: ${day.outcome}`} className={`h-2.5 flex-1 rounded-full ${day.outcome === "kept" ? "bg-amber-400" : day.outcome === "frozen" ? "bg-sky-300" : "bg-slate-200"}`} />)}</div>}
     <p className="mt-auto pt-4 text-xs font-bold text-sky-700">❄ {group.freezes_remaining} {group.freezes_remaining === 1 ? "freeze" : "freezes"} left this week</p>
@@ -25,11 +25,11 @@ export function StreakCard({ group }: { group: Group }) {
 
 export function DailyGoal({ group }: { group: Group }) {
   const complete = group.completed_today >= group.member_count;
-  return <section aria-label="Today's group goal" className={`card flex h-full flex-col p-4 md:p-6 ${complete ? "ring-2 ring-amber-300" : ""}`}>
-    <h2 className="text-sm font-semibold text-slate-500">Today’s group goal</h2>
+  return <section aria-label="Today's squad goal" className={`card flex h-full flex-col p-4 md:p-6 ${complete ? "ring-2 ring-amber-300" : ""}`}>
+    <h2 className="text-sm font-semibold text-slate-500">Today’s squad goal</h2>
     <p className="mt-3 text-3xl font-extrabold md:text-4xl">{group.completed_today}<span className="text-lg text-slate-400"> / {group.member_count}</span></p>
-    <p className="mt-2 text-sm font-bold">{complete ? "Daily group goal complete!" : `${group.member_count} sessions together`}</p>
-    <div role="progressbar" aria-label="Group sessions completed today" aria-valuemin={0} aria-valuemax={Math.max(group.completed_today, group.member_count)} aria-valuenow={group.completed_today} className="mt-4 h-2.5 overflow-hidden rounded-full bg-slate-100"><div className="h-full rounded-full bg-brand-500" style={{ width: `${Math.min(100, 100 * group.completed_today / Math.max(1, group.member_count))}%` }} /></div>
+    <p className="mt-2 text-sm font-bold">{complete ? "Daily squad goal complete!" : `${group.member_count} sessions together`}</p>
+    <div role="progressbar" aria-label="Squad sessions completed today" aria-valuemin={0} aria-valuemax={Math.max(group.completed_today, group.member_count)} aria-valuenow={group.completed_today} className="mt-4 h-2.5 overflow-hidden rounded-full bg-slate-100"><div className="h-full rounded-full bg-brand-500" style={{ width: `${Math.min(100, 100 * group.completed_today / Math.max(1, group.member_count))}%` }} /></div>
     <p className="mt-auto pt-4 text-xs leading-relaxed text-slate-500"><span className="hidden md:inline">Completed sessions today, Lagos time. </span>Solo counts too.</p>
   </section>;
 }
@@ -59,5 +59,5 @@ export function GroupProgress({ groupId, details = false }: { groupId?: number; 
   const group = groups.find(g => String(g.id) === selected) ?? groups[0];
   if (error) return <ErrorMessage message={error} />;
   if (!group) return null;
-  return <div role="region" className="space-y-5" aria-label="Current group progress">{groups.length > 1 && <label className="block text-sm font-bold">Group progress<select aria-label="Group progress" value={group.id} onChange={e => setSelected(e.target.value)} className={`studyflow-select ${field}`}>{groups.map(g => <option key={g.id} value={g.id}>{g.name}</option>)}</select></label>}<GroupBar name={group.name} points={group.weekly_points} target={group.weekly_target} compact />{details && <><DailyGoal group={group} /><StreakCard group={group} /></>}</div>;
+  return <div role="region" className="space-y-5" aria-label="Current squad progress">{groups.length > 1 && <label className="block text-sm font-bold">Squad progress<select aria-label="Squad progress" value={group.id} onChange={e => setSelected(e.target.value)} className={`studyflow-select ${field}`}>{groups.map(g => <option key={g.id} value={g.id}>{g.name}</option>)}</select></label>}<GroupBar name={group.name} points={group.weekly_points} target={group.weekly_target} compact />{details && <><DailyGoal group={group} /><StreakCard group={group} /></>}</div>;
 }

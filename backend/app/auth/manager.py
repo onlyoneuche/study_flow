@@ -30,7 +30,7 @@ class UserDatabase(SQLAlchemyUserDatabase[User, int]):
             raise HTTPException(
                 status_code=409,
                 detail=(
-                    "This level change conflicts with your groups. Leave or transfer them first."
+                    "This level change conflicts with your squads. Leave or transfer them first."
                 ),
             ) from error
 
