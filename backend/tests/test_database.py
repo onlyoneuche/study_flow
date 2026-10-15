@@ -37,7 +37,7 @@ def test_failed_initial_migration_rolls_back_schema(tmp_path, monkeypatch):
     try:
         assert inspect(engine).get_table_names() == []
         command.upgrade(migration_config(path), "head")
-        assert len(inspect(engine).get_table_names()) == 16
+        assert len(inspect(engine).get_table_names()) == 17
     finally:
         engine.dispose()
 
@@ -57,7 +57,7 @@ def test_migration_down_and_up_with_populated_schema(db, db_engine, db_path):
 
 def test_required_tables_and_indexes_exist(db_engine):
     inspector = inspect(db_engine)
-    assert len(Base.metadata.tables) == 15
+    assert len(Base.metadata.tables) == 16
     assert set(inspector.get_table_names()) == {*Base.metadata.tables, "alembic_version"}
     assert "level" not in {column["name"] for column in inspector.get_columns("sessions")}
     assert {"level", "quiz_id", "ended_at"} <= {

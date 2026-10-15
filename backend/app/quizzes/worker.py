@@ -82,7 +82,7 @@ async def cached(db, job, user_id, related=False):
     return None
 
 
-async def store_quiz(db, job, document, model_name, source=QuizSource.LLM):
+async def store_quiz(db, job, document, model_name, source=QuizSource.LLM, *, historical=False):
     quiz = Quiz(
         cache_key=job.key,
         subject_norm=job.subject_norm,
@@ -91,6 +91,7 @@ async def store_quiz(db, job, document, model_name, source=QuizSource.LLM):
         prompt_version=PROMPT_VERSION,
         model_name=model_name,
         source=source,
+        status=QuizVariantStatus.RETIRED if historical else QuizVariantStatus.ACTIVE,
     )
     db.add(quiz)
     await db.flush()
@@ -115,7 +116,7 @@ async def store_quiz(db, job, document, model_name, source=QuizSource.LLM):
             .order_by(Quiz.id.desc())
         )
     ).all()
-    for old in active[5:]:
+    for old in active[5:] if not historical else []:
         # Logical eviction preserves the questions referenced by historical attempts and flags.
         old.status = QuizVariantStatus.RETIRED
     await db.flush()

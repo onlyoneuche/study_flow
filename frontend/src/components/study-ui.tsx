@@ -18,7 +18,7 @@ export function StreakCard({ group }: { group: Group }) {
     <h2 className="text-sm font-semibold text-slate-500">Group streak</h2>
     <p className="mt-3 flex flex-wrap items-baseline gap-2"><span aria-hidden="true" className="self-center text-2xl md:text-3xl">🔥</span><b className="text-4xl text-amber-600 md:text-5xl">{group.streak}</b><span className="font-bold">days</span></p>
     {!!group.streak_history?.length && <div aria-label="Recent streak days" className="mt-4 flex gap-1.5">{group.streak_history.map(day => <span key={day.date} title={`${day.date}: ${day.outcome}`} aria-label={`${day.date}: ${day.outcome}`} className={`h-2.5 flex-1 rounded-full ${day.outcome === "kept" ? "bg-amber-400" : day.outcome === "frozen" ? "bg-sky-300" : "bg-slate-200"}`} />)}</div>}
-    <p className="mt-auto pt-4 text-xs font-bold text-sky-700">❄ {group.freezes_remaining} freezes left this week</p>
+    <p className="mt-auto pt-4 text-xs font-bold text-sky-700">❄ {group.freezes_remaining} {group.freezes_remaining === 1 ? "freeze" : "freezes"} left this week</p>
     <p className="mt-2 hidden text-xs leading-relaxed text-slate-500 md:block">Checked at 02:00 Lagos.{group.last_evaluated_date ? ` Through ${group.last_evaluated_date}.` : " Your first day is still ahead."}{group.streak_paused ? " At least 3 members are needed at the start of a day." : ""}</p>
   </section>;
 }

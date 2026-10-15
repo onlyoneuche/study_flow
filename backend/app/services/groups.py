@@ -94,8 +94,8 @@ def invite_view(invite: Invite, group: Group, frontend_url: str):
     )
 
 
-async def new_invite(db: AsyncSession, group: Group, user_id: int, max_uses: int):
-    now = utc_now()
+async def new_invite(db: AsyncSession, group: Group, user_id: int, max_uses: int, now=None):
+    now = now or utc_now()
     old = (
         await db.scalars(
             select(Invite).where(Invite.group_id == group.id, Invite.revoked_at.is_(None))

@@ -1,6 +1,7 @@
 """Import every model here so Alembic sees the complete metadata."""
 
 from app.models.entities import (
+    DemoSeedRun,
     FocusSummary,
     Group,
     GroupMember,
@@ -19,6 +20,7 @@ from app.models.entities import (
 )
 
 __all__ = [
+    "DemoSeedRun",
     "FocusSummary",
     "Group",
     "GroupMember",

@@ -12,6 +12,7 @@ from alembic import command  # noqa: E402
 from alembic.config import Config  # noqa: E402
 from app.core.config import get_settings  # noqa: E402
 from app.db.database import Database  # noqa: E402
+from app.demo.seed import seed_demo  # noqa: E402
 from app.quizzes.seed import seed_quizzes  # noqa: E402
 
 url = os.environ.get("DATABASE_URL", "")
@@ -25,7 +26,10 @@ command.upgrade(config, "head")
 async def seed():
     database = Database(get_settings().database_url)
     try:
-        await seed_quizzes(database)
+        if os.environ.get("STUDYFLOW_BROWSER_DEMO") == "1":
+            await seed_demo(database, frontend_url="http://127.0.0.1:3000")
+        else:
+            await seed_quizzes(database)
     finally:
         await database.close()
 

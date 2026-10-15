@@ -1,4 +1,4 @@
-.PHONY: setup dev dev-backend dev-frontend migrate migration-check seed-quizzes test test-backend test-frontend test-browser build docker-up docker-down
+.PHONY: setup dev dev-backend dev-frontend migrate migration-check seed seed-quizzes test test-backend test-frontend test-browser test-demo build docker-up docker-down
 
 export UV_CACHE_DIR ?= $(CURDIR)/.cache/uv
 export npm_config_cache ?= $(CURDIR)/.cache/npm
@@ -48,3 +48,10 @@ docker-down:
 
 seed-quizzes:
 	uv run --directory backend python -m app.quizzes.seed
+
+seed:
+	uv run --directory backend python -m app.demo.seed
+
+test-demo: build
+	STUDYFLOW_BROWSER_DEMO=1 npm --prefix frontend run test:browser -- --project=chrome-390 tests/demo.spec.ts
+	STUDYFLOW_BROWSER_DEMO=1 npm --prefix frontend run test:browser -- --project=webkit-1440 tests/demo.spec.ts

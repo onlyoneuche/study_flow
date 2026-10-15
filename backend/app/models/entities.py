@@ -64,6 +64,20 @@ class User(SQLAlchemyBaseUserTable[int], Record, Base):
     adult_confirmed_at: Mapped[datetime | None] = mapped_column(UTCDateTime())
 
 
+class DemoSeedRun(Record, Base):
+    """Explicit ownership for the local fixture; email/name matching never grants ownership."""
+
+    __tablename__ = "demo_seed_runs"
+    __table_args__ = (
+        Index("uq_demo_seed_active", "is_active", unique=True, sqlite_where=text("is_active = 1")),
+    )
+
+    is_active: Mapped[bool] = mapped_column(default=True, server_default=text("1"))
+    user_ids: Mapped[list[int]] = mapped_column(JSON)
+    group_ids: Mapped[list[int]] = mapped_column(JSON)
+    archived_at: Mapped[datetime | None] = mapped_column(UTCDateTime())
+
+
 class Group(Record, Base):
     __tablename__ = "groups"
     __table_args__ = (

@@ -20,6 +20,7 @@ from app.models.enums import FlagReason, ParticipantStatus, QuizStatus, QuizVari
 from app.quizzes.worker import questions_for, usable
 from app.services.completion import complete, deadline
 from app.services.groups import fail
+from app.services.quizzes import submit_attempt
 from app.services.sessions import advance_session
 
 router = APIRouter()
@@ -270,32 +271,7 @@ async def submit_quiz(
     attempt = await db.scalar(
         select(QuizAttempt).where(QuizAttempt.participant_id == participant.id)
     )
-    if not attempt:
-        fail("not_started", "Open the quiz before submitting your answers.")
-    if attempt.submitted_at:
-        if attempt.answers != data.answers:
-            fail(
-                "already_submitted",
-                "This quiz has already been submitted. Answers cannot be changed.",
-            )
-        return await result(db, participant, attempt, now)
-    if not participant.ended_at or participant.status == ParticipantStatus.INCOMPLETE:
-        fail("quiz_locked", "This participation is not eligible for a quiz.")
-    if now > deadline(participant, attempt):
-        await complete(db, session, participant, now)
-        await db.commit()
-        fail(
-            "quiz_deadline",
-            "Your quiz submission is late. The deadline has passed; "
-            "your study time keeps time-only completion and base points.",
-            410,
-        )
-    questions = await questions_for(db, attempt.quiz_id)
-    attempt.answers = data.answers
-    attempt.correct_count = sum(data.answers[q.position] == q.correct_index for q in questions)
-    attempt.score_pct = 100 * attempt.correct_count / 15
-    attempt.submitted_at = now
-    await complete(db, session, participant, now, attempt)
+    await submit_attempt(db, session, participant, attempt, data.answers, now)
     await db.commit()
     return await result(db, participant, attempt, now)
 

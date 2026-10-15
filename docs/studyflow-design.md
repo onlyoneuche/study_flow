@@ -115,7 +115,8 @@ job nightly_streaks(now):
         record(group, D, outcome, completed=len(done), eligible=len(members))
     commit
     # Weekly totals switch automatically at Monday 00:00 Lagos via ledger queries.
-    # TODO: specify storage/API for optional immutable weekly leaderboard snapshots.
+    # MVP historical weeks are derived from the ledger, with Lagos week boundaries.
+    # Optional immutable weekly leaderboard snapshots remain backlog (decision, 15 Oct 2026).
 ```
 
 Judgement call: freezes are not spent on a streak that is already 0, so they are kept for when they matter. The cursor `last_evaluated_date` always advances after evaluating a day, including paused days, in the same transaction as its unique day record.
@@ -219,6 +220,7 @@ All tables have `id` (int PK) and `created_at` (UTC) unless stated. FK = foreign
 | `group_streaks` | group_id FK (unique), current, best, last_evaluated_date | One row per group, written only by the nightly job. |
 | `group_streak_days` | group_id FK, date, outcome (`kept`/`frozen`/`broken`/`paused`), completed_count, eligible_count | Unique (group_id, date). Audit trail and idempotency. |
 | `streak_freezes` | group_id FK, date, week_start, reason (`auto`) | Unique (group_id, date). Count per `week_start` <= 2. |
+| `demo_seed_runs` | is_active, user_ids (JSON), group_ids (JSON), archived_at | Local demo ownership registry; at most one active generation. Resets archive only owned demo accounts/groups, preserving immutable ledger history. Refuse mixed non-demo history. Infrastructure only; no scoring or streak rules. |
 
 **Relationships:** users M:N groups via `group_members`; groups 1:N invites, sessions; sessions 1:N session_participants; session_participants 1:1 quiz_attempts; quizzes 1:N quiz_questions; quiz_questions 1:N question_flags; points_ledger N:1 to users, groups, session_participants.
 

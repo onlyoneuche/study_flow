@@ -2,7 +2,7 @@
 
 A local, social study app for the hackathon. Python 3.12 + FastAPI + SQLite, Next.js App Router + TypeScript + Tailwind, and local Ollama. No hosted backend or paid API.
 
-**Current milestone: step 9, responsive screens and Lagos streak jobs.** Sign up, invite friends, study solo or live, take a quiz and see points, group progress and rankings. Nightly streak evaluation and restart catch-up are active. The full Study Squad seed history and final hackathon demo guide remain steps 10–11.
+**Current milestone: step 10, repeatable Study Squad demo history.** Sign up, invite friends, study solo or live, take a quiz and see points, group progress and rankings. Nightly streak evaluation and restart catch-up are active. The final hackathon demo guide is step 11.
 
 The [full design](docs/studyflow-design.md) is the source of truth. UI references: [mobile](docs/mockups/mobile.html), [desktop](docs/mockups/desktop.html). See [implementation notes and TODOs](docs/implementation-notes.md) for unresolved details.
 
@@ -13,7 +13,7 @@ Install [uv](https://docs.astral.sh/uv/getting-started/installation/), Node.js 2
 ```sh
 make setup
 make migrate
-make seed-quizzes
+make seed
 ollama pull qwen2.5:7b-instruct
 ollama serve  # only if the Ollama app/service is not already running
 make dev
@@ -108,7 +108,7 @@ A missed day consumes a freeze only for a positive streak, at most two per group
 
 Use one backend instance/worker per SQLite database. An operating-system lock beside the database (`.jobs.lock`) rejects a second scheduler owner and is automatically released if the process exits. SQLite write reservations and unique day records also protect against overlapping evaluations. Keep the lock file in the same shared local volume as SQLite; do not remove it while the server runs. APScheduler coalesces missed cron firings; every run catches up from the stored cursor.
 
-Weekly bars and freeze allowances switch at Monday 00:00 Lagos (Sunday 23:00 UTC), through date-filtered queries. The weekly cron records that boundary without deleting or rewriting history; Sunday is still evaluated at Monday 02:00 using Sunday’s week. Historical ledger queries remain available. Optional weekly leaderboard snapshot storage is unspecified in the design and stays a TODO.
+Weekly bars and freeze allowances switch at Monday 00:00 Lagos (Sunday 23:00 UTC), through date-filtered queries. The weekly cron records that boundary without deleting or rewriting history; Sunday is still evaluated at Monday 02:00 using Sunday’s week. Historical weeks are derived from the ledger. Optional weekly snapshots remain backlog by user decision.
 
 ## Responsive screens
 
@@ -137,7 +137,14 @@ The production build includes an install manifest, local app icons and a service
 
 ## Next milestones
 
-10. Study Squad seed history.
 11. Complete setup and end-to-end demo instructions.
 
 Only after these work end to end: optional on-device Focus Tracker.
+
+## Study Squad seed
+
+Stop the backend, then run `make seed` after `make migrate`. Sign in as `ada@demo.studyflow.example.com` with password `StudyFlow-demo-2026!`. Tunde, Zainab, Chidi, Emeka and Funmi use their lowercase names at the same domain and password. These fictional SS2 accounts all belong to the secondary band; each studies a distinct subject. The second squad is **Lagos Brainiacs**.
+
+History is replayed through heartbeat, grading, completion/ledger and streak services: 13 evaluated days yield a 12-day streak with one freeze used; the latest seven days include solo/live sessions and quiz attempts. The weekly bar is about 340/**600** (six members × the documented 100-point target), with exact points depending on the current Lagos week. The seed prints actual totals, tonight’s scheduled room and Ada’s prepared quiz URL.
+
+For a short pitch, the prepared quiz represents an already-studied 25-minute session. Its real 20-minute quiz timer starts at seed time, so seed immediately before presenting. Normal session timers remain 25/45/60 minutes. Resetting creates a fresh active demo generation and archives the old one; immutable ledger/history are retained. Non-demo accounts, groups, flags and cache variants are preserved. A reset refuses mixed demo/non-demo membership or session history. Stop the backend before every reset, then sign in again.

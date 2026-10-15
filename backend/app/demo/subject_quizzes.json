@@ -1,0 +1,750 @@
+[
+  {
+    "subject": "Physics",
+    "topic": "Forces and motion",
+    "level": "SS2",
+    "questions": [
+      {
+        "question": "What is the SI unit of force?",
+        "options": [
+          "newton",
+          "joule",
+          "watt",
+          "pascal"
+        ],
+        "correct_index": 0,
+        "explanation": "Force is measured in newtons.",
+        "difficulty": "easy"
+      },
+      {
+        "question": "Which quantity is the rate of change of velocity?",
+        "options": [
+          "acceleration",
+          "distance",
+          "mass",
+          "momentum"
+        ],
+        "correct_index": 0,
+        "explanation": "Acceleration measures how quickly velocity changes.",
+        "difficulty": "easy"
+      },
+      {
+        "question": "Which equation expresses Newton’s second law for constant mass?",
+        "options": [
+          "F = ma",
+          "F = m/a",
+          "F = a/m",
+          "F = mv"
+        ],
+        "correct_index": 0,
+        "explanation": "The resultant force equals mass multiplied by acceleration.",
+        "difficulty": "easy"
+      },
+      {
+        "question": "Which force opposes sliding between two dry surfaces?",
+        "options": [
+          "friction",
+          "upthrust",
+          "tension",
+          "magnetic force"
+        ],
+        "correct_index": 0,
+        "explanation": "Friction opposes relative sliding motion.",
+        "difficulty": "easy"
+      },
+      {
+        "question": "What is inertia?",
+        "options": [
+          "resistance to a change in motion",
+          "rate of change of speed",
+          "force per unit area",
+          "energy per unit time"
+        ],
+        "correct_index": 0,
+        "explanation": "Inertia is a body’s resistance to changes in its motion.",
+        "difficulty": "easy"
+      },
+      {
+        "question": "A 2 kg trolley accelerates at 3 m/s². What is the resultant force?",
+        "options": [
+          "6 N",
+          "1.5 N",
+          "5 N",
+          "9 N"
+        ],
+        "correct_index": 0,
+        "explanation": "Using F = ma gives 2 × 3 = 6 N.",
+        "difficulty": "medium"
+      },
+      {
+        "question": "A 12 N resultant force acts on a 4 kg object. What is its acceleration?",
+        "options": [
+          "3 m/s²",
+          "48 m/s²",
+          "8 m/s²",
+          "0.33 m/s²"
+        ],
+        "correct_index": 0,
+        "explanation": "Acceleration is F/m = 12/4 = 3 m/s².",
+        "difficulty": "medium"
+      },
+      {
+        "question": "A body moves with constant velocity in a straight line. What is its resultant force?",
+        "options": [
+          "0 N",
+          "its weight",
+          "its mass",
+          "a steadily increasing force"
+        ],
+        "correct_index": 0,
+        "explanation": "Constant velocity means zero acceleration and hence zero resultant force.",
+        "difficulty": "medium"
+      },
+      {
+        "question": "Using g = 10 m/s², what is the weight of a 5 kg bag?",
+        "options": [
+          "50 N",
+          "5 N",
+          "0.5 N",
+          "15 N"
+        ],
+        "correct_index": 0,
+        "explanation": "Weight is mg = 5 × 10 = 50 N.",
+        "difficulty": "medium"
+      },
+      {
+        "question": "A swimmer pushes water backwards. Why does the swimmer move forwards?",
+        "options": [
+          "water exerts a forward reaction force",
+          "water removes the swimmer’s mass",
+          "gravity changes direction",
+          "the swimmer has no inertia"
+        ],
+        "correct_index": 0,
+        "explanation": "Newton’s third law gives a forward force of water on the swimmer.",
+        "difficulty": "medium"
+      },
+      {
+        "question": "Two horizontal forces of 9 N and 4 N act in opposite directions. What is their resultant?",
+        "options": [
+          "5 N towards the 9 N force",
+          "13 N towards the 4 N force",
+          "36 N towards the 9 N force",
+          "0 N"
+        ],
+        "correct_index": 0,
+        "explanation": "Opposing collinear forces subtract, giving 9 − 4 = 5 N.",
+        "difficulty": "medium"
+      },
+      {
+        "question": "A 3 kg object has a 15 N forward pull and 6 N backward friction. What is its acceleration?",
+        "options": [
+          "3 m/s² forwards",
+          "7 m/s² forwards",
+          "5 m/s² backwards",
+          "2 m/s² backwards"
+        ],
+        "correct_index": 0,
+        "explanation": "The resultant is 9 N forwards, so a = 9/3 = 3 m/s² forwards.",
+        "difficulty": "hard"
+      },
+      {
+        "question": "A vehicle speeds up uniformly from 4 m/s to 16 m/s in 6 s. What is its acceleration?",
+        "options": [
+          "2 m/s²",
+          "3.33 m/s²",
+          "12 m/s²",
+          "72 m/s²"
+        ],
+        "correct_index": 0,
+        "explanation": "Acceleration is (16 − 4)/6 = 2 m/s².",
+        "difficulty": "hard"
+      },
+      {
+        "question": "A 2 kg object accelerates at 4 m/s² when pulled by 11 N. What frictional force opposes it?",
+        "options": [
+          "3 N",
+          "8 N",
+          "19 N",
+          "5.5 N"
+        ],
+        "correct_index": 0,
+        "explanation": "The resultant is 8 N, so opposing friction is 11 − 8 = 3 N.",
+        "difficulty": "hard"
+      },
+      {
+        "question": "A 1,000 kg car accelerates at 1.5 m/s² against 500 N resistance. What is the driving force?",
+        "options": [
+          "2,000 N",
+          "1,000 N",
+          "1,500 N",
+          "750 N"
+        ],
+        "correct_index": 0,
+        "explanation": "Driving force minus 500 N equals ma = 1,500 N, so driving force is 2,000 N.",
+        "difficulty": "hard"
+      }
+    ]
+  },
+  {
+    "subject": "Biology",
+    "topic": "Cell structure",
+    "level": "SS2",
+    "questions": [
+      {
+        "question": "Which structure controls most activities of a typical animal cell?",
+        "options": [
+          "nucleus",
+          "cell wall",
+          "vacuole",
+          "chloroplast"
+        ],
+        "correct_index": 0,
+        "explanation": "The nucleus contains genetic material that controls cell activities.",
+        "difficulty": "easy"
+      },
+      {
+        "question": "Which structure controls movement of substances into and out of a cell?",
+        "options": [
+          "cell membrane",
+          "cell wall",
+          "nucleolus",
+          "chromosome"
+        ],
+        "correct_index": 0,
+        "explanation": "The selectively permeable cell membrane regulates entry and exit.",
+        "difficulty": "easy"
+      },
+      {
+        "question": "Which organelle carries out photosynthesis in green plant cells?",
+        "options": [
+          "chloroplast",
+          "mitochondrion",
+          "ribosome",
+          "lysosome"
+        ],
+        "correct_index": 0,
+        "explanation": "Chloroplasts contain chlorophyll and carry out photosynthesis.",
+        "difficulty": "easy"
+      },
+      {
+        "question": "Which structure gives a plant cell support and a regular shape?",
+        "options": [
+          "cell wall",
+          "nucleus",
+          "ribosome",
+          "cell membrane only"
+        ],
+        "correct_index": 0,
+        "explanation": "The cellulose cell wall provides structural support.",
+        "difficulty": "easy"
+      },
+      {
+        "question": "Where does most aerobic respiration occur in a typical eukaryotic cell?",
+        "options": [
+          "mitochondria",
+          "chloroplasts",
+          "ribosomes",
+          "nucleoli"
+        ],
+        "correct_index": 0,
+        "explanation": "Mitochondria are the main site of aerobic respiration.",
+        "difficulty": "easy"
+      },
+      {
+        "question": "Why do root hair cells have long projections?",
+        "options": [
+          "to increase surface area for absorption",
+          "to reduce contact with soil",
+          "to make chlorophyll",
+          "to store chromosomes outside the nucleus"
+        ],
+        "correct_index": 0,
+        "explanation": "The projection increases the surface area for absorbing water and mineral ions.",
+        "difficulty": "medium"
+      },
+      {
+        "question": "Which organelle joins amino acids to make proteins?",
+        "options": [
+          "ribosome",
+          "vacuole",
+          "chloroplast",
+          "cell wall"
+        ],
+        "correct_index": 0,
+        "explanation": "Ribosomes are the sites of protein synthesis.",
+        "difficulty": "medium"
+      },
+      {
+        "question": "Which feature is typical of a bacterial cell?",
+        "options": [
+          "DNA is not enclosed in a nucleus",
+          "a large membrane-bound nucleus",
+          "many chloroplasts",
+          "a cellulose cell wall in every species"
+        ],
+        "correct_index": 0,
+        "explanation": "Bacteria are prokaryotes and lack a membrane-bound nucleus.",
+        "difficulty": "medium"
+      },
+      {
+        "question": "What happens when a healthy plant cell takes in water by osmosis?",
+        "options": [
+          "the vacuole expands and the cell becomes turgid",
+          "the cell wall immediately dissolves",
+          "the nucleus leaves the cell",
+          "all chloroplasts become ribosomes"
+        ],
+        "correct_index": 0,
+        "explanation": "Water entering the vacuole creates turgor pressure against the cell wall.",
+        "difficulty": "medium"
+      },
+      {
+        "question": "What is the function of a large central vacuole in a plant cell?",
+        "options": [
+          "storing cell sap and helping maintain turgor",
+          "producing all the cell’s DNA",
+          "forming the cell membrane from cellulose",
+          "replacing all mitochondria"
+        ],
+        "correct_index": 0,
+        "explanation": "The vacuole stores cell sap and helps keep the cell turgid.",
+        "difficulty": "medium"
+      },
+      {
+        "question": "Why do muscle cells usually contain many mitochondria?",
+        "options": [
+          "they need much energy for contraction",
+          "they carry out photosynthesis",
+          "they do not contain cytoplasm",
+          "they have no cell membranes"
+        ],
+        "correct_index": 0,
+        "explanation": "Muscle contraction needs energy supplied by respiration in mitochondria.",
+        "difficulty": "medium"
+      },
+      {
+        "question": "A cube-shaped cell has side length 2 units. What is its surface-area-to-volume ratio?",
+        "options": [
+          "3:1",
+          "6:1",
+          "2:1",
+          "1:3"
+        ],
+        "correct_index": 0,
+        "explanation": "Its surface area is 24 and volume is 8, giving a ratio of 3:1.",
+        "difficulty": "hard"
+      },
+      {
+        "question": "Why does a smaller cell usually exchange materials more efficiently than a similar larger cell?",
+        "options": [
+          "it has a larger surface-area-to-volume ratio",
+          "it has no need for nutrients",
+          "its volume always exceeds its surface area",
+          "its membrane is made of cellulose"
+        ],
+        "correct_index": 0,
+        "explanation": "A larger surface-area-to-volume ratio supports exchange relative to the cell’s needs.",
+        "difficulty": "hard"
+      },
+      {
+        "question": "A red blood cell placed in concentrated salt solution shrinks. What explains this?",
+        "options": [
+          "water leaves by osmosis",
+          "salt changes directly into water",
+          "the cell grows a cellulose wall",
+          "water enters by photosynthesis"
+        ],
+        "correct_index": 0,
+        "explanation": "Water moves out through the cell membrane into the more concentrated solution.",
+        "difficulty": "hard"
+      },
+      {
+        "question": "A leaf cell cannot make enough proteins after damage to many ribosomes. Which process is directly affected?",
+        "options": [
+          "joining amino acids into proteins",
+          "absorbing light with chlorophyll",
+          "forming glucose by photosynthesis",
+          "storing water in the vacuole"
+        ],
+        "correct_index": 0,
+        "explanation": "Damaged ribosomes directly reduce protein synthesis from amino acids.",
+        "difficulty": "hard"
+      }
+    ]
+  },
+  {
+    "subject": "Economics",
+    "topic": "Demand",
+    "level": "SS2",
+    "questions": [
+      {
+        "question": "In economics, demand requires a desire for a good and what else?",
+        "options": [
+          "ability and willingness to pay",
+          "a large population only",
+          "a government price limit only",
+          "production by the buyer"
+        ],
+        "correct_index": 0,
+        "explanation": "Effective demand combines desire with ability and willingness to pay.",
+        "difficulty": "easy"
+      },
+      {
+        "question": "What does the law of demand normally predict when a good’s own price rises, other things equal?",
+        "options": [
+          "quantity demanded falls",
+          "quantity demanded rises",
+          "demand becomes unlimited",
+          "income must rise"
+        ],
+        "correct_index": 0,
+        "explanation": "Other things equal, price and quantity demanded are inversely related.",
+        "difficulty": "easy"
+      },
+      {
+        "question": "Which axis normally shows price on a demand graph?",
+        "options": [
+          "vertical axis",
+          "horizontal axis",
+          "neither axis",
+          "the time axis only"
+        ],
+        "correct_index": 0,
+        "explanation": "Price is normally plotted on the vertical axis.",
+        "difficulty": "easy"
+      },
+      {
+        "question": "Which pair is an example of substitute goods?",
+        "options": [
+          "tea and coffee",
+          "cars and petrol",
+          "printers and ink",
+          "torches and batteries"
+        ],
+        "correct_index": 0,
+        "explanation": "Tea and coffee can replace one another in consumption.",
+        "difficulty": "easy"
+      },
+      {
+        "question": "Which pair is an example of complementary goods?",
+        "options": [
+          "cars and petrol",
+          "tea and coffee",
+          "rice and yam as alternatives",
+          "two competing bus services"
+        ],
+        "correct_index": 0,
+        "explanation": "Cars and petrol are commonly used together.",
+        "difficulty": "easy"
+      },
+      {
+        "question": "What causes a movement along an unchanged demand curve?",
+        "options": [
+          "a change in the good’s own price",
+          "a change in tastes",
+          "a change in buyers’ income",
+          "a change in population"
+        ],
+        "correct_index": 0,
+        "explanation": "A change in own price changes quantity demanded along the same curve.",
+        "difficulty": "medium"
+      },
+      {
+        "question": "Income rises and demand for a normal good increases. How does its demand curve move?",
+        "options": [
+          "to the right",
+          "to the left",
+          "only down along the same curve",
+          "only up along the same curve"
+        ],
+        "correct_index": 0,
+        "explanation": "Higher income shifts demand for a normal good to the right.",
+        "difficulty": "medium"
+      },
+      {
+        "question": "Income rises and demand for an inferior good falls. What type of good is it?",
+        "options": [
+          "an inferior good",
+          "a normal good",
+          "a public good by definition",
+          "a complementary good by definition"
+        ],
+        "correct_index": 0,
+        "explanation": "Demand for an inferior good decreases as income rises, other things equal.",
+        "difficulty": "medium"
+      },
+      {
+        "question": "Coffee becomes more expensive. What may happen to demand for tea, a substitute?",
+        "options": [
+          "it increases",
+          "it must fall to zero",
+          "it cannot change",
+          "tea becomes a free good"
+        ],
+        "correct_index": 0,
+        "explanation": "Some buyers switch from coffee to tea, increasing demand for tea.",
+        "difficulty": "medium"
+      },
+      {
+        "question": "Petrol becomes more expensive. What may happen to demand for large petrol cars?",
+        "options": [
+          "it decreases",
+          "it must increase",
+          "it becomes perfectly elastic automatically",
+          "it equals the price of petrol"
+        ],
+        "correct_index": 0,
+        "explanation": "Higher running costs can reduce demand for a complementary good such as a petrol car.",
+        "difficulty": "medium"
+      },
+      {
+        "question": "Which change is most likely to increase market demand for notebooks?",
+        "options": [
+          "more pupils enrol in school",
+          "the notebook’s own price rises",
+          "fewer pupils attend school",
+          "notebooks become less useful to pupils"
+        ],
+        "correct_index": 0,
+        "explanation": "More potential buyers can shift market demand for notebooks to the right.",
+        "difficulty": "medium"
+      },
+      {
+        "question": "Price rises by 10% and quantity demanded falls by 20%. What is the magnitude of price elasticity of demand?",
+        "options": [
+          "2",
+          "0.5",
+          "10",
+          "30"
+        ],
+        "correct_index": 0,
+        "explanation": "The elasticity magnitude is 20%/10% = 2.",
+        "difficulty": "hard"
+      },
+      {
+        "question": "Price falls by 5% and quantity demanded rises by 5%. What is the elasticity magnitude?",
+        "options": [
+          "1",
+          "0",
+          "5",
+          "25"
+        ],
+        "correct_index": 0,
+        "explanation": "Equal percentage changes give unit elasticity, with magnitude 1.",
+        "difficulty": "hard"
+      },
+      {
+        "question": "A firm raises price and total revenue falls. What does this suggest about demand over that range?",
+        "options": [
+          "it is price elastic",
+          "it is perfectly inelastic",
+          "quantity demanded is fixed",
+          "buyers’ income must have risen"
+        ],
+        "correct_index": 0,
+        "explanation": "With elastic demand, the percentage fall in quantity outweighs the percentage price rise.",
+        "difficulty": "hard"
+      },
+      {
+        "question": "At ₦100, 30 units are demanded; at ₦80, 40 units are demanded. What describes the change caused by this price fall alone?",
+        "options": [
+          "an extension of demand along the curve",
+          "a decrease in demand to the left",
+          "a rise in the price of a substitute",
+          "a change in population"
+        ],
+        "correct_index": 0,
+        "explanation": "A fall in own price causes an extension in quantity demanded along the same curve.",
+        "difficulty": "hard"
+      }
+    ]
+  },
+  {
+    "subject": "English",
+    "topic": "Parts of speech",
+    "level": "SS2",
+    "questions": [
+      {
+        "question": "Which word is a noun in “The teacher smiled”?",
+        "options": [
+          "teacher",
+          "the",
+          "smiled",
+          "quickly"
+        ],
+        "correct_index": 0,
+        "explanation": "Teacher names a person and is a noun.",
+        "difficulty": "easy"
+      },
+      {
+        "question": "Which word is the verb in “Ada studies every evening”?",
+        "options": [
+          "studies",
+          "Ada",
+          "every",
+          "evening"
+        ],
+        "correct_index": 0,
+        "explanation": "Studies expresses the action in the sentence.",
+        "difficulty": "easy"
+      },
+      {
+        "question": "Which word is an adjective in “She carried a heavy bag”?",
+        "options": [
+          "heavy",
+          "carried",
+          "she",
+          "a"
+        ],
+        "correct_index": 0,
+        "explanation": "Heavy describes the noun bag.",
+        "difficulty": "easy"
+      },
+      {
+        "question": "Which word is an adverb in “Tunde answered politely”?",
+        "options": [
+          "politely",
+          "Tunde",
+          "answered",
+          "answer"
+        ],
+        "correct_index": 0,
+        "explanation": "Politely describes how Tunde answered.",
+        "difficulty": "easy"
+      },
+      {
+        "question": "Which word is a pronoun in “They arrived early”?",
+        "options": [
+          "they",
+          "arrived",
+          "early",
+          "arrival"
+        ],
+        "correct_index": 0,
+        "explanation": "They stands in place of a noun or noun phrase.",
+        "difficulty": "easy"
+      },
+      {
+        "question": "What part of speech is “under” in “The book is under the table”?",
+        "options": [
+          "preposition",
+          "verb",
+          "adjective",
+          "interjection"
+        ],
+        "correct_index": 0,
+        "explanation": "Under shows the relationship between the book and the table.",
+        "difficulty": "medium"
+      },
+      {
+        "question": "What part of speech is “and” in “Zainab and Chidi studied”?",
+        "options": [
+          "conjunction",
+          "adverb",
+          "noun",
+          "pronoun"
+        ],
+        "correct_index": 0,
+        "explanation": "And joins the two names and is a conjunction.",
+        "difficulty": "medium"
+      },
+      {
+        "question": "What does “very” modify in “The test was very difficult”?",
+        "options": [
+          "the adjective difficult",
+          "the noun test",
+          "the article the",
+          "the verb was only"
+        ],
+        "correct_index": 0,
+        "explanation": "Very is an adverb modifying the adjective difficult.",
+        "difficulty": "medium"
+      },
+      {
+        "question": "What part of speech is “hers” in “That calculator is hers”?",
+        "options": [
+          "possessive pronoun",
+          "preposition",
+          "article",
+          "conjunction"
+        ],
+        "correct_index": 0,
+        "explanation": "Hers replaces a possessive noun phrase such as her calculator.",
+        "difficulty": "medium"
+      },
+      {
+        "question": "What part of speech is “a” in “Funmi bought a pen”?",
+        "options": [
+          "indefinite article",
+          "personal pronoun",
+          "main verb",
+          "adverb of manner"
+        ],
+        "correct_index": 0,
+        "explanation": "A introduces a singular non-specific countable noun.",
+        "difficulty": "medium"
+      },
+      {
+        "question": "What part of speech is “because” in “We stayed because it rained”?",
+        "options": [
+          "subordinating conjunction",
+          "proper noun",
+          "adjective",
+          "personal pronoun"
+        ],
+        "correct_index": 0,
+        "explanation": "Because introduces a subordinate clause giving a reason.",
+        "difficulty": "medium"
+      },
+      {
+        "question": "In “We study hard”, what part of speech is “hard”?",
+        "options": [
+          "adverb",
+          "adjective",
+          "noun",
+          "preposition"
+        ],
+        "correct_index": 0,
+        "explanation": "Hard modifies the verb study and functions as an adverb here.",
+        "difficulty": "hard"
+      },
+      {
+        "question": "In which sentence is “light” used as a verb?",
+        "options": [
+          "Please light the candle.",
+          "The bag is light.",
+          "The light is bright.",
+          "She carried a light bag."
+        ],
+        "correct_index": 0,
+        "explanation": "Light expresses the action of making the candle burn.",
+        "difficulty": "hard"
+      },
+      {
+        "question": "In “Swimming keeps me fit”, how does “Swimming” function?",
+        "options": [
+          "as a noun naming an activity",
+          "as a preposition",
+          "as a conjunction",
+          "as an adjective describing me"
+        ],
+        "correct_index": 0,
+        "explanation": "Swimming is a gerund functioning as the subject noun.",
+        "difficulty": "hard"
+      },
+      {
+        "question": "In “The very small child laughed loudly”, which pair consists only of adverbs?",
+        "options": [
+          "very and loudly",
+          "small and child",
+          "the and child",
+          "child and laughed"
+        ],
+        "correct_index": 0,
+        "explanation": "Very modifies small, and loudly modifies laughed, so both function as adverbs.",
+        "difficulty": "hard"
+      }
+    ]
+  }
+]
