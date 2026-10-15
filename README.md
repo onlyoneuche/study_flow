@@ -4,7 +4,8 @@
 
 StudyFlow is a research-backed, gamified social study app built for the hackathon theme *Engagement & Staying in the Learning Journey*. It helps students stay motivated and keep learning over time instead of dropping off.
 
-Built local-first with Next.js, FastAPI, SQLite and Ollama. It uses no paid APIs and no hosted backend.
+Built local-first with FastAPI, Next.js, SQLite and Ollama. It uses no paid APIs and no hosted backend.
+Designed by me and developed with [OpenAI Codex](https://openai.com/codex/) as my coding agent.
 
 ## Why StudyFlow
 
@@ -30,9 +31,9 @@ make seed
 make dev
 ```
 
-Open [localhost:3000](http://localhost:3000). Demo login: `ada@demo.studyflow.example.com` / `StudyFlow-demo-2026!`.
+Prefer Docker? Follow the [Docker setup](docs/setup.md#docker-option) for `.env` configuration and demo seeding, then run `docker compose up --build`.
 
-Squads are stored as groups internally.
+Open [localhost:3000](http://localhost:3000). Demo login: `ada@demo.studyflow.example.com` / `StudyFlow-demo-2026!`.
 
 ## Docs
 

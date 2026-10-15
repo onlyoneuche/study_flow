@@ -54,7 +54,7 @@ Browser runners use disposable databases and need ports 3000/8000 free. Run `mak
 
 ## Changes that need care
 
-- UI copy says **squad**; internal names, routes and JSON still use `group`. Preserve that boundary.
+- Squads are stored as groups internally. UI copy says **squad**; internal names, routes and JSON still use `group`. Preserve that boundary.
 - Reuse the existing services. `points_ledger` is append-only; corrections are adjustment rows. Never compare raw quiz scores across learners or subjects.
 - Store timestamps in UTC and use `backend/app/core/calendar.py` for Lagos day/week boundaries. Keep clocks, active time and quiz deadlines on the server.
 - Preserve audience-band checks and consent requirements. Keep correct answers private until quiz submission.
