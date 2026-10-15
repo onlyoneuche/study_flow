@@ -1,4 +1,4 @@
-.PHONY: setup dev dev-backend dev-frontend test test-backend test-frontend test-browser build docker-up docker-down
+.PHONY: setup dev dev-backend dev-frontend migrate migration-check test test-backend test-frontend test-browser build docker-up docker-down
 
 export UV_CACHE_DIR ?= $(CURDIR)/.cache/uv
 export npm_config_cache ?= $(CURDIR)/.cache/npm
@@ -17,6 +17,12 @@ dev-backend:
 
 dev-frontend:
 	npm --prefix frontend run dev
+
+migrate:
+	uv run --directory backend alembic upgrade head
+
+migration-check:
+	uv run --directory backend alembic check
 
 test: test-backend test-frontend
 

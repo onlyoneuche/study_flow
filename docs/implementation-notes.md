@@ -9,14 +9,20 @@ The source of truth is [studyflow-design.md](studyflow-design.md). The user's nu
 - Focus Tracker implementation follows steps 1–11; its table belongs in step 2 as requested. Scoring and streak code must never read it.
 - Missing Ollama is a degraded dependency, not an API outage (§3.7). `/health` and `/api/v1/health` return HTTP 200 with detailed dependency state; this avoids blocking startup or Docker liveness when cached quizzes can serve the app. This is an infrastructure choice, not a scoring rule.
 
-## TODO: resolve before implementing the affected rules
+## Decisions confirmed by the user, 15 Oct 2026
 
-- `OTHER` has a level descriptor but no audience-band mapping (§4, §8). Do not infer a band or allow cross-band membership.
-- The document's paused-streak pseudocode skips `last_evaluated_date` while startup catch-up uses that field (§2). Preserve idempotent day records and define a catch-up cursor that cannot repeatedly revisit paused days; no streak rule should change.
-- Startup before 02:00 Lagos must not finalise yesterday before the last session's quiz window closes (§2). TODO: anchor catch-up to the latest due 02:00 evaluation.
-- Quiz timer is 20 minutes (§3.10), submission window is 30 minutes after participant end (§1.1). TODO: enforce both deadlines when quiz endpoints are added.
-- `sessions` is described as having a copied level (§4), but live participants can have different levels and the table in §5 has no level column. TODO: retain the per-participant level snapshot and resolve whether a redundant session-level value is intended.
-- The mockup's daily goal of two sessions, scheduled-session RSVPs (“going”), member nudges and cross-person quiz-score badges have no corresponding MVP API/rule. TODO: omit unsupported mechanics and show only documented data; never rank raw scores.
+- `OTHER` maps to `tertiary` and requires an explicit 18+ confirmation, recorded in `adult_confirmed_at`. No cross-band groups.
+- Always advance `group_streaks.last_evaluated_date`, including paused days. Keep unique group/day records and update the cursor and day atomically in step 8.
+- Latest due day is Lagos today minus two before 02:00, otherwise today minus one. Catch up only through that day in step 8.
+- Enforce both quiz deadlines in step 6: `min(quiz_start + 20 min, participant_end + 30 min)`. A late submission is rejected clearly but sufficient active time still earns time-only completion and base points.
+- Keep the level snapshot on `session_participants`, with no session-level column.
+- Keep the daily goal card based on completed group sessions today versus member count. Omit RSVPs and MVP nudges, and remove cross-person raw-score badges. Rank group members only by improvement points.
+
+These decisions are incorporated into the design document. Their service/UI implementations remain in the relevant numbered build steps.
+
+## Remaining TODO
+
+- Account deletion (§8) says ledger `user_id` is replaced by a tombstone, while §5 forbids any ledger updates. The schema enforces append-only rows and restrictive foreign keys. Resolve the anonymisation strategy before exposing account deletion; do not silently add an exception to ledger immutability.
 
 ## Step 1
 
@@ -38,6 +44,23 @@ The source of truth is [studyflow-design.md](studyflow-design.md). The user's nu
 
 ### Dependency notes
 
-The installed Next.js lint configuration pulls in `braces` via `fast-glob`/`micromatch`. The registry audit reports five transitive/development advisories rooted in the same `braces` stack-exhaustion issue; the latest published `braces` remains 3.0.3 with no patched version available. These tools process repository files at lint time. The production-only npm audit reports zero advisories. TODO: update the lint dependency chain when a compatible patch is published; do not force a framework downgrade.
+The installed Next.js lint configuration pulls in `braces` via `fast-glob`/`micromatch`. The registry audit reports five transitive/development advisories rooted in the same `braces` stack-exhaustion issue; the latest published `braces` remains 3.0.3 with no patched version available. These tools process repository files at lint time. The production-only npm audit reports zero advisories. The user accepted deferring this advisory; do not force a framework downgrade.
+
+## Step 2
+
+- Implemented all 15 SQLAlchemy tables with integer IDs, UTC creation timestamps and the documented enums, checks, foreign keys and lookup indexes. `User` extends the integer-ID fastapi-users SQLAlchemy base.
+- Added the initial Alembic migration, stable database path resolution, async session dependency, WAL/foreign-key setup, `make migrate` and `make migration-check`. Schema creation is explicit through migrations, never startup `create_all`.
+- Added database guards for append-only ledger history (including `INSERT OR REPLACE`), duplicate non-adjustment awards, active membership uniqueness/caps, audience bands and the weekly freeze cap.
+- Added supporting storage fields: adult confirmation timestamp; participant `quiz_id` to preserve assigned quizzes before opening; participant `ended_at` for early-finish deadlines; question difficulty from the required quiz schema. Attempt results stay null until submission, preserving the server-held quiz start time.
+- Focus summary storage enforces opt-out privacy and metric ranges. Camera processing, coverage validation and comparison endpoints remain stretch work. Scoring and streak calculations are not implemented in this step.
+
+### Verification
+
+- `make test`: 49 backend tests passed, plus backend lint/format and frontend lint/TypeScript. The existing upstream Starlette test-client deprecation warning remains.
+- `make migrate`: applied to the native SQLite database and repeated successfully. `make migration-check` reports no schema changes.
+- Migration tests cover a deliberately interrupted first migration (DDL rolls back fully), populated downgrade/re-upgrade, and schema/metadata agreement. SQLite uses explicit transactions for atomic migration DDL.
+- The backend Docker image builds with the migration files. The migration and schema check pass against the persistent Docker volume; the updated backend starts successfully.
+
+Implementation references: [SQLAlchemy SQLite transactions and foreign keys](https://docs.sqlalchemy.org/en/20/dialects/sqlite.html), [Alembic asyncio integration](https://alembic.sqlalchemy.org/en/latest/cookbook.html#using-asyncio-with-alembic), [fastapi-users SQLAlchemy adapter](https://fastapi-users.github.io/fastapi-users/latest/configuration/databases/sqlalchemy/).
 
 Technical references: [Next.js installation](https://nextjs.org/docs/app/getting-started/installation), [Next.js PWA guide](https://nextjs.org/docs/app/guides/progressive-web-apps), [Ollama model-list API](https://docs.ollama.com/api/tags).

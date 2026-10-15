@@ -6,6 +6,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app.api.health import router as health_router
 from app.core.config import Settings, get_settings
+from app.db.database import Database
 
 
 def create_app(
@@ -16,14 +17,19 @@ def create_app(
 
     @asynccontextmanager
     async def lifespan(app: FastAPI):
-        async with httpx.AsyncClient(
-            base_url=str(config.ollama_base_url).rstrip("/") + "/",
-            timeout=config.ollama_health_timeout_seconds,
-            transport=ollama_transport,
-            trust_env=False,
-        ) as client:
-            app.state.ollama_client = client
-            yield
+        database = Database(config.database_url)
+        app.state.database = database
+        try:
+            async with httpx.AsyncClient(
+                base_url=str(config.ollama_base_url).rstrip("/") + "/",
+                timeout=config.ollama_health_timeout_seconds,
+                transport=ollama_transport,
+                trust_env=False,
+            ) as client:
+                app.state.ollama_client = client
+                yield
+        finally:
+            await database.close()
 
     app = FastAPI(title=config.app_name, version="0.1.0", lifespan=lifespan)
     app.state.settings = config

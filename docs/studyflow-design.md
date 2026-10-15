@@ -19,7 +19,7 @@ Friends form a small invite-only group (3 to 8 members). Each member studies the
 - **Planned duration** `P`: one of 25, 45 or 60 minutes (chosen when the session is created). Capping at 60 keeps late-night sessions inside the nightly job window (section 2).
 - **Active time** `A`: seconds counted by the server from presence heartbeats (section 3.3). The client clock is never trusted.
 - **Required time** `R`: `0.8 * P` for SOLO and on-time LIVE joiners. For late LIVE joiners see 3.1.
-- **Completed session:** `A >= R` **and** the quiz is submitted within 30 minutes of the user's session end. (If no quiz could be produced, see 3.7.)
+- **Completed session:** `A >= R` and quiz submission meets both deadlines in 3.10. Infrastructure unavailability follows 3.7. A missed quiz deadline retains time-only completion and base points when `A >= R`, without quiz/improvement points or a baseline entry (decision, 15 Oct 2026).
 - **Session date:** `lagos_date(session.started_at)` for that participant. A session started at 23:40 counts for that day even if the quiz is submitted after midnight.
 - **Quiz score** `S`: percentage correct, `100 * correct / 15`.
 
@@ -97,6 +97,7 @@ job nightly_streaks(now):
         members = eligible_members(group, D)
         if len(members) < 3:
             record(group, D, outcome="paused")                    # below min size: no change
+            streak.last_evaluated_date = D                       # always advance the cursor
             continue
         done = { m for m in members
                  if exists completed participation with session_date == D }
@@ -116,7 +117,9 @@ job nightly_streaks(now):
     if D is Sunday: snapshot_weekly_leaderboard(wk)               # runs Monday 02:00
 ```
 
-Judgement call: freezes are not spent on a streak that is already 0, so they are kept for when they matter. Missed nights (server down) are caught up by looping D from `last_evaluated_date + 1` to yesterday at start-up.
+Judgement call: freezes are not spent on a streak that is already 0, so they are kept for when they matter. The cursor `last_evaluated_date` always advances after evaluating a day, including paused days, in the same transaction as its unique day record.
+
+**Startup catch-up (decision, 15 Oct 2026):** convert now to Africa/Lagos. Before 02:00 today, the latest evaluable day is `today - 2`; from 02:00 onward it is `today - 1`. Iterate from `last_evaluated_date + 1` through that latest evaluable day, in order. Never finalise D before 02:00 Lagos on D + 1. No streak or freeze rules change.
 
 ---
 
@@ -170,13 +173,15 @@ Generation starts in the background when the session starts (plenty of time befo
 - At 3 flags from distinct users, or 1 "inappropriate" flag, the question is disabled and its quiz variant is retired from the cache.
 
 ### 3.10 Quiz integrity (light)
-Correct answers are never sent to the client before submission. Options are shuffled server-side (LLMs over-use option A). One attempt per participation, 20-minute quiz timer.
+Correct answers are never sent to the client before submission. Options are shuffled server-side (LLMs over-use option A). One attempt per participation. The quiz timer runs for 20 minutes from its server-held start, and both starting and submitting must fit within 30 minutes of the participant end. Effective deadline: `min(quiz_start + 20 min, participant_end + 30 min)`.
+
+Late submissions are rejected with a clear error. When `A >= R`, the session retains time-only completion and base points per the fallback rule, without quiz/improvement points or a baseline entry (decision, 15 Oct 2026).
 
 ---
 
 ## 4. Education level handling
 
-`level` enum on `users` (editable in profile) and copied onto each session and quiz:
+`level` enum on `users` (editable in profile) and copied onto each **session participant** and quiz. The participant snapshot is the source of truth for quiz cache keys and baselines; `sessions` has no redundant level column (decision, 15 Oct 2026):
 
 | Value | Prompt descriptor |
 |---|---|
@@ -196,15 +201,15 @@ All tables have `id` (int PK) and `created_at` (UTC) unless stated. FK = foreign
 
 | Table | Key columns | Notes |
 |---|---|---|
-| `users` | email (unique), hashed_password, is_active, is_verified, display_name, level, age_band (`under_18` / `18_plus`), guardian_consent_at (nullable) | fastapi-users base table. No DOB, phone, photo or school name. |
+| `users` | email (unique), hashed_password, is_active, is_verified, display_name, level, age_band (`under_18` / `18_plus`), guardian_consent_at (nullable), adult_confirmed_at (nullable), is_superuser | fastapi-users base table. `OTHER` requires `18_plus` and recorded 18+ confirmation. No DOB, phone, photo or school name. |
 | `groups` | name, owner_id FK users, audience_band (`secondary` / `tertiary`), max_members (default 8), is_active | |
 | `group_members` | group_id FK, user_id FK, role (`owner`/`member`), joined_at, left_at (nullable), removed_by (nullable) | Unique (group_id, user_id) where left_at is null. Max 3 active groups per user. |
 | `invites` | group_id FK, code (8 chars, unique), created_by FK, expires_at (7 days), max_uses, uses, revoked_at | Link: `/join/{code}`, WhatsApp share via `https://wa.me/?text=...` |
 | `sessions` | group_id FK (nullable for SOLO), host_id FK, mode (`live`/`solo`), planned_minutes, scheduled_at, started_at, end_at, status (`scheduled`/`running`/`ended`/`cancelled`) | `started_at`/`end_at` are server-set. |
-| `session_participants` | session_id FK, user_id FK, subject, subject_norm, topic, topic_norm, level, joined_at, late_minutes, active_seconds, last_heartbeat_at, status (`joined`/`active`/`disconnected`/`left`/`completed`/`incomplete`), is_live_credited, quiz_status (`pending`/`ready`/`unavailable`), session_date (Lagos), completed_at | Unique (session_id, user_id). One row per person per session. |
+| `session_participants` | session_id FK, user_id FK, subject, subject_norm, topic, topic_norm, level, joined_at, late_minutes, active_seconds, last_heartbeat_at, status (`joined`/`active`/`disconnected`/`left`/`completed`/`incomplete`), is_live_credited, quiz_status (`pending`/`ready`/`unavailable`), quiz_id FK (nullable), session_date (Lagos), ended_at (nullable), completed_at | Unique (session_id, user_id). `quiz_id` persists the assigned quiz before an attempt starts; `ended_at` records participant end, including early SOLO finish, for deadline enforcement. `level` is the study-level snapshot. |
 | `quizzes` | cache_key (indexed), subject_norm, topic_norm, level, prompt_version, model_name, source (`llm`/`fallback`), status (`active`/`retired`) | One row = one cached variant. |
-| `quiz_questions` | quiz_id FK, position, question, options (JSON array of 4), correct_index, explanation, is_disabled, flag_count | |
-| `quiz_attempts` | participant_id FK (unique), quiz_id FK, user_id FK, answers (JSON), correct_count, score_pct, baseline_pct (nullable), counts_for_baseline, started_at, submitted_at | Stores the baseline used, so points are reproducible. |
+| `quiz_questions` | quiz_id FK, position (0–14), question, options (JSON array of 4), correct_index, explanation, difficulty (`easy`/`medium`/`hard`), is_disabled, flag_count | Persists the difficulty returned by the prompt in 7.2. |
+| `quiz_attempts` | participant_id FK (unique), quiz_id FK, user_id FK, answers (JSON, nullable until submission), correct_count (nullable until submission), score_pct (nullable until submission), baseline_pct (nullable), counts_for_baseline, started_at, submitted_at (nullable) | Created when first opened so the server-held timer survives reloads. Stores the baseline used, so points are reproducible. |
 | `question_flags` | question_id FK, user_id FK, reason, note (max 200 chars) | Unique (question_id, user_id). |
 | `points_ledger` | user_id FK, group_id FK, participant_id FK, component (`base`/`quiz`/`improvement`/`live`/`group_live`/`daily_cap`/`adjustment`), points (int, may be negative only for `adjustment`), lagos_date, week_start, reverses_id (nullable FK self) | **Append-only.** Never update or delete; corrections are new `adjustment` rows pointing at `reverses_id`. Index (group_id, week_start), (user_id, lagos_date). |
 | `group_streaks` | group_id FK (unique), current, best, last_evaluated_date | One row per group, written only by the nightly job. |
@@ -330,14 +335,14 @@ Rules:
 
 ## 8. Safety note: under-18 and university users
 
-- **Two audience bands.** Users at JSS/SS levels are `secondary` (assumed under 18); 100L and above are `tertiary`. A group's band is set from the creator's level, and only users of the same band can join it. Under-18s and adults are therefore never in a group together. The group leaderboard is also split by band. (Judgement call: this blocks a university sibling tutoring a secondary student inside the app; acceptable for v1.)
+- **Two audience bands.** Users at JSS/SS levels are `secondary` (assumed under 18); 100L and above and `OTHER` are `tertiary` (university/adult band). Users selecting `OTHER` must confirm they are 18+, recorded as `age_band = 18_plus` and `adult_confirmed_at` (decision, 15 Oct 2026). No cross-band groups are allowed. A group's band is set from the creator's level, and only users of the same band can join it. Under-18s and adults are therefore never in a group together. The group leaderboard is also split by band. (Judgement call: this blocks a university sibling tutoring a secondary student inside the app; acceptable for v1.)
 - **Data minimisation.** Collect only email, password hash, display name and level. No date of birth, phone number, photo, school name or location. Display names are shown to group members only; there are no public profiles or search.
 - **Invite-only.** Groups cannot be discovered; joining needs a code or link that expires after 7 days and can be revoked. The public invite preview shows only the group name and member count.
 - **No free-text chat in v1.** Presence and a fixed set of emoji reactions only, so there is nothing to moderate between members. Flag notes are seen only by the operator.
 - **Consent.** The Nigeria Data Protection Act 2023 treats under-18s as children whose data needs parent or guardian consent. For the hackathon, show a guardian-consent confirmation at sign-up for secondary levels and record `guardian_consent_at`; take proper legal advice before a real launch.
 - **LLM content.** The model runs locally, so no study data leaves the server. Prompts require school-suitable content, the output is filtered, and a single "inappropriate" flag removes the question.
 - **Camera (Focus Tracker).** Opt-in per session, off by default, processed on the device only; only a numeric summary is stored (section 9).
-- **Deletion.** `DELETE /users/me` removes the profile and anonymises ledger and attempt rows (user_id replaced by a tombstone) so group totals stay consistent.
+- **Deletion.** `DELETE /users/me` removes the profile and anonymises ledger and attempt rows (user_id replaced by a tombstone) so group totals stay consistent. **TODO:** replacing ledger user IDs conflicts with the append-only rule in section 5. Resolve the anonymisation strategy before exposing account deletion; the current schema does not permit ledger rewrites.
 
 ---
 
@@ -489,3 +494,7 @@ Retention: 90 days, then delete. Removed by `DELETE /users/me`. Server sanity ch
 4. LIVE sessions with WebSocket presence and shared goal.
 5. Nightly streak job and freezes; leaderboard.
 6. v2: group full-live bonus `G`, guardian consent emails, Focus Tracker (section 9; minimal version in 9.13 if time allows).
+
+## 11. Mockup data decisions (15 Oct 2026)
+
+Keep the daily goal card, showing group sessions completed today versus member count, using documented completion data only. Omit RSVPs/“going” and member nudges from MVP; nudges are v2. Remove cross-person raw quiz-score badges. In-group ranking displays improvement points only.

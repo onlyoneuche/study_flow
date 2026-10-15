@@ -2,7 +2,7 @@
 
 A local, social study app for the hackathon. Python 3.12 + FastAPI + SQLite, Next.js App Router + TypeScript + Tailwind, and local Ollama. No hosted backend or paid API.
 
-**Current milestone: step 1, application scaffold.** Accounts, groups, sessions, quiz/scoring, streak jobs and demo data arrive in the numbered build order. This is not yet an end-to-end MVP.
+**Current milestone: step 2, data model and migrations.** Accounts, groups, sessions, quiz/scoring, streak jobs and demo data arrive in the numbered build order. This is not yet an end-to-end MVP.
 
 The [full design](docs/studyflow-design.md) is the source of truth. UI references: [mobile](docs/mockups/mobile.html), [desktop](docs/mockups/desktop.html). See [implementation notes and TODOs](docs/implementation-notes.md) for unresolved details.
 
@@ -12,6 +12,7 @@ Install [uv](https://docs.astral.sh/uv/getting-started/installation/), Node.js 2
 
 ```sh
 make setup
+make migrate
 ollama pull qwen2.5:7b-instruct
 ollama serve  # only if the Ollama app/service is not already running
 make dev
@@ -28,6 +29,7 @@ Run both development servers with `make dev`, or separately with `make dev-backe
 ```sh
 make test    # backend lint, formatting, tests; frontend lint and TypeScript
 make build  # frontend production build
+make migration-check  # verify the migrated schema matches the models
 ```
 
 Browser checks use installed Google Chrome and Playwright WebKit at 360, 390, 768 and 1440px. WebKit provides Safari-engine coverage; an actual Safari/device pass is still required for the completed screens in step 9.
@@ -39,7 +41,15 @@ make test-browser
 
 Health checks call Ollama's `/api/tags` with a bounded timeout and verify the configured model is installed, without generating text. HTTP 200 means the API is alive; JSON `status` is `ok` or `degraded`. Ollama details distinguish `ready`, `model_missing`, `unreachable` and `invalid_response`. A missing quiz service does not prevent startup: cached-quiz fallback is part of step 6. Neither database readiness nor generation quality is asserted by this scaffold health check.
 
-Scoring, streak and invite tests will be introduced with their implementations and must pass before every subsequent commit. There are no domain rules or domain tests yet. Migration and seed commands will be added in steps 2 and 10, respectively.
+Tests cover migrations, UTC timestamps, WAL/foreign keys, membership/band constraints, invite storage constraints, append-only ledger enforcement and streak/focus storage invariants. Full scoring, streak-job and invite-acceptance tests arrive with those services. Seed commands arrive in step 10.
+
+## Database and migrations
+
+`make migrate` applies Alembic migrations and is safe to rerun. Relative `DATABASE_URL` paths are always resolved from `backend/`, consistently across the API, scripts and migrations. The default is `backend/data/studyflow.db` (ignored by Git). Connections enable WAL, foreign keys and a 10-second busy timeout. Application timestamps must be timezone-aware; storage and returned values use UTC.
+
+The initial migration creates all 15 design tables, including `focus_summaries` without enabling camera tracking. Database triggers reject ledger updates, deletes and replacements; corrections are appended adjustment rows. They also enforce membership caps, audience bands and the two-freezes-per-week limit. `OTHER` maps to `tertiary` and requires recorded 18+ confirmation. API consent collection arrives in step 3.
+
+Schema changes use a new Alembic revision, never application-startup `create_all`. After editing models, generate a revision from `backend/` with `uv run alembic revision --autogenerate -m "describe change"`, review it (triggers need manual review), then run `make migrate`, `make migration-check` and `make test` from the repository root. Tests downgrade and re-upgrade disposable databases; never downgrade a database whose history you need to retain.
 
 ## Docker
 
@@ -47,6 +57,7 @@ With Docker running and `.env` created:
 
 ```sh
 make docker-up
+docker compose exec backend alembic upgrade head
 make docker-down
 ```
 
@@ -58,7 +69,6 @@ The production build includes an install manifest, local app icons and a service
 
 ## Next milestones
 
-2. Data model and Alembic, including append-only ledger and focus summary schema.
 3. fastapi-users authentication.
 4. Groups and invites.
 5. Server-timed sessions and WebSocket presence.
