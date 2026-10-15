@@ -1,28 +1,61 @@
+# Python / uv
+__pycache__/
+*.py[cod]
+.venv/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+*.egg-info/
+
+# SQLite (WAL creates -wal and -shm files)
+*.db
+*.sqlite
+*.sqlite3
+*.db-wal
+*.db-shm
+
+# Secrets / env
 .env
 .env.*
 !.env.example
 !**/.env.example
-.venv/
-__pycache__/
-*.py[cod]
-.pytest_cache/
-.ruff_cache/
-.coverage
-htmlcov/
-backend/data/
-*.db
-*.db-shm
-*.db-wal
+
+# Next.js / Node
 node_modules/
 .next/
 out/
-coverage/
-playwright-report/
+*.tsbuildinfo
+next-env.d.ts
+npm-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# PWA generated service worker
+public/sw.js
+public/workbox-*.js
+frontend/public/sw.js
+frontend/public/workbox-*.js
+
+# Playwright / test output
 test-results/
+playwright-report/
+coverage/
+
+# Docker volumes / local data
+data/
+backend/data/
+ollama/
+
+# OS / editors
 .DS_Store
+.vscode/
+.idea/
+
+# Other local artifacts
 *.log
 .cache/
-*.tsbuildinfo
 
 # Generated self-hosted MediaPipe assets (setup/build script).
 frontend/public/focus-assets/
