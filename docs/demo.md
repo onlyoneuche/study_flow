@@ -1,11 +1,11 @@
 # StudyFlow: 2–3 minute demo
 
-Run this locally after the [README setup](../README.md). This pitch starts a real live session, then explicitly switches to Ada’s **already-studied solo session** to demonstrate its quiz and saved results. Normal timers are 25/45/60 minutes; there is no shortened-duration flag.
+Run this locally after the [setup guide](setup.md). This pitch starts a real live session, then explicitly switches to Ada’s **already-studied solo session** to demonstrate its quiz and saved results. Normal timers are 25/45/60 minutes; there is no shortened-duration flag.
 
 ## Prepare before the audience arrives
 
 1. Pull `qwen2.5:7b-instruct` and keep Ollama running if showing new AI generation. The prepared quiz and curated SS2 fallback topics also work when Ollama is unavailable.
-2. Stop the backend, run `make migrate && make seed`, then `make dev`. For Docker, use the stop/seed/start sequence in the README. Seed immediately before presenting: Ada’s prepared quiz has a real **20-minute** timer starting at seed time. Keep the printed quiz URL handy. A full rebuild is best completed before this final reset.
+2. Stop the backend, run `make migrate && make seed`, then `make dev`. For Docker, use the stop/seed/start sequence in the [setup guide](setup.md). Seed immediately before presenting: Ada’s prepared quiz has a real **20-minute** timer starting at seed time. Keep the printed quiz URL handy. A full rebuild is best completed before this final reset.
 3. Open localhost:3000 and sign in as `ada@demo.studyflow.example.com` / `StudyFlow-demo-2026!`. Resetting archives the previous generation, so use a fresh sign-in.
 4. Optionally sign in as `tunde@demo.studyflow.example.com` with the same password in another browser/private window for live presence. Tunde studies Physics / Forces and motion. Use demo accounts for this; a real account joining the fixture makes later resets refuse safely to protect shared history.
 5. Check Home shows Study Squad, around 340/600 points, 12 streak days, one recent frozen day, and a scheduled live room. Counts follow the current Lagos calendar; use the seed’s printed totals if presenting around a week boundary. Keep the answer cues below beside the presentation.
