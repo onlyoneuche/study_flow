@@ -10,10 +10,12 @@ from app.api.auth import router as auth_router
 from app.api.groups import router as groups_router
 from app.api.health import router as health_router
 from app.api.presence import router as presence_router
+from app.api.quizzes import router as quizzes_router
 from app.api.sessions import router as sessions_router
 from app.core.config import Settings, get_settings
 from app.db.database import Database
 from app.db.types import utc_now
+from app.quizzes.worker import QuizWorker
 from app.services.presence import Presence, PrivateSocketToken
 
 
@@ -28,6 +30,7 @@ def create_app(
         database = Database(config.database_url)
         app.state.database = database
         app.state.presence = Presence(app)
+        app.state.quizzes = QuizWorker(app)
         try:
             async with httpx.AsyncClient(
                 base_url=str(config.ollama_base_url).rstrip("/") + "/",
@@ -37,10 +40,12 @@ def create_app(
             ) as client:
                 app.state.ollama_client = client
                 if config.environment != "test":
+                    await app.state.quizzes.start()
                     await app.state.presence.start()
                 yield
         finally:
             app.state.presence.stop()
+            await app.state.quizzes.stop()
             await database.close()
 
     app = FastAPI(title=config.app_name, version="0.1.0", lifespan=lifespan)
@@ -74,4 +79,5 @@ def create_app(
     app.include_router(groups_router, prefix="/api/v1", tags=["groups"])
     app.include_router(sessions_router, prefix="/api/v1", tags=["sessions"])
     app.include_router(presence_router, tags=["presence"])
+    app.include_router(quizzes_router, prefix="/api/v1", tags=["quizzes"])
     return app

@@ -1,4 +1,4 @@
-from datetime import timedelta
+from datetime import UTC, datetime, timedelta
 from pathlib import Path
 from shutil import copyfile
 from types import SimpleNamespace
@@ -57,7 +57,12 @@ def db(db_engine):
 
 
 @pytest.fixture
-def auth_client(db_path):
+def ollama_transport():
+    return None
+
+
+@pytest.fixture
+def auth_client(db_path, ollama_transport):
     settings = Settings(
         _env_file=None,
         environment="test",
@@ -65,7 +70,7 @@ def auth_client(db_path):
         database_url=f"sqlite+aiosqlite:///{db_path}",
         frontend_url="http://127.0.0.1:3000",
     )
-    with TestClient(create_app(settings)) as client:
+    with TestClient(create_app(settings, ollama_transport=ollama_transport)) as client:
         yield client
 
 
@@ -84,3 +89,10 @@ def actor(auth_client, db_engine):
         return SimpleNamespace(id=uid, headers={"Authorization": f"Bearer {token}"})
 
     return make
+
+
+@pytest.fixture
+def clock(auth_client):
+    clock = SimpleNamespace(now=datetime(2026, 10, 15, 22, 50, tzinfo=UTC))
+    auth_client.app.state.clock = lambda: clock.now
+    return clock

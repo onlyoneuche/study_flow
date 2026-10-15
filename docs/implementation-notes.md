@@ -87,7 +87,7 @@ Technical references: [Next.js installation](https://nextjs.org/docs/app/getting
 
 Groups and invites use the approved schema without a new migration. Invite codes are eight unambiguous uppercase characters. Existing membership is an idempotent success without consuming an invite use. New acceptance and invite regeneration are serialised with SQLite write intent. Public previews expose only name/count.
 
-TODO: the design does not define the lifecycle after the last member leaves. Preserve history and mark the empty group inactive, revoking links, until this is specified. The existing account anonymisation TODO stays in the backlog.
+Resolved in step 6: the user confirmed that the empty group is archived with invites disabled and history retained. Account anonymisation remains in the backlog.
 
 Verification: 96 backend tests, lint/format, frontend lint/TypeScript, production build and schema check pass. All 48 browser checks pass in Chrome/WebKit at 360, 390, 768 and 1440px, including invite signup/login auto-join and owner removal. Actual Safari/device verification remains for step 9.
 
@@ -99,7 +99,7 @@ WebSocket heartbeat accounting uses the documented 120-second grace and 15-secon
 
 Late LIVE joins through exactly 10 minutes retain live eligibility and require 80% of remaining time. Later arrivals have no live participation or shared-goal credit; the UI offers SOLO on the same topic, or the member can observe through the socket. Sockets recheck active account/membership and accept only a fixed reaction set. Query credentials are stripped before socket path logging. Hidden tabs keep presence heartbeats; only future tracker sampling pauses, never an away label. Focus Tracker remains off.
 
-TODO: the document does not precisely define the session shared-goal denominator for members who never join or leave the group. The UI labels it **Joined live goal**, counting eligible live participations and excluding late observers, without awarding the v2 full-group bonus. Confirm before expanding this goal. Account anonymisation and the empty-group lifecycle remain in the backlog.
+Resolved in step 6: the user defined the shared-goal denominator as active group members at the scheduled start. The current goal uses membership intervals at that timestamp; new group arrivals are excluded, qualifying late participants count, and later departures do not shrink the denominator. The v2 full-group bonus remains deferred.
 
 Step 6 integration point: enqueue quiz preparation after participant creation/commit and at a scheduled start, outside SQLite write transactions. Until implemented, quiz status remains pending; sufficient time alone does not fabricate quiz availability, completion or points. The room handles the documented quiz-ready event and has an opt-in browser notification control.
 
@@ -112,3 +112,23 @@ Docker now runs Alembic before starting the API so a fresh volume is migrated be
 - All 64 Chrome/WebKit browser checks pass at 360, 390, 768 and 1440px. Coverage includes group invite signup/login auto-join, solo socket/pause-through-leave/rejoin/reload, two live learners on different topics through the Next.js WebSocket proxy, and overflow/navigation/PWA checks. Mobile/desktop session screenshots were visually reviewed. Actual Safari/device verification remains for step 9.
 - Fresh disposable Docker database: automatic Alembic migrations, startup catch-up, health, signup/login, group/invite creation, solo start and authenticated heartbeat socket pass. The test container is removed; the app preview uses the existing persistent volume.
 - A final access regression confirms that a former LIVE host cannot list the room after leaving its group. Active-time tests cover exact 120-second grace, 121-second gaps, fractional carry, multiple sockets, required time, scheduled starts without participants, late joins, Lagos midnight, snapshot preservation, incomplete end and early-finish deadline anchoring.
+
+## Step 6
+
+Applied the confirmed archive behavior and historical shared-goal denominator. No migration is needed: membership intervals and `is_active` already preserve these facts.
+
+FastAPI background tasks enqueue per-participant quiz work after commit. Scheduled rooms enqueue at server-held start; startup recovers persisted pending work. One asyncio worker serialises Ollama calls and coalesces matching subject/topic/level/prompt-version keys. Ollama receives the document prompt and Pydantic JSON schema via `format`, `stream=false`, temperature 0.4, with a 120-second whole-request deadline and one retry containing validation feedback. No model is substituted if the configured model is missing.
+
+Validation enforces question/option sizes, distinct normalised options/questions, strict answer indices, difficulty values and 5/6/4 mix, banned options and a small local content blocklist. Options are shuffled before storage and indices remapped. Safe endpoints return no answer indices/explanations until the owner submits. GET opens/resumes the attempt per the design; POST `/quiz/start` is an explicit idempotent alias. Timers and the effective deadline survive reloads. Duplicate identical submissions return the original result; different resubmissions fail.
+
+Cache hits precede generation; after failure the worker rechecks exact cache, then same-subject/level related cache, excluding attempted, retired, flagged or disabled variants. An entire variant containing a flagged question is excluded from new assignments, preserving 15 questions. Open attempts retain their immutable question/options mapping and earned results; flagging never recalculates a score. Five active variants are retained per key; logical eviction retires old variants to preserve historical attempts. Single inappropriate or three distinct-user flags disable the question and retire the variant. Only submitted owners can flag, once per question; notes stay private.
+
+Unavailable or expired quizzes retain active-time completion and base/live points, subject to the daily cap and membership rules. Step 6 introduces those fallback ledger writes; step 7 adds quiz/improvement points and baseline counting. Insufficient time earns nothing. Camera/focus data is never read by completion or quiz logic.
+
+`make seed-quizzes` stores three validated, curated SS2 fallback topics: Chemistry/Mole concept, Chemistry/Alkenes, Mathematics/Indices. Repeated seeds never resurrect flagged variants. Docker applies migrations and seeds these fallbacks before startup. The full week-history demo seed remains step 10.
+
+Responsive quiz/result screens include 1–4 / Enter shortcuts, local draft recovery, server-based countdown, progress/review tracker, personal result explanations and post-submission reporting. Before submission, **Mark for review** is local only; it does not send a question flag early.
+
+References: [Ollama chat API](https://docs.ollama.com/api/chat), [Ollama structured output](https://docs.ollama.com/capabilities/structured-outputs).
+
+Verification: 144 backend tests pass, including mocked valid/retry/failure/timeout generation, cache/flag/repeat rules, queue deduplication, scheduled snapshot use, pending responses and deadline boundaries. Lint/format, frontend lint/TypeScript, production build and migration check pass. All 72 Chrome/WebKit checks pass at 360, 390, 768 and 1440px, including quiz reload, keyboard submission, personal results, flagging and saved group points. Quiz screenshots were visually reviewed. Ollama is offline locally; model output behavior is covered with mocked Ollama and the browser demo uses seeded fallback data. Actual Safari/device verification remains for step 9.

@@ -1,0 +1,72 @@
+"use client";
+import Link from "next/link";
+import { useCallback, useEffect, useRef, useState, type FormEvent } from "react";
+import { useAuth } from "@/components/auth-provider";
+import { AuthGate, ErrorMessage, field, primary, secondary } from "@/components/group-ui";
+import { api } from "@/lib/api";
+import { timeLabel } from "@/lib/sessions";
+import { awardNames, type Quiz, type Question } from "@/lib/quizzes";
+
+export function QuizPage({ id }: { id: string }) {
+  const { token } = useAuth();
+  const [quiz, setQuiz] = useState<Quiz | null>(null); const [error, setError] = useState(""); const [answers, setAnswers] = useState<(number | null)[]>(Array(15).fill(null)); const [review, setReview] = useState<number[]>([]); const [current, setCurrent] = useState(0); const [busy, setBusy] = useState(false); const [seconds, setSeconds] = useState(0); const [retry, setRetry] = useState(0);
+  const timer = useRef<{ remaining: number; at: number } | null>(null); const restored = useRef("");
+  useEffect(() => {
+    if (!token) return;
+    let active = true; let poll: ReturnType<typeof setTimeout> | undefined;
+    async function load() {
+      try {
+        const data = await api<Quiz>(`/participants/${id}/quiz`, { token: token! }); if (!active) return;
+        setQuiz(data);
+        if (data.status === "preparing") poll = setTimeout(load, 3000);
+        if (data.status === "ready" && data.deadline && data.server_now) {
+          const remaining = (Date.parse(data.deadline) - Date.parse(data.server_now)) / 1000;
+          timer.current = { remaining, at: performance.now() }; setSeconds(Math.max(0, remaining));
+          const key = `studyflow-quiz-${id}-${data.started_at}`;
+          if (restored.current !== key) {
+            restored.current = key;
+            try { const saved = JSON.parse(sessionStorage.getItem(key) ?? "null"); if (Array.isArray(saved) && saved.length === 15 && saved.every(a => a === null || (Number.isInteger(a) && a >= 0 && a <= 3))) setAnswers(saved); } catch { /* Start with a fresh local draft if storage is unavailable. */ }
+          }
+        }
+      } catch(e) { if (active) setError((e as Error).message); }
+    }
+    void load(); const interval = setInterval(() => { if (timer.current) setSeconds(Math.max(0, timer.current.remaining - (performance.now() - timer.current.at) / 1000)); }, 1000);
+    return () => { active = false; if (poll) clearTimeout(poll); clearInterval(interval); };
+  }, [id, token, retry]);
+  const choose = useCallback((value: number) => {
+    if (quiz?.status !== "ready" || busy || seconds <= 0) return;
+    setAnswers(previous => { const next = [...previous]; next[current] = value; try { if (restored.current) sessionStorage.setItem(restored.current, JSON.stringify(next)); } catch { /* The server-held timer remains authoritative. */ } return next; });
+  }, [quiz?.status, busy, seconds, current]);
+  const answered = answers.filter(a => a !== null).length;
+  const submit = useCallback(async () => {
+    if (!token || busy || answers.some(a => a === null)) return;
+    setBusy(true); setError("");
+    try { const result = await api<Quiz>(`/participants/${id}/quiz/submit`, { method: "POST", token, body: { answers } }); setQuiz(result); if (restored.current) sessionStorage.removeItem(restored.current); } catch(e) { setError((e as Error).message); } finally { setBusy(false); }
+  }, [id, token, busy, answers]);
+  useEffect(() => {
+    function onKey(event: KeyboardEvent) {
+      const tag = (event.target as HTMLElement)?.tagName;
+      if (quiz?.status !== "ready" || event.altKey || event.ctrlKey || event.metaKey || ["INPUT", "TEXTAREA", "SELECT"].includes(tag)) return;
+      if (/^[1-4]$/.test(event.key)) { event.preventDefault(); choose(Number(event.key) - 1); }
+      if (event.key === "Enter" && (tag !== "BUTTON" || (event.target as HTMLElement).getAttribute("role") === "radio") && answers[current] !== null && !busy && seconds > 0) { event.preventDefault(); if (current < 14) setCurrent(current + 1); else if (answered === 15) void submit(); }
+    }
+    window.addEventListener("keydown", onKey); return () => window.removeEventListener("keydown", onKey);
+  }, [quiz?.status, choose, answers, current, busy, seconds, answered, submit]);
+  const question = quiz?.questions?.[current];
+  return <AuthGate next={`/participants/${id}/quiz`}><ErrorMessage message={error} />{error && <div className="mt-4 flex flex-wrap gap-3"><button className={secondary} onClick={() => { setError(""); setRetry(n => n + 1); }}>Check again</button><Link href={quiz?.session_id ? `/sessions/${quiz.session_id}` : "/study"} className={secondary}>Back to study</Link></div>}{!quiz && !error && <p role="status">Opening your quiz…</p>}{quiz?.status === "preparing" && <div className="card mx-auto max-w-lg space-y-4 p-8"><h1 className="text-2xl font-extrabold">Your quiz is being prepared</h1><p role="status" className="text-slate-500">Your topic is on its way. This page will update when it’s ready.</p></div>}{quiz?.status === "time_only" && <div className="card mx-auto mt-5 max-w-lg space-y-5 p-7"><h1 className="text-3xl font-extrabold">Your study time counts</h1><p className="text-slate-500">{quiz.message}</p><Points points={quiz.points ?? []} /><Link href="/squad" className={primary}>See your squad</Link></div>}{quiz?.status === "submitted" && <Results quiz={quiz} token={token!} />}{quiz?.status === "ready" && question && <><header className="mb-6 flex flex-wrap items-center justify-between gap-3"><Link href={`/sessions/${quiz.session_id}`} className="inline-flex min-h-12 items-center text-sm font-bold text-slate-500">← Back to session</Link><span role="timer" aria-label="Quiz time remaining" className="rounded-full bg-amber-100 px-4 py-2 font-bold text-amber-800 tabular-nums">{timeLabel(seconds)}</span></header>{seconds <= 0 ? <section className="card mx-auto max-w-lg space-y-4 p-7"><h1 className="text-2xl font-extrabold">Quiz time has ended</h1><p className="text-slate-500">Your study time still counts for time-only completion. Late answers cannot earn quiz or improvement points.</p><Link href="/squad" className={primary}>Back to your squad</Link></section> : <div className="grid items-start gap-6 md:grid-cols-[minmax(0,640px)_220px] min-[1025px]:gap-10"><section className="min-w-0"><p className="text-sm font-bold text-slate-600">Question {current + 1} of 15</p><div className="mt-3 h-3 overflow-hidden rounded-full bg-slate-200"><div className="h-full rounded-full bg-brand-500" style={{ width: `${100 * (current + 1) / 15}%` }} /></div><p className="mt-7 inline-flex rounded-full bg-brand-50 px-3 py-1 text-xs font-bold text-brand-700">{quiz.subject} · {quiz.related_topic ? `Related topic: ${quiz.quiz_topic}` : quiz.topic}</p><h1 className="mt-5 text-2xl leading-snug font-extrabold md:text-3xl">{question.question}</h1><p className="mt-2 text-sm text-slate-500">Choose one answer.</p><div role="radiogroup" aria-label="Answer choices" className="mt-6 space-y-3">{question.options.map((option, index) => <button key={index} type="button" role="radio" aria-checked={answers[current] === index} onClick={() => choose(index)} className={`flex min-h-16 w-full items-center gap-4 rounded-2xl border-2 p-4 text-left ${answers[current] === index ? "border-brand-600 bg-brand-50 text-brand-800 ring-2 ring-brand-100" : "border-slate-200 bg-white text-slate-800"}`}><span className={`flex size-9 shrink-0 items-center justify-center rounded-xl text-sm font-bold ${answers[current] === index ? "bg-brand-600 text-white" : "bg-slate-100 text-slate-600"}`}><span className="md:hidden">{"ABCD"[index]}</span><kbd className="hidden md:inline">{index + 1}</kbd></span><span className="min-w-0 font-semibold wrap-break-word">{option}</span></button>)}</div><div className="mt-6 flex flex-wrap items-center justify-between gap-3"><button type="button" onClick={() => setReview(previous => previous.includes(current) ? previous.filter(n => n !== current) : [...previous, current])} className="min-h-12 px-2 text-sm font-bold text-slate-500">{review.includes(current) ? "✓ Marked for review" : "Mark for review"}</button><button type="button" disabled={busy || answers[current] === null || (current === 14 && answered !== 15)} className={primary} onClick={() => current === 14 ? void submit() : setCurrent(current + 1)}>{busy ? "Submitting…" : current === 14 ? "Submit quiz" : "Next"}</button></div><p className="mt-5 hidden text-center text-xs text-slate-500 md:block">Press 1–4 to answer, Enter for next.</p></section><aside className="card p-5"><h2 className="text-lg font-extrabold">Your progress</h2><p className="mt-2 text-sm text-slate-500">{answered} answered · {review.length} to review</p><div className="mt-4 grid grid-cols-5 gap-2">{answers.map((answer, index) => <button type="button" key={index} onClick={() => setCurrent(index)} aria-label={`Go to question ${index + 1}`} aria-current={current === index ? "step" : undefined} className={`min-h-11 min-w-0 rounded-xl text-sm font-bold ${current === index ? "ring-2 ring-brand-600" : ""} ${review.includes(index) ? "bg-amber-100 text-amber-800" : answer !== null ? "bg-brand-600 text-white" : "bg-slate-100 text-slate-500"}`}>{index + 1}</button>)}</div><p className="mt-5 text-xs leading-relaxed text-slate-500">Marked questions stay in your review list. After submission you can report an incorrect or unsuitable question.</p>{quiz.related_topic && <p className="mt-4 text-xs leading-relaxed text-amber-800">This is a related cached topic for your subject and level.</p>}<p className="mt-4 text-xs leading-relaxed text-slate-500">Your timer is saved on the server and continues if you leave or reload.</p></aside></div>}</>}</AuthGate>;
+}
+
+export function Points({ points }: { points: Quiz["points"] }) {
+  const groupIds = [...new Set((points ?? []).map(row => row.group_id))];
+  return <div className="space-y-4">{groupIds.map(id => <div key={id}><p className="text-xs font-bold text-slate-500">{points?.find(row => row.group_id === id)?.group_name ?? "Your squad"}</p><dl className="mt-2 divide-y divide-slate-100">{points!.filter(row => row.group_id === id).map((row, index) => <div key={index} className="flex justify-between gap-3 py-3 text-sm"><dt>{awardNames[row.component] ?? row.component}</dt><dd className="font-extrabold text-brand-700">+{row.points}</dd></div>)}</dl></div>)}{groupIds.length === 0 && <p className="text-sm text-slate-500">Join a squad to fill a group bar with your next session.</p>}</div>;
+}
+
+function Results({ quiz, token }: { quiz: Quiz; token: string }) {
+  return <><div className="my-6"><p className="text-sm font-bold text-brand-700">A little progress, saved</p><h1 className="mt-2 text-3xl font-extrabold">Nice work!</h1><p className="mt-2 text-slate-500">{quiz.subject} · {quiz.topic}</p></div><div className="grid items-start gap-6 md:grid-cols-2"><section className="card space-y-5 p-6"><h2 className="text-xl font-extrabold">Your quiz result</h2><p className="text-5xl font-extrabold text-brand-700">{quiz.correct_count}<span className="text-2xl text-slate-400"> / 15</span></p><p className="text-sm text-slate-500">{quiz.score_pct?.toFixed(1)}% on your topic. Your result is personal.</p>{quiz.baseline_pct != null && <p className="rounded-2xl bg-brand-50 p-4 text-sm text-brand-800">Your previous subject baseline: {quiz.baseline_pct.toFixed(1)}%</p>}<Link href="/study" className={primary}>Study again</Link> <Link href="/squad" className={secondary}>Your squads</Link></section><section className="card p-6"><h2 className="mb-4 text-xl font-extrabold">Points saved to your groups</h2><Points points={quiz.points ?? []} /></section></div><section className="mt-8"><h2 className="mb-5 text-2xl font-extrabold">Review your answers</h2><div className="space-y-4">{quiz.questions?.map(question => <ReviewQuestion key={question.id} question={question} token={token} />)}</div></section></>;
+}
+
+function ReviewQuestion({ question, token }: { question: Question; token: string }) {
+  const [flagged, setFlagged] = useState(question.flagged_by_me); const [open, setOpen] = useState(false); const [message, setMessage] = useState(""); const [busy, setBusy] = useState(false);
+  async function flag(event: FormEvent<HTMLFormElement>) { event.preventDefault(); setBusy(true); const data = new FormData(event.currentTarget); try { await api(`/questions/${question.id}/flags`, { method: "POST", token, body: { reason: data.get("reason"), note: data.get("note") || null } }); setFlagged(true); setOpen(false); setMessage("Flag saved. Your result stays the same."); } catch(e) { setMessage((e as Error).message); } finally { setBusy(false); } }
+  return <article className="card space-y-3 p-5 md:p-6"><p className="text-xs font-bold text-slate-500">Question {question.position + 1} · {question.selected_index === question.correct_index ? "Correct" : "Keep learning"}</p><h3 className="font-bold">{question.question}</h3><p className="text-sm text-brand-800"><b>Correct answer:</b> {question.options[question.correct_index!]}</p><p className="text-sm text-slate-500"><b>Your answer:</b> {question.options[question.selected_index!]}</p><p className="text-sm leading-relaxed text-slate-600">{question.explanation}</p><button disabled={flagged} onClick={() => setOpen(value => !value)} className="min-h-12 text-sm font-bold text-slate-500">{flagged ? "Flag saved" : "Flag question"}</button>{open && <form onSubmit={flag} className="space-y-4 border-t border-slate-100 pt-4"><label className="block text-sm font-bold">Reason<select name="reason" aria-label="Reason" className={`studyflow-select ${field}`}><option value="wrong_answer">Wrong answer</option><option value="unclear">Unclear</option><option value="off_topic">Off topic</option><option value="inappropriate">Inappropriate</option></select></label><label className="block text-sm font-bold">Optional note<input name="note" maxLength={200} className={field} /></label><button disabled={busy} className={secondary}>Send flag</button><p className="text-xs text-slate-500">Only the operator sees your note. Flags never change your result.</p></form>}{message && <p role="status" className="text-sm text-brand-700">{message}</p>}</article>;
+}

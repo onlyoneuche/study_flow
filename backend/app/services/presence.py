@@ -14,6 +14,7 @@ from sqlalchemy import select
 from app.auth.manager import UserDatabase, UserManager
 from app.models import StudySession, User
 from app.models.enums import SessionStatus
+from app.services.completion import settle_due
 from app.services.sessions import (
     REACTIONS,
     advance_session,
@@ -91,7 +92,9 @@ class Presence:
             now = self.app.state.clock()
             for session in sessions:
                 await advance_session(db, session, now)
+            await settle_due(db, now)
             await db.commit()
+        await self.app.state.quizzes.enqueue_due()
         for session_id in list(self.rooms):
             await self.publish(session_id)
 

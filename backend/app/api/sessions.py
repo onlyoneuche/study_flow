@@ -1,7 +1,7 @@
 from datetime import datetime, timedelta
 from typing import Literal
 
-from fastapi import APIRouter, Request
+from fastapi import APIRouter, BackgroundTasks, Request
 from pydantic import AwareDatetime, BaseModel, ConfigDict, Field
 
 from app.api.groups import DB, Learner
@@ -9,6 +9,7 @@ from app.models import StudySession
 from app.models.enums import ParticipantStatus as PS
 from app.models.enums import SessionMode
 from app.models.enums import SessionStatus as SS
+from app.services.completion import settle_due
 from app.services.groups import fail, require_group
 from app.services.sessions import (
     advance_session,
@@ -45,6 +46,7 @@ class Live(BaseModel):
 async def state(db, session, user, request):
     now = request.app.state.clock()
     await advance_session(db, session, now)
+    await settle_due(db, now)
     await db.commit()
     return await session_view(db, session, user.id, now)
 
@@ -57,7 +59,9 @@ async def list_sessions(db: DB, user: Learner, request: Request):
 
 
 @router.post("/sessions/solo", status_code=201)
-async def create_solo(data: Solo, db: DB, user: Learner, request: Request):
+async def create_solo(
+    data: Solo, db: DB, user: Learner, request: Request, background_tasks: BackgroundTasks
+):
     now = request.app.state.clock()
     session = StudySession(
         host_id=user.id,
@@ -70,7 +74,8 @@ async def create_solo(data: Solo, db: DB, user: Learner, request: Request):
     )
     db.add(session)
     await db.flush()
-    await join_session(db, session, user, data.subject, data.topic, now)
+    participant, _ = await join_session(db, session, user, data.subject, data.topic, now)
+    background_tasks.add_task(request.app.state.quizzes.enqueue, participant.id)
     return await state(db, session, user, request)
 
 
@@ -97,12 +102,21 @@ async def create_live(group_id: int, data: Live, db: DB, user: Learner, request:
 
 
 @router.post("/sessions/{session_id}/join")
-async def join(session_id: int, data: Topic, db: DB, user: Learner, request: Request):
+async def join(
+    session_id: int,
+    data: Topic,
+    db: DB,
+    user: Learner,
+    request: Request,
+    background_tasks: BackgroundTasks,
+):
     session = await require_session(db, session_id, user.id)
     participant, solo_offer = await join_session(
         db, session, user, data.subject, data.topic, request.app.state.clock()
     )
     await db.commit()
+    if participant:
+        background_tasks.add_task(request.app.state.quizzes.enqueue, participant.id)
     return dict(
         participant=participant_view(session, participant),
         solo_offer=solo_offer,

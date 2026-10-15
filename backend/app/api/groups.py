@@ -156,7 +156,7 @@ async def leave_or_remove(group_id: int, user_id: int, db: DB, user: Learner):
             group.owner_id = remaining[0].user_id
             remaining[0].role = MemberRole.OWNER
         else:
-            # TODO: confirm empty-group lifecycle; retain history and close joins for now.
+            # Archive an empty group; retain membership and ledger history.
             group.is_active = False
             invites = (await db.scalars(select(Invite).where(Invite.group_id == group.id))).all()
             for invite in invites:

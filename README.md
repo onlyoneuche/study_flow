@@ -2,7 +2,7 @@
 
 A local, social study app for the hackathon. Python 3.12 + FastAPI + SQLite, Next.js App Router + TypeScript + Tailwind, and local Ollama. No hosted backend or paid API.
 
-**Current milestone: step 5, timed solo/live sessions.** Create an account and squad, invite friends, then study on your own topic with a server-timed session and live presence. Quiz generation/submission, scoring, streak jobs and demo data arrive in the numbered build order. This is not yet an end-to-end MVP.
+**Current milestone: step 6, local AI quizzes.** Study solo or live, take a validated 15-question quiz, review your own results and flag questions. Quiz/improvement scoring, streak jobs and full demo history arrive in the numbered build order. This is not yet an end-to-end MVP.
 
 The [full design](docs/studyflow-design.md) is the source of truth. UI references: [mobile](docs/mockups/mobile.html), [desktop](docs/mockups/desktop.html). See [implementation notes and TODOs](docs/implementation-notes.md) for unresolved details.
 
@@ -13,6 +13,7 @@ Install [uv](https://docs.astral.sh/uv/getting-started/installation/), Node.js 2
 ```sh
 make setup
 make migrate
+make seed-quizzes
 ollama pull qwen2.5:7b-instruct
 ollama serve  # only if the Ollama app/service is not already running
 make dev
@@ -69,7 +70,7 @@ The award guard uses `(participant_id, group_id, component)`, equivalent to `(us
 
 Open **Squad**, create a group (capacity 3–8), then **Create invite**. Copy the link or use **Share on WhatsApp**. New links expire in exactly 7 days; the owner chooses the use limit. **Regenerate invite** disables older links; **Disable invite** closes the current link. Eight-character codes omit ambiguous characters. Public previews reveal only group name and member count.
 
-Open the invite in another browser/tab. Create an account or sign in; the return destination survives both screens and membership is accepted automatically. Joining reports expired/disabled/exhausted links, full groups, different audience bands and the three-group limit. Existing membership succeeds without consuming another use, even with an old/full invite. The owner can remove a member; each member can leave. Ownership passes to the longest-standing remaining member. Membership history and earned points remain. Groups below three members pause streaks. An empty group is closed to joins pending the documented lifecycle TODO.
+Open the invite in another browser/tab. Create an account or sign in; the return destination survives both screens and membership is accepted automatically. Joining reports expired/disabled/exhausted links, full groups, different audience bands and the three-group limit. Existing membership succeeds without consuming another use, even with an old/full invite. The owner can remove a member; each member can leave. Ownership passes to the longest-standing remaining member. Membership history and earned points remain. Groups below three members pause streaks. An empty group is archived with invites disabled; history and ledger remain.
 
 ## Sessions demo
 
@@ -77,11 +78,19 @@ Open **Study** for a 25, 45 or 60-minute solo session. Choose a subject and topi
 
 The server holds start/end times; countdowns use server time and a monotonic browser timer to correct clock drift. Authenticated WebSockets at `/ws/sessions/{id}?token=JWT` work through the Next.js proxy. Heartbeats run every 15 seconds, even while a tab is hidden. A gap up to 120 seconds counts in full; a longer gap counts 15 seconds. Presence becomes disconnected after 120 seconds without a heartbeat. **Leave session** stops the active clock; **Rejoin session** resumes without counting the break. A solo learner can **Finish early** once 80% active time is saved. Insufficient active time at the end gives no quiz, points or completion.
 
-Live starts run at the server-held scheduled time, even in an empty room. Joining up to 10 minutes late keeps live eligibility and requires 80% of the remaining time. Later arrivals are offered a solo session on the same topic, or can observe the room without live credit. The joined-live goal excludes those observers. TODO: confirm the shared-goal denominator for non-joining/removed members; the UI explicitly labels the current denominator as eligible joined participants.
+Live starts run at the server-held scheduled time, even in an empty room. Joining up to 10 minutes late keeps live eligibility and requires 80% of the remaining time. Later arrivals are offered a solo session on the same topic, or can observe the room without live credit. The shared goal includes active members at the scheduled start, including eligible late joiners; people joining the group afterward are excluded. Later departures do not shrink that denominator.
 
 APScheduler checks due session transitions every second and catches up at startup. Use one backend worker for this MVP, because room connections are in memory. Active seconds and the last heartbeat survive restart. Socket access is authenticated and checked again on every event/broadcast; removals cut off access. Query tokens are removed from socket path logs. Supported reactions are a fixed set; no free-text chat is accepted.
 
-Quiz preparation is the next milestone. For now, the room saves active time and displays study-time completion; no quiz results, points or streak completion are fabricated. The quiz-ready notification handler will activate when step 6 provides ready quizzes. Focus Tracker remains off and uses no camera.
+Quiz preparation starts in the background. After sufficient study time, choose **Take your quiz**; you can request a browser notification when it is ready. Focus Tracker remains off and uses no camera.
+
+## Quiz demo
+
+Run `make seed-quizzes` for SS2 Chemistry **Mole concept** and **Alkenes**, and Mathematics **Indices**. Docker seeds these automatically. Exact unused cache variants are served first, so those topics work with Ollama offline. Other topics use local Ollama (`OLLAMA_MODEL`, default `qwen2.5:7b-instruct`), validated JSON output and one retry. Generation has a 120-second deadline per try and runs outside database write transactions. Matching queued jobs share one generation.
+
+At your participant end, open the quiz. GET `/participants/{id}/quiz` or POST `/participants/{id}/quiz/start` opens/resumes a single server-timed attempt. Pending work returns 202; insufficient time or an early open returns 409. The effective deadline is the earlier of attempt start + 20 minutes and participant end + 30 minutes. Reloading keeps the timer and local answer draft. Use 1–4 to choose and Enter to advance; answer all 15 before submitting. Correct answers/explanations appear only after submission. Results are personal; they are never used to rank people across subjects.
+
+If generation fails twice, the worker rechecks exact cache, tries related same-subject/level cache with a visible label, then marks the quiz unavailable. Sufficient active time still earns time-only base/live points; missed quiz deadlines follow the same fallback. Flag questions after submission. Three unique-user flags or one inappropriate flag disables the question and retires its variant; every flagged variant is excluded from new cache assignments. Existing results stay unchanged. Retired history is kept, and rerunning the seed does not bypass flags.
 
 ## Docker
 
@@ -100,7 +109,6 @@ The production build includes an install manifest, local app icons and a service
 
 ## Next milestones
 
-6. Validated Ollama quizzes and cached fallback.
 7. Scoring and ledger.
 8. Lagos streak/freeze jobs and weekly snapshots.
 9. Full responsive screens against the supplied mockups.

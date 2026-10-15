@@ -1,4 +1,4 @@
-.PHONY: setup dev dev-backend dev-frontend migrate migration-check test test-backend test-frontend test-browser build docker-up docker-down
+.PHONY: setup dev dev-backend dev-frontend migrate migration-check seed-quizzes test test-backend test-frontend test-browser build docker-up docker-down
 
 export UV_CACHE_DIR ?= $(CURDIR)/.cache/uv
 export npm_config_cache ?= $(CURDIR)/.cache/npm
@@ -45,3 +45,6 @@ docker-up:
 
 docker-down:
 	docker compose down
+
+seed-quizzes:
+	uv run --directory backend python -m app.quizzes.seed

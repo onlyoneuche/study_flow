@@ -2,30 +2,15 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.calendar import lagos_date
+from app.core.study import normalise, normalise_subject, required_seconds
 from app.models import Group, GroupMember, SessionParticipant, StudySession, User
 from app.models.enums import ParticipantStatus as PS
 from app.models.enums import QuizStatus, SessionMode
 from app.models.enums import SessionStatus as SS
+from app.services.completion import complete
 from app.services.groups import fail, require_group
 
 REACTIONS = ("💪", "🔥", "📚", "👏")
-
-
-def normalise(value: str):
-    return " ".join(value.lower().split())
-
-
-def normalise_subject(value: str):
-    value = normalise(value)
-    return {"maths": "mathematics", "chem": "chemistry"}.get(value, value)
-
-
-def required_seconds(session: StudySession, participant: SessionParticipant):
-    start = max(session.started_at, participant.joined_at)
-    duration = (session.end_at - start).total_seconds()
-    return (
-        0.8 * duration if session.mode == SessionMode.LIVE else 0.8 * session.planned_minutes * 60
-    )
 
 
 def heartbeat(session: StudySession, participant: SessionParticipant, now):
@@ -50,9 +35,6 @@ def end_participant(session: StudySession, participant: SessionParticipant, now)
     participant.ended_at = min(now, session.end_at)
     if participant.active_seconds < required_seconds(session, participant):
         participant.status = PS.INCOMPLETE
-    elif participant.quiz_status == QuizStatus.UNAVAILABLE:
-        participant.status = PS.COMPLETED
-        participant.completed_at = now
     else:
         # Completion and points require the quiz (or its documented unavailable/deadline fallback).
         participant.status = PS.JOINED
@@ -71,6 +53,8 @@ async def advance_session(db: AsyncSession, session: StudySession, now):
         for participant in participants:
             # End is not a heartbeat: do not award time with no evidence that the PWA stayed open.
             end_participant(session, participant, session.end_at)
+            if participant.quiz_status == QuizStatus.UNAVAILABLE:
+                await complete(db, session, participant, now)
 
 
 async def require_session(db: AsyncSession, session_id: int, user_id: int):
@@ -127,7 +111,6 @@ async def join_session(
     )
     db.add(participant)
     await db.flush()
-    # TODO step 6: enqueue validated/cache-backed quiz preparation after this transaction commits.
     return participant, False
 
 
@@ -180,7 +163,21 @@ async def session_view(db: AsyncSession, session, user_id, now):
         members.append(
             dict(user_id=p.user_id, display_name=names[p.user_id], subject=p.subject, status=status)
         )
-    credited = [p for p in participants if p.is_live_credited]
+    eligible = set()
+    if session.group_id:
+        eligible = set(
+            (
+                await db.scalars(
+                    select(GroupMember.user_id).where(
+                        GroupMember.group_id == session.group_id,
+                        GroupMember.joined_at <= session.started_at,
+                        (GroupMember.left_at.is_(None))
+                        | (GroupMember.left_at > session.started_at),
+                    )
+                )
+            ).all()
+        )
+    credited = [p for p in participants if p.is_live_credited and p.user_id in eligible]
     group = await db.get(Group, session.group_id) if session.group_id else None
     return dict(
         id=session.id,
@@ -198,7 +195,7 @@ async def session_view(db: AsyncSession, session, user_id, now):
         mine=participant_view(
             session, next((p for p in participants if p.user_id == user_id), None)
         ),
-        goal=dict(done=sum(p.status == PS.COMPLETED for p in credited), total=len(credited)),
+        goal=dict(done=sum(p.status == PS.COMPLETED for p in credited), total=len(eligible)),
         reactions=REACTIONS,
     )
 

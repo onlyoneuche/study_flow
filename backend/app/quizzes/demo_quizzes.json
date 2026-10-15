@@ -1,0 +1,563 @@
+[
+  {
+    "subject": "Chemistry",
+    "topic": "Mole concept",
+    "level": "SS2",
+    "questions": [
+      {
+        "question": "What does one mole of a substance contain?",
+        "options": [
+          "6.02 × 10²³ particles",
+          "6.02 × 10² particles",
+          "1,000 particles",
+          "100 particles"
+        ],
+        "correct_index": 0,
+        "explanation": "One mole contains approximately 6.02 × 10²³ specified particles.",
+        "difficulty": "easy"
+      },
+      {
+        "question": "Which unit is used for amount of substance?",
+        "options": [
+          "mol",
+          "g",
+          "dm³",
+          "Pa"
+        ],
+        "correct_index": 0,
+        "explanation": "The SI unit for amount of substance is the mole, symbol mol.",
+        "difficulty": "easy"
+      },
+      {
+        "question": "What is the molar mass of water, using H = 1 and O = 16?",
+        "options": [
+          "18 g/mol",
+          "17 g/mol",
+          "16 g/mol",
+          "34 g/mol"
+        ],
+        "correct_index": 0,
+        "explanation": "Water is H₂O, so its molar mass is 2(1) + 16 = 18 g/mol.",
+        "difficulty": "easy"
+      },
+      {
+        "question": "Which expression gives moles from mass and molar mass?",
+        "options": [
+          "Mass ÷ molar mass",
+          "Mass × molar mass",
+          "Molar mass ÷ mass",
+          "Mass + molar mass"
+        ],
+        "correct_index": 0,
+        "explanation": "Amount in moles equals mass divided by molar mass.",
+        "difficulty": "easy"
+      },
+      {
+        "question": "What is the molar mass of carbon dioxide, using C = 12 and O = 16?",
+        "options": [
+          "44 g/mol",
+          "28 g/mol",
+          "32 g/mol",
+          "40 g/mol"
+        ],
+        "correct_index": 0,
+        "explanation": "CO₂ has molar mass 12 + 2(16) = 44 g/mol.",
+        "difficulty": "easy"
+      },
+      {
+        "question": "How many moles are present in 36 g of water with molar mass 18 g/mol?",
+        "options": [
+          "2 mol",
+          "0.5 mol",
+          "18 mol",
+          "36 mol"
+        ],
+        "correct_index": 0,
+        "explanation": "Dividing 36 g by 18 g/mol gives 2 mol.",
+        "difficulty": "medium"
+      },
+      {
+        "question": "What mass is 0.5 mol of sodium chloride with molar mass 58.5 g/mol?",
+        "options": [
+          "29.25 g",
+          "117 g",
+          "58.5 g",
+          "0.5 g"
+        ],
+        "correct_index": 0,
+        "explanation": "Mass equals amount times molar mass: 0.5 × 58.5 = 29.25 g.",
+        "difficulty": "medium"
+      },
+      {
+        "question": "How many molecules are in 2 mol of oxygen, using Avogadro’s constant 6.02 × 10²³?",
+        "options": [
+          "1.204 × 10²⁴",
+          "3.01 × 10²³",
+          "6.02 × 10²³",
+          "2.00 × 10²³"
+        ],
+        "correct_index": 0,
+        "explanation": "Two moles contain 2 × 6.02 × 10²³ = 1.204 × 10²⁴ molecules.",
+        "difficulty": "medium"
+      },
+      {
+        "question": "At room temperature and pressure, 1 mol of an ideal gas occupies 24 dm³. What volume is 0.25 mol?",
+        "options": [
+          "6 dm³",
+          "24 dm³",
+          "96 dm³",
+          "0.25 dm³"
+        ],
+        "correct_index": 0,
+        "explanation": "Gas volume is 0.25 × 24 = 6 dm³ under the stated conditions.",
+        "difficulty": "medium"
+      },
+      {
+        "question": "What is the concentration of 0.5 mol of solute in 2 dm³ of solution?",
+        "options": [
+          "0.25 mol/dm³",
+          "1 mol/dm³",
+          "4 mol/dm³",
+          "2.5 mol/dm³"
+        ],
+        "correct_index": 0,
+        "explanation": "Concentration equals amount divided by solution volume: 0.5 ÷ 2 = 0.25 mol/dm³.",
+        "difficulty": "medium"
+      },
+      {
+        "question": "For N₂ + 3H₂ → 2NH₃, how many moles of hydrogen react with 1 mol of nitrogen?",
+        "options": [
+          "3 mol",
+          "1 mol",
+          "2 mol",
+          "6 mol"
+        ],
+        "correct_index": 0,
+        "explanation": "The balanced equation gives a 1:3 nitrogen-to-hydrogen mole ratio.",
+        "difficulty": "medium"
+      },
+      {
+        "question": "For 2H₂ + O₂ → 2H₂O, 4 mol H₂ reacts with 1 mol O₂. Which reactant limits water production?",
+        "options": [
+          "Oxygen",
+          "Hydrogen",
+          "Water",
+          "Neither reactant"
+        ],
+        "correct_index": 0,
+        "explanation": "One mole of O₂ reacts with only 2 mol of H₂, so oxygen is the limiting reactant.",
+        "difficulty": "hard"
+      },
+      {
+        "question": "A compound contains 24 g of carbon and 4 g of hydrogen. Using C = 12 and H = 1, what is its empirical formula?",
+        "options": [
+          "CH₂",
+          "CH₄",
+          "C₂H",
+          "C₂H₆"
+        ],
+        "correct_index": 0,
+        "explanation": "The amounts are 2 mol C and 4 mol H, giving the simplest ratio 1:2.",
+        "difficulty": "hard"
+      },
+      {
+        "question": "How many oxygen atoms are present in 0.5 mol of CO₂, using Avogadro’s constant 6.02 × 10²³?",
+        "options": [
+          "6.02 × 10²³",
+          "3.01 × 10²³",
+          "1.204 × 10²⁴",
+          "0.5 × 10²³"
+        ],
+        "correct_index": 0,
+        "explanation": "Each CO₂ molecule has two oxygen atoms, so 0.5 mol CO₂ contains 1 mol oxygen atoms.",
+        "difficulty": "hard"
+      },
+      {
+        "question": "What volume of 0.20 mol/dm³ solution contains 0.05 mol of solute?",
+        "options": [
+          "250 cm³",
+          "25 cm³",
+          "100 cm³",
+          "400 cm³"
+        ],
+        "correct_index": 0,
+        "explanation": "Volume is 0.05 ÷ 0.20 = 0.25 dm³, equivalent to 250 cm³.",
+        "difficulty": "hard"
+      }
+    ]
+  },
+  {
+    "subject": "Chemistry",
+    "topic": "Alkenes",
+    "level": "SS2",
+    "questions": [
+      {
+        "question": "Which bond is characteristic of an alkene?",
+        "options": [
+          "Carbon–carbon double bond",
+          "Carbon–carbon triple bond",
+          "Ionic bond",
+          "Metallic bond"
+        ],
+        "correct_index": 0,
+        "explanation": "Alkenes contain at least one carbon–carbon double bond.",
+        "difficulty": "easy"
+      },
+      {
+        "question": "What is the molecular formula of ethene?",
+        "options": [
+          "C₂H₄",
+          "C₂H₆",
+          "CH₄",
+          "C₂H₂"
+        ],
+        "correct_index": 0,
+        "explanation": "Ethene is the two-carbon alkene and has molecular formula C₂H₄.",
+        "difficulty": "easy"
+      },
+      {
+        "question": "Which reagent tests for unsaturation in an alkene?",
+        "options": [
+          "Bromine water",
+          "Limewater",
+          "Sodium chloride solution",
+          "Universal indicator"
+        ],
+        "correct_index": 0,
+        "explanation": "Alkenes decolourise bromine water through addition across the double bond.",
+        "difficulty": "easy"
+      },
+      {
+        "question": "What is the general formula for an acyclic alkene with one double bond?",
+        "options": [
+          "CₙH₂ₙ",
+          "CₙH₂ₙ₊₂",
+          "CₙH₂ₙ₋₂",
+          "CₙHₙ"
+        ],
+        "correct_index": 0,
+        "explanation": "An acyclic alkene with one double bond has general formula CₙH₂ₙ.",
+        "difficulty": "easy"
+      },
+      {
+        "question": "What type of reaction commonly occurs at an alkene double bond?",
+        "options": [
+          "Addition",
+          "Neutralisation",
+          "Precipitation",
+          "Sublimation"
+        ],
+        "correct_index": 0,
+        "explanation": "Addition reactions convert the double bond into a single bond while adding atoms.",
+        "difficulty": "easy"
+      },
+      {
+        "question": "What is produced when hydrogen is added to ethene?",
+        "options": [
+          "Ethane",
+          "Ethyne",
+          "Ethanol",
+          "Ethanoic acid"
+        ],
+        "correct_index": 0,
+        "explanation": "Hydrogenation adds H₂ across the double bond to form ethane.",
+        "difficulty": "medium"
+      },
+      {
+        "question": "Which catalyst is commonly used to hydrogenate ethene?",
+        "options": [
+          "Nickel",
+          "Sodium chloride",
+          "Calcium carbonate",
+          "Copper sulphate"
+        ],
+        "correct_index": 0,
+        "explanation": "Finely divided nickel is a common hydrogenation catalyst.",
+        "difficulty": "medium"
+      },
+      {
+        "question": "What is produced when steam is added to ethene under suitable catalytic conditions?",
+        "options": [
+          "Ethanol",
+          "Ethane",
+          "Methane",
+          "Ethanoic acid"
+        ],
+        "correct_index": 0,
+        "explanation": "Hydration of ethene adds the elements of water to form ethanol.",
+        "difficulty": "medium"
+      },
+      {
+        "question": "How does bromine water change when shaken with sufficient ethene?",
+        "options": [
+          "Orange to colourless",
+          "Colourless to orange",
+          "Blue to green",
+          "Green to purple"
+        ],
+        "correct_index": 0,
+        "explanation": "Bromine is consumed by addition, removing its orange colour.",
+        "difficulty": "medium"
+      },
+      {
+        "question": "What is the formula of propene?",
+        "options": [
+          "C₃H₆",
+          "C₃H₈",
+          "C₃H₄",
+          "C₂H₆"
+        ],
+        "correct_index": 0,
+        "explanation": "The alkene formula CₙH₂ₙ gives C₃H₆ for three carbon atoms.",
+        "difficulty": "medium"
+      },
+      {
+        "question": "What large molecule forms when many ethene molecules join by addition polymerisation?",
+        "options": [
+          "Poly(ethene)",
+          "Poly(propene)",
+          "Starch",
+          "Protein"
+        ],
+        "correct_index": 0,
+        "explanation": "Ethene monomers open their double bonds and join to form poly(ethene).",
+        "difficulty": "medium"
+      },
+      {
+        "question": "Which pair are position isomers with formula C₄H₈?",
+        "options": [
+          "But-1-ene and but-2-ene",
+          "Ethene and propene",
+          "Butane and but-1-ene",
+          "Propane and cyclopropane"
+        ],
+        "correct_index": 0,
+        "explanation": "But-1-ene and but-2-ene differ in the position of their carbon–carbon double bond.",
+        "difficulty": "hard"
+      },
+      {
+        "question": "What volume of oxygen is required for complete combustion of 10 cm³ ethene, at the same temperature and pressure?",
+        "options": [
+          "30 cm³",
+          "10 cm³",
+          "20 cm³",
+          "40 cm³"
+        ],
+        "correct_index": 0,
+        "explanation": "C₂H₄ + 3O₂ → 2CO₂ + 2H₂O, giving an ethene-to-oxygen volume ratio of 1:3.",
+        "difficulty": "hard"
+      },
+      {
+        "question": "How many moles of bromine react fully with 0.20 mol of ethene?",
+        "options": [
+          "0.20 mol",
+          "0.10 mol",
+          "0.40 mol",
+          "0.60 mol"
+        ],
+        "correct_index": 0,
+        "explanation": "One bromine molecule adds across each ethene double bond, so the mole ratio is 1:1.",
+        "difficulty": "hard"
+      },
+      {
+        "question": "An acyclic hydrocarbon with one double bond has molar mass 56 g/mol. Using C = 12 and H = 1, what is its formula?",
+        "options": [
+          "C₄H₈",
+          "C₃H₈",
+          "C₄H₁₀",
+          "C₂H₄"
+        ],
+        "correct_index": 0,
+        "explanation": "For CₙH₂ₙ the molar mass is 14n, so 56 ÷ 14 = 4 and the formula is C₄H₈.",
+        "difficulty": "hard"
+      }
+    ]
+  },
+  {
+    "subject": "Mathematics",
+    "topic": "Indices",
+    "level": "SS2",
+    "questions": [
+      {
+        "question": "What is the value of 2³?",
+        "options": [
+          "8",
+          "6",
+          "9",
+          "12"
+        ],
+        "correct_index": 0,
+        "explanation": "An exponent of 3 means 2 × 2 × 2 = 8.",
+        "difficulty": "easy"
+      },
+      {
+        "question": "For non-zero a, what is a⁰?",
+        "options": [
+          "1",
+          "0",
+          "a",
+          "−1"
+        ],
+        "correct_index": 0,
+        "explanation": "Any non-zero number raised to the power zero equals 1.",
+        "difficulty": "easy"
+      },
+      {
+        "question": "Which expression equals 5²?",
+        "options": [
+          "5 × 5",
+          "5 + 5",
+          "5 × 2",
+          "2 × 2 × 2 × 2 × 2"
+        ],
+        "correct_index": 0,
+        "explanation": "The power 5² means multiplying 5 by itself twice.",
+        "difficulty": "easy"
+      },
+      {
+        "question": "What is the value of 10⁻¹?",
+        "options": [
+          "0.1",
+          "−10",
+          "−1",
+          "10"
+        ],
+        "correct_index": 0,
+        "explanation": "A negative power means a reciprocal: 10⁻¹ = 1/10.",
+        "difficulty": "easy"
+      },
+      {
+        "question": "What is the value of 9^(1/2)?",
+        "options": [
+          "3",
+          "4.5",
+          "18",
+          "81"
+        ],
+        "correct_index": 0,
+        "explanation": "A power of one-half gives the positive square root.",
+        "difficulty": "easy"
+      },
+      {
+        "question": "Simplify a³ × a⁴.",
+        "options": [
+          "a⁷",
+          "a¹²",
+          "a¹",
+          "2a⁷"
+        ],
+        "correct_index": 0,
+        "explanation": "When multiplying powers with the same base, add the exponents.",
+        "difficulty": "medium"
+      },
+      {
+        "question": "For non-zero x, simplify x⁸ ÷ x³.",
+        "options": [
+          "x⁵",
+          "x¹¹",
+          "x²⁴",
+          "x^(8/3)"
+        ],
+        "correct_index": 0,
+        "explanation": "When dividing powers with the same base, subtract the exponents.",
+        "difficulty": "medium"
+      },
+      {
+        "question": "Simplify (y²)³.",
+        "options": [
+          "y⁶",
+          "y⁵",
+          "y⁸",
+          "3y²"
+        ],
+        "correct_index": 0,
+        "explanation": "For a power raised to another power, multiply the exponents.",
+        "difficulty": "medium"
+      },
+      {
+        "question": "What is the value of 27^(2/3)?",
+        "options": [
+          "9",
+          "6",
+          "18",
+          "81"
+        ],
+        "correct_index": 0,
+        "explanation": "The cube root of 27 is 3; squaring it gives 9.",
+        "difficulty": "medium"
+      },
+      {
+        "question": "Write 0.00045 in standard form.",
+        "options": [
+          "4.5 × 10⁻⁴",
+          "4.5 × 10⁴",
+          "45 × 10⁻⁴",
+          "0.45 × 10⁻³"
+        ],
+        "correct_index": 0,
+        "explanation": "Standard form uses a coefficient from 1 to less than 10: 4.5 × 10⁻⁴.",
+        "difficulty": "medium"
+      },
+      {
+        "question": "If 2ˣ = 32, what is x?",
+        "options": [
+          "5",
+          "4",
+          "8",
+          "16"
+        ],
+        "correct_index": 0,
+        "explanation": "Since 2⁵ = 32, the exponent x is 5.",
+        "difficulty": "medium"
+      },
+      {
+        "question": "Solve 3^(2x) = 81.",
+        "options": [
+          "2",
+          "4",
+          "3",
+          "8"
+        ],
+        "correct_index": 0,
+        "explanation": "Since 81 = 3⁴, equating exponents gives 2x = 4 and x = 2.",
+        "difficulty": "hard"
+      },
+      {
+        "question": "Evaluate (16^(3/4)) ÷ 2.",
+        "options": [
+          "4",
+          "2",
+          "6",
+          "8"
+        ],
+        "correct_index": 0,
+        "explanation": "The fourth root of 16 is 2; cubing gives 8, then dividing by 2 gives 4.",
+        "difficulty": "hard"
+      },
+      {
+        "question": "For positive a, simplify a^(1/2) × a^(3/2) ÷ a.",
+        "options": [
+          "a",
+          "a²",
+          "1",
+          "a^(1/2)"
+        ],
+        "correct_index": 0,
+        "explanation": "Add the exponents in the product and subtract 1: 1/2 + 3/2 − 1 = 1.",
+        "difficulty": "hard"
+      },
+      {
+        "question": "If 4^(x−1) = 8, what is x?",
+        "options": [
+          "2.5",
+          "2",
+          "3",
+          "1.5"
+        ],
+        "correct_index": 0,
+        "explanation": "Writing both sides in base 2 gives 2(x − 1) = 3, so x = 2.5.",
+        "difficulty": "hard"
+      }
+    ]
+  }
+]

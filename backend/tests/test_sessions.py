@@ -1,20 +1,12 @@
-from datetime import UTC, datetime, timedelta
-from types import SimpleNamespace
+from datetime import datetime, timedelta
 
 import pytest
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 from starlette.websockets import WebSocketDisconnect
 
-from app.models import SessionParticipant, StudySession
+from app.models import GroupMember, SessionParticipant, StudySession
 from tests.test_groups import accept, create, invite
-
-
-@pytest.fixture
-def clock(auth_client):
-    clock = SimpleNamespace(now=datetime(2026, 10, 15, 22, 50, tzinfo=UTC))
-    auth_client.app.state.clock = lambda: clock.now
-    return clock
 
 
 def solo(client, learner, duration=25):
@@ -201,7 +193,7 @@ def test_live_scheduled_start_late_rules_and_cross_midnight_date(auth_client, ac
     assert late["solo_offer"] and late["participant"] is None
     with socket(auth_client, observer, session) as ws:
         observed = state(ws)
-        assert observed["mine"] is None and observed["goal"]["total"] == 2
+        assert observed["mine"] is None and observed["goal"]["total"] == 3
     assert (
         auth_client.post(
             f"/api/v1/sessions/{session['id']}/finish", headers=owner.headers
@@ -345,3 +337,33 @@ def test_former_live_host_cannot_list_a_room_after_leaving_group(auth_client, ac
     auth_client.delete(f"/api/v1/groups/{group['id']}/members/{owner.id}", headers=owner.headers)
     assert auth_client.get("/api/v1/sessions", headers=owner.headers).json() == []
     assert len(auth_client.get("/api/v1/sessions", headers=next_owner.headers).json()) == 1
+
+
+def test_shared_goal_uses_membership_at_scheduled_start(auth_client, actor, clock, db_engine):
+    owner, existing, newcomer = actor(), actor(), actor()
+    group = create(auth_client, owner)
+    link = invite(auth_client, owner, group)
+    accept(auth_client, existing, link)
+    session = live(auth_client, owner, group)
+    accept(auth_client, newcomer, link)
+    with Session(db_engine) as db:
+        member = db.scalar(select(GroupMember).where(GroupMember.user_id == newcomer.id))
+        member.joined_at = clock.now + timedelta(seconds=1)
+        db.commit()
+    clock.now += timedelta(minutes=5)
+    join(auth_client, existing, session)
+    join(auth_client, newcomer, session)
+    result = auth_client.get(f"/api/v1/sessions/{session['id']}", headers=owner.headers).json()
+    assert result["goal"]["total"] == 2
+    auth_client.delete(f"/api/v1/groups/{group['id']}/members/{existing.id}", headers=owner.headers)
+    # Membership intervals after the start cannot shrink the fixed denominator.
+    with Session(db_engine) as db:
+        member = db.scalar(select(GroupMember).where(GroupMember.user_id == existing.id))
+        member.left_at = clock.now
+        db.commit()
+    assert (
+        auth_client.get(f"/api/v1/sessions/{session['id']}", headers=owner.headers).json()["goal"][
+            "total"
+        ]
+        == 2
+    )

@@ -130,6 +130,8 @@ Judgement call: freezes are not spent on a streak that is already 0, so they are
 - Joining up to 10 minutes late: counts as LIVE and earns `L`. `R = 0.8 * (end_at - joined_at)`; `B` still uses the full `P`.
 - Joining more than 10 minutes late: the client offers a SOLO session instead (same topic, own clock). The user can still sit in the room for presence, but gets no `L` and does not count towards the shared goal.
 
+**Shared live goal (decision, 15 Oct 2026):** its denominator is the set of active group members at the live session’s scheduled start: `joined_at <= scheduled_at` and `left_at IS NULL OR left_at > scheduled_at`. Qualifying LIVE completions from those members count, including participation joins up to 10 minutes late. Members who join the group after the scheduled start are excluded. Later removals or departures do not shrink this historical denominator.
+
 ### 3.2 Leaving mid-session
 - An explicit "Leave" stops the user's active clock. They may rejoin before `end_at`; active time accumulates.
 - The quiz unlocks at the user's end time (`end_at` for LIVE, `started_at + P` for SOLO), or earlier for SOLO once `A >= R` and the user taps "Finish". If `A < R` at the end, the participation is `incomplete`: no quiz, no points, no streak credit.
@@ -150,6 +152,7 @@ Judgement call: freezes are not spent on a streak that is already 0, so they are
 - Ledger rows already earned stay (append-only history). This avoids "kick to protect the streak" disputes.
 - If membership drops below 3, the streak is paused (not broken) until the group is back to 3.
 - If the owner leaves, ownership passes to the longest-standing member.
+- If the last member leaves, archive the group (`is_active = false`), disable its invites and retain membership history and ledger (decision, 15 Oct 2026).
 
 ### 3.6 Timezone
 - Everything is computed with Africa/Lagos via `zoneinfo`, never the server's local time and never the client's. Users travelling abroad still use Lagos days (one shared clock for the group).
@@ -245,7 +248,8 @@ Prefix `/api/v1`. Auth is a bearer JWT from fastapi-users unless marked public.
 - `GET /sessions/{id}` (state, participants, shared goal progress)
 
 **Quizzes**
-- `GET /participants/{id}/quiz` (questions without answers; 409 if locked, 202 if still generating)
+- `GET /participants/{id}/quiz` (opens/resumes the server-held attempt; questions without answers; 409 if locked, 202 if still generating)
+- `POST /participants/{id}/quiz/start` (explicit, idempotent alternative to opening via GET)
 - `POST /participants/{id}/quiz/submit` (`answers: [int x15]`) -> score, explanations, points breakdown
 - `POST /questions/{id}/flags` (reason, note)
 
