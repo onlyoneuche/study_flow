@@ -1,150 +1,138 @@
 # StudyFlow
 
-A local, social study app for the hackathon. Python 3.12 + FastAPI + SQLite, Next.js App Router + TypeScript + Tailwind, and local Ollama. No hosted backend or paid API.
+Study together on your own subjects, take a topic quiz, and grow a shared weekly bar through study time and personal improvement. The hackathon MVP covers sign-up, groups/invites, solo/live sessions, quizzes, points, streaks and rankings. All services run locally; no paid APIs or hosted backend.
 
-**Current milestone: step 10, repeatable Study Squad demo history.** Sign up, invite friends, study solo or live, take a quiz and see points, group progress and rankings. Nightly streak evaluation and restart catch-up are active. The final hackathon demo guide is step 11.
+The [design](docs/studyflow-design.md) is the source of truth. UI references: [mobile](docs/mockups/mobile.html) and [desktop](docs/mockups/desktop.html). [Implementation notes](docs/implementation-notes.md) record decisions and verification. For presenting, use the [2–3 minute demo script](docs/demo.md).
 
-The [full design](docs/studyflow-design.md) is the source of truth. UI references: [mobile](docs/mockups/mobile.html), [desktop](docs/mockups/desktop.html). See [implementation notes and TODOs](docs/implementation-notes.md) for unresolved details.
+## Native setup
 
-## Local setup
-
-Install [uv](https://docs.astral.sh/uv/getting-started/installation/), Node.js 22+ with npm, and [Ollama](https://ollama.com/). uv downloads Python 3.12 if needed.
+Prerequisites: [uv](https://docs.astral.sh/uv/getting-started/installation/), Node.js **22+** with npm, [Ollama](https://ollama.com/), and `make`. uv installs Python **3.12** if needed. Run commands from the repository root.
 
 ```sh
+ollama pull qwen2.5:7b-instruct
+# If the Ollama app/service is not already running, run in another terminal:
+# ollama serve
 make setup
 make migrate
 make seed
-ollama pull qwen2.5:7b-instruct
-ollama serve  # only if the Ollama app/service is not already running
 make dev
 ```
 
-`make setup` installs locked dependencies and creates a private `.env` with a random auth secret. It preserves an existing `.env`. Configuration starts from `.env.example`. Set `OLLAMA_MODEL` to use a different locally installed instruct model. Keep `OLLAMA_BASE_URL=http://localhost:11434` for native development.
+Open [StudyFlow](http://localhost:3000). API documentation is at [localhost:8000/docs](http://localhost:8000/docs). `make dev` starts both apps; Ctrl-C stops both. Separate terminals can use `make dev-backend` and `make dev-frontend`.
 
-Open [StudyFlow](http://localhost:3000), [API docs](http://localhost:8000/docs), or [health](http://localhost:8000/health). The frontend forwards `/api/*` to the local API using the server-only `BACKEND_URL`. API endpoint prefix is `/api/v1`.
+`make setup` installs locked dependencies and creates `.env` from [.env.example](.env.example), replacing the placeholder with a random local auth secret. It preserves existing configuration. `make migrate` applies Alembic migrations; the app never creates tables implicitly. Stop the backend before running `make seed` again, then restart and sign in again.
 
-Run both development servers with `make dev`, or separately with `make dev-backend` and `make dev-frontend`. Ctrl-C stops both processes. No external fonts, analytics or hosted services are required at runtime.
+| Setting | Local default / purpose |
+| --- | --- |
+| `OLLAMA_BASE_URL` | `http://localhost:11434` |
+| `OLLAMA_MODEL` | `qwen2.5:7b-instruct`; pull a different local model before changing this |
+| `DATABASE_URL` | `sqlite+aiosqlite:///./data/studyflow.db`, resolved under `backend/` |
+| `AUTH_SECRET` | Random secret created by setup; keep private and stable across restarts |
+| `FRONTEND_URL` | `http://localhost:3000`; used in invite and console email links |
+| `BACKEND_URL` | Server-only `http://127.0.0.1:8000`; Next.js proxies browser `/api/*` and `/ws/*` |
+| `CORS_ORIGINS` | JSON array of permitted local origins |
+| `AUTH_TOKEN_LIFETIME_SECONDS` | 3600; email verification/reset links also default to 3600 seconds |
 
-## Checks
+For another browser-facing hostname, update `FRONTEND_URL` and `CORS_ORIGINS`. Keep the API proxy configured with the reachable backend address. The default development API binds to loopback. Device access also needs an appropriate bind address; installation/camera/notification capabilities generally require HTTPS outside localhost.
 
-```sh
-make test    # backend lint, formatting, tests; frontend lint and TypeScript
-make build  # frontend production build
-make migration-check  # verify the migrated schema matches the models
-```
+The stack uses FastAPI, SQLAlchemy/SQLModel, Alembic, SQLite in WAL mode, fastapi-users, APScheduler and WebSockets; Next.js App Router, TypeScript and Tailwind serve the PWA. Fonts and assets are local. Both development and production builds use Webpack.
 
-Browser checks use installed Google Chrome and Playwright WebKit at 360, 390, 768 and 1440px. Stop the local app servers/containers first; the browser runner creates a disposable `/tmp/studyflow-…` database, applies migrations and seeds fallback quizzes automatically. WebKit provides Safari-engine coverage at all four widths. A native Safari desktop rendering smoke check also passed; full native Safari/device testing at each size remains manual because native window/input automation was intermittent.
+## Demo data
 
-```sh
-cd frontend && npx playwright install webkit && cd ..
-make test-browser
-```
+`make seed` prints credentials, actual weekly totals, the scheduled room and Ada’s prepared quiz URL.
 
-Health checks call Ollama's `/api/tags` with a bounded timeout and verify the configured model is installed, without generating text. HTTP 200 means the API is alive; JSON `status` is `ok` or `degraded`. Ollama details distinguish `ready`, `model_missing`, `unreachable` and `invalid_response`. A missing quiz service does not prevent startup: cached-quiz fallback is part of step 6. Neither database readiness nor generation quality is asserted by this health check.
+- **Email:** `ada@demo.studyflow.example.com`
+- **Password:** `StudyFlow-demo-2026!`
 
-Tests cover migrations, UTC timestamps, WAL/foreign keys, membership/band constraints, invite storage constraints, append-only ledger enforcement and streak/focus storage invariants. Invite acceptance tests cover every rejection state, idempotency, ownership and concurrent capacity/use limits. Scoring tests cover the worked example, caps, live/multi-group credit and quiz fallback. Streak tests cover membership snapshots, freezes, catch-up, Lagos boundaries, atomicity and idempotency. Full demo history seeding arrives in step 10.
+| Study Squad member | Subject |
+| --- | --- |
+| Ada | Chemistry — Mole concept |
+| Tunde | Physics — Forces and motion |
+| Zainab | Biology — Cell structure |
+| Chidi | Mathematics — Indices |
+| Emeka | Economics — Demand |
+| Funmi | English — Parts of speech |
 
-## Database and migrations
+Friends use their lowercase names at `demo.studyflow.example.com` and the same password. These are fictional verified **SS2 / secondary-band** accounts with fixture consent. The competing **Lagos Brainiacs** has Ife, Musa and Bisi in the same band.
 
-`make migrate` applies Alembic migrations and is safe to rerun. Relative `DATABASE_URL` paths are always resolved from `backend/`, consistently across the API, scripts and migrations. The default is `backend/data/studyflow.db` (ignored by Git). Connections enable WAL, foreign keys and a 10-second busy timeout. Application timestamps must be timezone-aware; storage and returned values use UTC.
+The seed replays heartbeat, session transition, quiz grading, ledger and streak services. Thirteen evaluated days produce a **12-day streak and one freeze used**, with seven recent days of live/solo history and quiz attempts. Today’s extra study brings the weekly bar near **340/600**: six members × the documented 100-point target. The rival has a competing points-per-member average, and a live session is scheduled tonight (19:00 Lagos, or shortly after seed if later).
 
-The initial migration creates all 15 design tables, including `focus_summaries` without enabling camera tracking. Database triggers reject ledger updates, deletes and replacements; corrections are appended adjustment rows. They also enforce membership caps, audience bands and the two-freezes-per-week limit. `OTHER` maps to `tertiary` and requires recorded 18+ confirmation. Sign-up collects the required confirmations.
+Actual points and remaining freezes follow the current Lagos calendar. Sunday history can already exceed 340; very early Monday may not have enough elapsed study time to reach it. A freeze in a previous week does not consume this week’s allowance. The seed always prints actual values.
 
-Schema changes use a new Alembic revision, never application-startup `create_all`. After editing models, generate a revision from `backend/` with `uv run alembic revision --autogenerate -m "describe change"`, review it (triggers need manual review), then run `make migrate`, `make migration-check` and `make test` from the repository root. Tests downgrade and re-upgrade disposable databases; never downgrade a database whose history you need to retain.
+Ada’s prepared quiz belongs to an **already-studied 25-minute solo session**. Its real 20-minute quiz timer starts at seed time: refresh the seed immediately before presenting. New sessions retain their normal **25/45/60-minute** timers. The [short demo](docs/demo.md) explicitly switches from a newly started live room to this prepared participation.
 
-## Authentication demo
+Reset creates a fresh active demo generation and archives the old accounts/groups, disables their invites and cancels their open rooms. Immutable points and study history remain. An ownership registry prevents claiming other accounts by name/email. Non-demo users, groups, existing quiz variants and flags are preserved. Mixed demo/non-demo membership or session history, transferred ownership, or a reserved email collision makes the entire reset refuse safely. For a repeatable pitch, share/copy the invite without joining a real account to the fixture; use another demo member for live presence. Archived generations intentionally remain in the database.
 
-Open [Create account](http://localhost:3000/auth/sign-up). Enter your display name, email, password and level. The audience band is derived from the level: JSS/SS requires guardian consent; university/postgraduate/OTHER requires confirmation that you are 18+. Consent timestamps are set by the server. The guardian checkbox also mentions the optional on-device Focus Tracker, which is not enabled yet.
+## Docker option
 
-Verification emails print automatically in the backend console. For Docker, use `docker compose logs -f backend`; with `make dev`, use the server terminal. Open the printed `/auth/verify#token=...` link and tap **Verify email**. You can sign in before verification; no additional verification gate has been added to the design. Your account page can resend the email.
-
-**Forgot password?** on sign-in requests a reset email, also printed in the backend console. Open its `/auth/reset-password#token=...` link and set a new password. Email tokens expire after one hour by default; a successful reset invalidates that reset link. Unknown-email requests return the same response. Tokens appear in URL fragments so they are not sent in page-request URLs. No real emails or external mail services are used.
-
-Set `FRONTEND_URL` to the browser-facing app URL when running on a different host. `AUTH_TOKEN_LIFETIME_SECONDS` and `AUTH_EMAIL_TOKEN_LIFETIME_SECONDS` default to 3600. Passwords use Argon2 hashing and must contain 8–128 characters. Browser bearer tokens are kept in session storage and removed on sign-out; fastapi-users JWTs remain valid until expiry and are not revoked server-side by logout or a password reset.
-
-API routes are under `/api/v1`: `POST /auth/register`, `/auth/jwt/login` (form fields `username` and `password`), `/auth/jwt/logout`, `/auth/request-verify-token`, `/auth/verify`, `/auth/forgot-password`, `/auth/reset-password`; `GET/PATCH /users/me`. Profile updates accept display name and level, plus the appropriate confirmation when crossing audience bands without prior consent. Existing group constraints prevent a cross-band level change. Account deletion is deferred pending the documented anonymisation decision.
-
-The award guard uses `(participant_id, group_id, component)`, equivalent to `(user_id, group_id, session_id, award_type)` because participation is unique per user/session and migration 0002 enforces the ledger-user match. A regression test awards one session to three groups and rejects a duplicate within a group. Freeze buckets are Monday dates derived in Africa/Lagos; their boundary is Sunday 23:00 UTC. Scheduled jobs use these same Lagos boundaries.
-
-## Groups and invites demo
-
-Open **Squad**, create a group (capacity 3–8), then **Create invite**. Copy the link or use **Share on WhatsApp**. New links expire in exactly 7 days; the owner chooses the use limit. **Regenerate invite** disables older links; **Disable invite** closes the current link. Eight-character codes omit ambiguous characters. Public previews reveal only group name and member count.
-
-Open the invite in another browser/tab. Create an account or sign in; the return destination survives both screens and membership is accepted automatically. Joining reports expired/disabled/exhausted links, full groups, different audience bands and the three-group limit. Existing membership succeeds without consuming another use, even with an old/full invite. The owner can remove a member; each member can leave. Ownership passes to the longest-standing remaining member. Membership history and earned points remain. Days starting with fewer than three eligible members pause streaks. An empty group is archived with invites disabled; history and ledger remain.
-
-## Sessions demo
-
-Open **Study** for a 25, 45 or 60-minute solo session. Choose a subject and topic; your profile level is saved on the participation. For live sessions, choose a squad and start now or schedule a future start. Other members see the open room under **Study**, join on their own topics, and appear in the members panel. **Study together** on the group page preselects that squad.
-
-The server holds start/end times; countdowns use server time and a monotonic browser timer to correct clock drift. Authenticated WebSockets at `/ws/sessions/{id}?token=JWT` work through the Next.js proxy. Heartbeats run every 15 seconds, even while a tab is hidden. A gap up to 120 seconds counts in full; a longer gap counts 15 seconds. Presence becomes disconnected after 120 seconds without a heartbeat. **Leave session** stops the active clock; **Rejoin session** resumes without counting the break. A solo learner can **Finish early** once 80% active time is saved. Insufficient active time at the end gives no quiz, points or completion.
-
-Live starts run at the server-held scheduled time, even in an empty room. Joining up to 10 minutes late keeps live eligibility and requires 80% of the remaining time. Later arrivals are offered a solo session on the same topic, or can observe the room without live credit. The shared goal includes active members at the scheduled start, including eligible late joiners; people joining the group afterward are excluded. Later departures do not shrink that denominator.
-
-APScheduler checks due session transitions every second and catches up at startup. Use one backend worker for this MVP, because room connections are in memory. Active seconds and the last heartbeat survive restart. Socket access is authenticated and checked again on every event/broadcast; removals cut off access. Query tokens are removed from socket path logs. Supported reactions are a fixed set; no free-text chat is accepted.
-
-Quiz preparation starts in the background. After sufficient study time, choose **Take your quiz**; you can request a browser notification when it is ready. Focus Tracker remains off and uses no camera.
-
-## Quiz demo
-
-Run `make seed-quizzes` for SS2 Chemistry **Mole concept** and **Alkenes**, and Mathematics **Indices**. Docker seeds these automatically. Exact unused cache variants are served first, so those topics work with Ollama offline. Other topics use local Ollama (`OLLAMA_MODEL`, default `qwen2.5:7b-instruct`), validated JSON output and one retry. Generation has a 120-second deadline per try and runs outside database write transactions. Matching queued jobs share one generation.
-
-At your participant end, open the quiz. GET `/participants/{id}/quiz` or POST `/participants/{id}/quiz/start` opens/resumes a single server-timed attempt. Pending work returns 202; insufficient time or an early open returns 409. The effective deadline is the earlier of attempt start + 20 minutes and participant end + 30 minutes. Reloading keeps the timer and local answer draft. Use 1–4 to choose and Enter to advance; answer all 15 before submitting. Correct answers/explanations appear only after submission. Results are personal; they are never used to rank people across subjects.
-
-If generation fails twice, the worker rechecks exact cache, tries related same-subject/level cache with a visible label, then marks the quiz unavailable. Sufficient active time still earns time-only base/live points; missed quiz deadlines follow the same fallback. Flag questions after submission. Three unique-user flags or one inappropriate flag disables the question and retires its variant; every flagged variant is excluded from new cache assignments. Existing results stay unchanged. Retired history is kept, and rerunning the seed does not bypass flags.
-
-## Points and rankings
-
-Successful quiz submission saves base, quiz and personal-improvement ledger lines. Improvement compares your score with your own last three counted quizzes for the same normalised subject and participant-level snapshot; the first quiz earns +3 welcome improvement points. Valid timely quizzes still update your baseline after the daily points cap; unavailable/expired quizzes never do. Rounding uses half up. Ada’s worked example in the design earns 30 live / 25 solo points.
-
-The first three completed sessions per Lagos session day earn points. Later completions save a zero `daily_cap` entry, still count as completed, and remain eligible for streaks and the shared live goal. Base/quiz/improvement credit goes to each of your current groups (up to three); +5 live goes only to the hosting group. The v2 full-group bonus is not awarded. Identical retries return the saved result and cannot create duplicate ledger awards.
-
-Open **Ranks** to see group points per current member (ties use streak), and your selected squad’s improvement-only ranking (ties use completed sessions). Only your audience band appears; individual raw scores are never compared. **Your points history** shows this week’s immutable credits, separately for each group. API routes: `GET /groups/{id}/points?week=YYYY-MM-DD`, `GET /leaderboard/groups?week=…`, `GET /users/me/ledger?from=…&to=…&limit=…&offset=…`. Weeks use Monday dates in Africa/Lagos; all historical rows remain after a reset or departure. Corrections are new adjustment rows, not edits.
-
-## Streaks and Lagos weeks
-
-At 02:00 Africa/Lagos, APScheduler evaluates the previous Lagos day. Every member active at that day’s midnight must have a completed live or solo session dated that day. Joining later starts eligibility the next day; leaving or being removed later does not change the historical denominator. Fewer than three eligible members pauses the day without changing the streak.
-
-A missed day consumes a freeze only for a positive streak, at most two per group per Lagos week; otherwise the streak resets. Freezes preserve rather than increment it. Each result, freeze and catch-up cursor commits atomically. Startup first settles overdue sessions, then processes every due day in order. Before 02:00 Lagos it stops at the day before yesterday; from 02:00 it includes yesterday. A new group starts its audit trail on its creation day (normally paused because nobody belonged at midnight). Archived groups retain their existing history.
-
-Use one backend instance/worker per SQLite database. An operating-system lock beside the database (`.jobs.lock`) rejects a second scheduler owner and is automatically released if the process exits. SQLite write reservations and unique day records also protect against overlapping evaluations. Keep the lock file in the same shared local volume as SQLite; do not remove it while the server runs. APScheduler coalesces missed cron firings; every run catches up from the stored cursor.
-
-Weekly bars and freeze allowances switch at Monday 00:00 Lagos (Sunday 23:00 UTC), through date-filtered queries. The weekly cron records that boundary without deleting or rewriting history; Sunday is still evaluated at Monday 02:00 using Sunday’s week. Historical weeks are derived from the ledger. Optional weekly snapshots remain backlog by user decision.
-
-## Responsive screens
-
-Home shows your selected squad’s weekly bar, streak and freezes, today’s group session goal, studied-today members and the next real live room. With no squad, it offers group creation/joining and solo study. Recent study links resume active sessions, open unfinished quizzes or review saved results, including time-only completions. Refresh or return to Home for current progress; visible dashboards also refresh every 30 seconds. There are no RSVP counts, nudges or other people’s raw quiz scores.
-
-Below 768px, screens stack around the bottom navigation and large controls. From 768px, the timer and members, or quiz and tracker, sit beside one another. Above 1024px, the left sidebar replaces the bottom navigation, Home becomes a dashboard grid, Results uses three columns and both leaderboards sit side by side. The quiz stays about 640px wide with a separate step tracker; 1–4 selects answers and Enter advances. Saved points show separate totals for each group. Charts show only your own subject/level history. The streak card names its last evaluated Lagos day rather than promising an immediate streak increment.
-
-Assets and fonts are local, camera tracking stays off, and links load pages when opened instead of automatically prefetching them. Authenticated responses are not cached. Connection errors have a retry path. Your account page contains the local connection/model status.
-
-Supporting private routes: `GET /users/me/dashboard` combines your accessible groups/open rooms and your latest eight participations; `GET /participants/{id}/result` reads your completed result, including time-only points after a quiz deadline. The quiz start/submit deadlines remain enforced.
-
-## Docker
-
-With Docker running and `.env` created:
+Install Docker with Compose and run Ollama on the host. Native Python/Node are not needed for this option. If `.env` is absent, copy `.env.example` to `.env`, then replace `AUTH_SECRET` with the output of `openssl rand -hex 48`. Keep an existing `.env`.
 
 ```sh
-make docker-up  # applies Alembic migrations before starting the API
-make docker-down
+ollama pull qwen2.5:7b-instruct
+# ollama serve  # only when the Ollama app/service is not running
+# Fresh setup, or stop the existing app before resetting demo data:
+docker compose stop frontend backend
+docker compose build
+docker compose run --rm --no-deps backend python -m app.demo.seed
+docker compose up -d
 ```
 
-Ollama runs on the host machine. Compose overrides its address to `http://host.docker.internal:11434`; the configured model still comes from `.env`. On Linux, Ollama may need to listen on the Docker bridge interface (`OLLAMA_HOST`); allow access only from your local Docker network. The backend's persistent volume will hold SQLite data. Both app images use unprivileged runtime users. Local ports are 3000 (web) and 8000 (API).
+Open [localhost:3000](http://localhost:3000). The backend entrypoint applies migrations before either the seed command or normal API startup. Normal startup also ensures the three curated fallback topics exist. To refresh a built demo later:
 
-## PWA
+```sh
+docker compose stop frontend backend
+docker compose run --rm --no-deps backend python -m app.demo.seed
+docker compose up -d
+```
 
-The production build includes an install manifest, local app icons and a service worker that caches only a public offline page. Run `npm --prefix frontend run start` after `make build` to exercise installation on localhost, or serve over HTTPS on a device. Development mode does not register a worker. Authenticated API data is never cached by the worker.
+Compose stores SQLite in the persistent `studyflow-data` volume, separate from native `backend/data/`. `make docker-up` builds/starts the app; `make docker-down` stops it while retaining the volume. Reset through the seed command rather than deleting the volume. Both images use unprivileged runtime users and expose ports 3000/8000 on localhost. Run either native servers or Compose on those ports at a time.
 
-## Next milestones
+Compose overrides `DATABASE_URL`, `BACKEND_URL` and Ollama’s address to use the container database, backend service and `http://host.docker.internal:11434`. On Linux, Ollama may need `OLLAMA_HOST` configured to listen on the Docker bridge interface; restrict access to the local Docker network. Useful logs: `docker compose logs -f backend` (including console email links).
 
-11. Complete setup and end-to-end demo instructions.
+## Using the MVP
 
-Only after these work end to end: optional on-device Focus Tracker.
+**Accounts.** Sign up with email/password and education level. Secondary levels require guardian consent; university/OTHER requires 18+ confirmation. OTHER maps to the adult band. Groups cannot cross bands. Verification and password reset screens print their email links to the backend console; open those links in the same local app. No external mail service is used. Demo accounts are already verified.
 
-## Study Squad seed
+**Groups.** Create a group under Squad; the creator owns it. Group capacity is 3–8, each user can belong to at most three groups, and invites expire after seven days with an owner-selected use limit. Copy or share via the prefilled WhatsApp link. Logged-out invitees return after sign-up/login and auto-join. Expired, disabled, exhausted, full and wrong-band states show clear messages; existing membership does not consume another use. Owners can regenerate/disable invites or remove members. Members can leave; ownership transfers to the longest-standing remaining member. Empty groups archive, preserving points/history.
 
-Stop the backend, then run `make seed` after `make migrate`. Sign in as `ada@demo.studyflow.example.com` with password `StudyFlow-demo-2026!`. Tunde, Zainab, Chidi, Emeka and Funmi use their lowercase names at the same domain and password. These fictional SS2 accounts all belong to the secondary band; each studies a distinct subject. The second squad is **Lagos Brainiacs**.
+**Study.** Start solo or live on your own subject/topic. Live members can choose different topics. Scheduled rooms start at server time; join within ten minutes for live eligibility, or observe/start solo afterward. Active time must reach 80% of the required duration. Heartbeats run every 15 seconds, including hidden tabs; gaps up to 120 seconds receive full credit, longer gaps receive 15 seconds. Leave/rejoin preserves earned active time without counting the break. Hidden tabs pause only future Focus Tracker sampling; they are never labelled away. The tracker is currently off and no camera is used.
 
-History is replayed through heartbeat, grading, completion/ledger and streak services: 13 evaluated days yield a 12-day streak with one freeze used; the latest seven days include solo/live sessions and quiz attempts. The weekly bar is about 340/**600** (six members × the documented 100-point target), with exact points depending on the current Lagos week. The seed prints actual totals, tonight’s scheduled room and Ada’s prepared quiz URL.
+**Quiz.** At session start, background work checks cache and calls local Ollama with the documented prompt and JSON schema. It validates exactly 15 questions, retries once, then uses exact/related same-level cache or time-only completion. Correct indices stay on the server until submission. Quiz time is the earlier of **start + 20 minutes** and **participant end + 30 minutes**; reload does not extend it. On desktop, 1–4 chooses and Enter advances. Allow browser notifications from the room to hear when a quiz is ready. Flag questions after submission; flags never change earned scores.
 
-For a short pitch, the prepared quiz represents an already-studied 25-minute session. Its real 20-minute quiz timer starts at seed time, so seed immediately before presenting. Normal session timers remain 25/45/60 minutes. Resetting creates a fresh active demo generation and archives the old one; immutable ledger/history are retained. Non-demo accounts, groups, flags and cache variants are preserved. A reset refuses mixed demo/non-demo membership or session history. Stop the backend before every reset, then sign in again.
+**Progress.** Results save base, quiz and improvement ledger entries. Improvement compares only with your own same-subject/level history. First-three-completions-per-Lagos-day and up-to-three-group rules apply; the +5 live bonus goes only to the host group. Group rankings use points per current member; in-group rankings use improvement points only. Other people’s raw quiz scores are never shown or compared. The daily goal counts group sessions completed today versus members, so it can exceed the denominator.
+
+**Streaks and weeks.** At 02:00 Africa/Lagos, the previous day is kept if every member eligible at that day’s midnight completed study. A missed positive streak consumes a freeze if available, up to two per Lagos week; otherwise it resets. Fewer than three eligible members pauses the day. Startup catches up every due date, including paused days; before 02:00 it stops at today−2, otherwise today−1. Quiz submission updates points immediately; streaks wait for nightly evaluation. Weekly bars and freeze allowances switch Monday 00:00 Lagos without deleting history. Past weeks come from ledger queries, with no stored MVP snapshots.
+
+API routes are under `/api/v1`; see [OpenAPI](http://localhost:8000/docs) and the [design endpoint list](docs/studyflow-design.md#6-api-endpoints). Examples include `GET /groups/{id}/points?week=YYYY-MM-DD`, `GET /leaderboard/groups?week=YYYY-MM-DD` and `GET /users/me/ledger?from=…&to=…`. A week parameter is the Monday date in Africa/Lagos. Corrections append adjustment rows; ledger entries are never edited/deleted.
+
+## Checks and PWA
+
+```sh
+make test             # backend lint/format + tests; frontend lint + TypeScript
+make build            # production build with standalone assets
+make migration-check  # migrated schema versus models
+# Stop app servers/containers before browser checks (ports 3000/8000).
+(cd frontend && npx playwright install webkit)
+make test-browser     # Chrome + WebKit, 360/390/768/1440px
+make test-demo        # seeded pitch, Chrome 390px + WebKit 1440px
+```
+
+Google Chrome must be installed for Chrome tests. Browser runners create disposable `/tmp/studyflow-…` databases and migrate them; the seeded demo checks each start with fresh data. Tests cover scoring’s worked example, daily/multi-group caps, all invite acceptance edge cases, streak/freezes/catch-up/idempotency, auth, sessions, quiz retries/timeouts and safe seed resets.
+
+Current verification: **209 backend tests**, backend/frontend checks, production build, migration agreement, repeated native/Docker seed runs, and the seeded end-to-end walkthrough pass. The earlier full responsive suite passed 80 checks. All four widths are covered in Chrome and WebKit. A native Safari desktop visual smoke check passed; full native Safari/device testing at each width remains manual because native input/window automation was intermittent.
+
+For PWA installation, run the production frontend with `make build` then `npm --prefix frontend run start` alongside the backend, or use Docker. The service worker caches only a public offline page. Authenticated data is never cached, and study/quiz actions require connectivity. Development mode does not register the worker. Devices require HTTPS for installation outside localhost.
+
+## Known limitations and backlog
+
+- Run **one backend instance/worker per database**: WebSocket connections live in memory. An OS lock beside SQLite (`.jobs.lock`) prevents duplicate scheduler owners and seed/server overlap; never remove it while the server runs.
+- Local generation can take up to 120 seconds per try and depends on hardware/model availability. Health returns HTTP 200 with `ok` or `degraded` and Ollama details; it is a liveness/dependency check, not a generation-quality or database-readiness check. Cached demo topics work with Ollama unavailable. `make seed-quizzes` adds SS2 Chemistry/Mole concept, Chemistry/Alkenes and Mathematics/Indices without the group fixture. Reseeding does not revive flagged variants.
+- Email delivery is console-only. Guardian consent is a recorded checkbox; guardian email workflows are v2. This is a local hackathon setup with public fictional demo credentials.
+- Browser JWTs use session storage. Sign-out clears the browser token, while an issued token remains valid until expiry; logout/password reset do not revoke it server-side. Reset demo generations are inactive and cannot authenticate.
+- **Account anonymisation:** resolve the conflict between tombstoning user IDs and append-only ledger history before exposing account deletion.
+- **Focus Tracker:** deferred until explicitly approved. No camera sampling, MediaPipe download or comparison flow is enabled; it will never affect points.
+- **Weekly snapshots:** backlog only. MVP historical weeks are derived from the ledger using Lagos boundaries.
+- **Nudges and RSVPs:** omitted for MVP; nudges are v2.
+- **Full-group live bonus G:** v2; no MVP awards.
+
+Steps 1–11 are complete. Focus Tracker stretch work awaits confirmation.
