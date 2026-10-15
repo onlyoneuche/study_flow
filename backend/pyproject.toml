@@ -1,0 +1,32 @@
+[project]
+name = "studyflow-backend"
+version = "0.1.0"
+description = "StudyFlow local-first study API"
+requires-python = ">=3.12,<3.13"
+dependencies = [
+  "fastapi>=0.115,<1",
+  "uvicorn[standard]>=0.34,<1",
+  "sqlmodel>=0.0.24,<0.1",
+  "sqlalchemy>=2.0,<2.1",
+  "alembic>=1.15,<2",
+  "aiosqlite>=0.21,<1",
+  "fastapi-users[sqlalchemy]>=14,<16",
+  "apscheduler>=3.11,<4",
+  "httpx>=0.28,<1",
+  "pydantic-settings>=2.8,<3",
+]
+
+[dependency-groups]
+dev = ["pytest>=8.3,<10", "pytest-asyncio>=0.25,<2", "ruff>=0.11,<1"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
+asyncio_mode = "auto"
+
+[tool.ruff]
+target-version = "py312"
+line-length = 100
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "ASYNC"]

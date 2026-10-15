@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+<meta charset="UTF-8">
+<title>StudyFlow desktop mockups</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script>
+tailwind.config = { theme: { extend: {
+  fontFamily: { sans: ['"Plus Jakarta Sans"', 'system-ui', 'sans-serif'] },
+  colors: { brand: { 50:'#ecfdf7',100:'#d1fae9',200:'#a7f3d6',300:'#6ee7bd',400:'#34d39f',500:'#10b985',600:'#059669',700:'#047857',800:'#065f46',900:'#064e3b' }, cream: '#fbf8f3' }
+}}}
+</script>
+<style>
+  body { background:#e9e4dc; }
+  .frame { width:1440px; height:900px; overflow:hidden; position:relative; background:#fbf8f3; display:flex; border-radius:18px; box-shadow:0 30px 60px -25px rgba(0,0,0,.35), 0 0 0 1px rgba(0,0,0,.06); }
+  .card { background:#fff; border-radius:24px; box-shadow:0 1px 2px rgba(16,24,40,.04), 0 4px 14px -6px rgba(16,24,40,.08); }
+  .av { display:flex; align-items:center; justify-content:center; border-radius:9999px; font-weight:700; color:#fff; flex-shrink:0; }
+  .tick { position:absolute; bottom:-2px; right:-2px; width:22px; height:22px; border-radius:9999px; background:#10b985; box-shadow:0 0 0 3px #fff; display:flex; align-items:center; justify-content:center; }
+  kbd { font-family:"Plus Jakarta Sans",sans-serif !important; font-size:12px; font-weight:700; background:#fff; border:1px solid #cbd5e1; border-bottom-width:3px; border-radius:7px; padding:1px 7px; color:#334155; }
+</style>
+</head>
+<body class="font-sans text-slate-800 antialiased">
+<div id="board" class="p-14 w-max">
+  <div class="mb-10 flex items-end justify-between" style="width:2960px">
+    <div>
+      <div class="flex items-center gap-3">
+        <div class="w-12 h-12 rounded-2xl bg-brand-600 flex items-center justify-center"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19V8l8-4 8 4v11"/><path d="M9 19v-6h6v6"/></svg></div>
+        <h1 class="text-5xl font-extrabold tracking-tight text-slate-900">StudyFlow · Desktop</h1>
+      </div>
+      <p class="mt-2 text-xl text-slate-600">Desktop UI mockups at 1440 × 900 · social, gamified study PWA for Nigerian students</p>
+    </div>
+    <div class="flex gap-2 text-base">
+      <span class="px-4 py-2 rounded-full bg-brand-600 text-white font-semibold">Primary #059669</span>
+      <span class="px-4 py-2 rounded-full bg-amber-500 text-white font-semibold">Streak #F59E0B</span>
+      <span class="px-4 py-2 rounded-full bg-cream text-slate-700 font-semibold border border-slate-300">Surface #FBF8F3</span>
+    </div>
+  </div>
+  <div class="grid grid-cols-2 gap-x-20 gap-y-16">
+
+<!-- ============ 1 HOME ============ -->
+<section>
+  <div class="mb-4 text-base font-bold uppercase tracking-widest text-slate-500">1 · Home / Dashboard</div>
+  <div class="frame" id="d1" data-active="home">
+    <main class="flex-1 px-10 py-8 flex flex-col gap-6">
+      <div class="flex items-center justify-between">
+        <div>
+          <p class="text-slate-500 text-[17px]">Good evening,</p>
+          <h2 class="text-[34px] font-extrabold text-slate-900 leading-tight">Ada 👋</h2>
+        </div>
+        <div class="flex items-center gap-3">
+          <div class="h-12 w-[300px] rounded-2xl bg-white border border-slate-200 px-4 flex items-center gap-2 text-slate-400 text-[15px]"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>Search topics or friends</div>
+          <div class="w-12 h-12 rounded-2xl card flex items-center justify-center relative"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#334155" stroke-width="2" stroke-linecap="round"><path d="M6 8a6 6 0 1 1 12 0c0 7 3 8 3 8H3s3-1 3-8"/><path d="M10 20a2 2 0 0 0 4 0"/></svg><span class="absolute top-2.5 right-3 w-2.5 h-2.5 rounded-full bg-amber-500 ring-2 ring-white"></span></div>
+        </div>
+      </div>
+
+      <!-- weekly bar -->
+      <div class="rounded-[28px] px-9 py-7 bg-gradient-to-br from-brand-600 to-brand-700 text-white relative overflow-hidden">
+        <div class="absolute -right-10 -top-20 w-72 h-72 rounded-full bg-white/10"></div>
+        <div class="absolute right-60 -bottom-24 w-48 h-48 rounded-full bg-white/5"></div>
+        <div class="relative flex items-end justify-between gap-10">
+          <div class="flex-1">
+            <div class="flex items-center gap-3"><span class="text-[18px] font-semibold text-brand-100">Study Squad · this week</span><span class="text-sm font-bold bg-white/20 px-3 py-1 rounded-full">3 days left</span></div>
+            <div class="mt-2 flex items-baseline gap-3"><span class="text-[64px] font-extrabold leading-none">340</span><span class="text-[28px] font-semibold text-brand-100">/ 500 pts</span></div>
+            <div class="mt-5 h-5 rounded-full bg-white/20 overflow-hidden"><div class="h-full rounded-full bg-gradient-to-r from-amber-300 to-amber-400" style="width:68%"></div></div>
+            <div class="mt-3 flex justify-between text-[16px] text-brand-50"><span>160 pts to go. About 5 more live sessions.</span><span class="font-bold">68%</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-3 gap-6 flex-1">
+        <!-- streak -->
+        <div class="card p-6 flex flex-col">
+          <p class="text-[15px] font-semibold text-slate-500">Group streak</p>
+          <div class="mt-3 flex items-center gap-3"><span class="text-5xl">🔥</span><span class="text-[54px] font-extrabold text-amber-600 leading-none">12</span><span class="text-[22px] font-bold text-slate-700">days</span></div>
+          <div class="mt-5 flex gap-2">
+            <span class="flex-1 h-2.5 rounded-full bg-amber-400"></span><span class="flex-1 h-2.5 rounded-full bg-amber-400"></span><span class="flex-1 h-2.5 rounded-full bg-amber-400"></span><span class="flex-1 h-2.5 rounded-full bg-amber-400"></span><span class="flex-1 h-2.5 rounded-full bg-amber-400"></span><span class="flex-1 h-2.5 rounded-full bg-amber-400"></span><span class="flex-1 h-2.5 rounded-full bg-amber-200"></span>
+          </div>
+          <div class="mt-auto pt-4 flex items-center gap-2 text-[15px] font-semibold text-sky-700"><span class="text-lg">❄️❄️</span> 2 freezes left</div>
+        </div>
+        <!-- goal -->
+        <div class="card p-6 flex flex-col">
+          <div class="flex items-center justify-between"><p class="text-[15px] font-semibold text-slate-500">Today's goal</p><span class="text-[14px] font-bold text-brand-700 bg-brand-50 px-3 py-1 rounded-full">1 / 2</span></div>
+          <p class="mt-3 text-[30px] font-extrabold text-slate-900">2 sessions</p>
+          <div class="mt-4 flex gap-2"><div class="h-3 flex-1 rounded-full bg-brand-500"></div><div class="h-3 flex-1 rounded-full bg-slate-200"></div></div>
+          <p class="mt-auto pt-4 text-[15px] text-slate-500">Done: Physics, 25 min this morning</p>
+        </div>
+        <!-- live -->
+        <div class="card p-6 flex flex-col border-2 border-brand-100">
+          <div class="flex items-center gap-4">
+            <div class="w-16 h-16 rounded-2xl bg-amber-50 flex flex-col items-center justify-center"><span class="text-[12px] font-bold text-amber-600 uppercase">Live</span><span class="text-[18px] font-extrabold text-amber-700 leading-none">7:00</span></div>
+            <div><p class="text-[15px] text-slate-500">Next live session</p><p class="text-[22px] font-bold text-slate-900">Tonight, 7:00 PM</p></div>
+          </div>
+          <p class="mt-3 text-[15px] text-brand-700 font-semibold">4 going · +5 live bonus</p>
+          <button class="mt-auto h-12 rounded-2xl bg-brand-600 text-white font-bold text-[17px] shadow-md shadow-brand-600/30">Join</button>
+        </div>
+        <!-- members -->
+        <div class="card p-6 col-span-2">
+          <div class="flex items-center justify-between"><p class="text-[18px] font-bold text-slate-900">Studied today</p><p class="text-[15px] font-semibold text-slate-500">4 of 6</p></div>
+          <div class="mt-4 flex justify-between px-2">
+            <div class="flex flex-col items-center gap-1.5"><div class="relative"><div class="av w-16 h-16 bg-rose-400 text-lg">AO</div><span class="tick"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round"><path d="M5 12l5 5L20 7"/></svg></span></div><span class="text-[14px] font-semibold">You</span></div>
+            <div class="flex flex-col items-center gap-1.5"><div class="relative"><div class="av w-16 h-16 bg-indigo-400 text-lg">TB</div><span class="tick"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round"><path d="M5 12l5 5L20 7"/></svg></span></div><span class="text-[14px] font-semibold">Tunde</span></div>
+            <div class="flex flex-col items-center gap-1.5"><div class="relative"><div class="av w-16 h-16 bg-amber-500 text-lg">ZM</div><span class="tick"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round"><path d="M5 12l5 5L20 7"/></svg></span></div><span class="text-[14px] font-semibold">Zainab</span></div>
+            <div class="flex flex-col items-center gap-1.5"><div class="relative"><div class="av w-16 h-16 bg-sky-500 text-lg">CN</div><span class="tick"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round"><path d="M5 12l5 5L20 7"/></svg></span></div><span class="text-[14px] font-semibold">Chidi</span></div>
+            <div class="flex flex-col items-center gap-1.5"><div class="av w-16 h-16 bg-slate-200 !text-slate-500 text-lg">EO</div><span class="text-[14px] font-semibold text-slate-400">Emeka</span></div>
+            <div class="flex flex-col items-center gap-1.5"><div class="av w-16 h-16 bg-slate-200 !text-slate-500 text-lg">FA</div><span class="text-[14px] font-semibold text-slate-400">Funmi</span></div>
+          </div>
+        </div>
+        <!-- solo -->
+        <div class="card p-6 flex flex-col justify-between bg-brand-50/60">
+          <div><p class="text-[18px] font-bold text-slate-900">Studying alone?</p><p class="text-[15px] text-slate-500 mt-1">Solo sessions still count towards the group bar.</p></div>
+          <button class="h-12 rounded-2xl border-2 border-brand-600 text-brand-700 font-bold text-[16px] flex items-center justify-center gap-2 bg-white"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><circle cx="12" cy="12" r="9"/><path d="M10 8.5v7l5.5-3.5z" fill="currentColor"/></svg>Start solo session</button>
+        </div>
+      </div>
+    </main>
+  </div>
+</section>
+
+<!-- ============ 2 START SESSION ============ -->
+<section>
+  <div class="mb-4 text-base font-bold uppercase tracking-widest text-slate-500">2 · Start session</div>
+  <div class="frame" id="d2" data-active="study">
+    <main class="flex-1 px-10 py-8 flex flex-col">
+      <div class="flex items-center gap-4">
+        <div class="w-11 h-11 rounded-2xl card flex items-center justify-center"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#334155" stroke-width="2.4" stroke-linecap="round"><path d="M15 5l-7 7 7 7"/></svg></div>
+        <h2 class="text-[30px] font-extrabold text-slate-900">New session</h2>
+      </div>
+      <div class="mt-6 grid grid-cols-[1fr_400px] gap-8 flex-1">
+        <div class="card p-8 space-y-7">
+          <div>
+            <label class="text-[15px] font-bold text-slate-700">What are you studying?</label>
+            <div class="mt-2 h-14 rounded-2xl bg-white border-2 border-brand-500 px-5 flex items-center text-[18px] font-semibold text-slate-900 ring-4 ring-brand-100">Organic chemistry: alkenes<span class="w-0.5 h-6 bg-brand-600 ml-0.5"></span></div>
+          </div>
+          <div class="grid grid-cols-2 gap-6">
+            <div>
+              <label class="text-[15px] font-bold text-slate-700">Subject</label>
+              <div class="mt-2 h-14 rounded-2xl bg-white border border-slate-200 px-5 flex items-center justify-between text-[17px] font-semibold"><span class="flex items-center gap-2"><span>🧪</span>Chemistry</span><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#64748b" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg></div>
+            </div>
+            <div>
+              <label class="text-[15px] font-bold text-slate-700">Level</label>
+              <div class="mt-2 flex gap-3"><span class="h-14 flex-1 rounded-2xl bg-brand-600 text-white font-bold text-[17px] flex items-center justify-center">SS2</span><span class="h-14 flex-1 rounded-2xl bg-white border border-slate-200 font-semibold text-[17px] text-slate-600 flex items-center justify-center">200L</span></div>
+            </div>
+          </div>
+          <div class="grid grid-cols-2 gap-6">
+            <div>
+              <label class="text-[15px] font-bold text-slate-700">Duration</label>
+              <div class="mt-2 grid grid-cols-3 gap-3">
+                <span class="h-16 rounded-2xl bg-white border border-slate-200 flex flex-col items-center justify-center"><span class="text-[20px] font-extrabold text-slate-700">25</span><span class="text-[12px] text-slate-500 -mt-0.5">min</span></span>
+                <span class="h-16 rounded-2xl bg-brand-50 border-2 border-brand-600 flex flex-col items-center justify-center"><span class="text-[20px] font-extrabold text-brand-700">45</span><span class="text-[12px] text-brand-700 -mt-0.5 font-semibold">min</span></span>
+                <span class="h-16 rounded-2xl bg-white border border-slate-200 flex flex-col items-center justify-center"><span class="text-[20px] font-extrabold text-slate-700">60</span><span class="text-[12px] text-slate-500 -mt-0.5">min</span></span>
+              </div>
+            </div>
+            <div>
+              <label class="text-[15px] font-bold text-slate-700">Mode</label>
+              <div class="mt-2 p-1.5 rounded-2xl bg-slate-100 grid grid-cols-2 gap-1.5 h-16">
+                <div class="rounded-xl bg-white shadow flex items-center justify-center gap-2"><span class="w-2.5 h-2.5 rounded-full bg-rose-500"></span><span class="text-[17px] font-bold">Live</span><span class="text-[12px] font-extrabold text-amber-700 bg-amber-100 px-2 py-0.5 rounded-full">+5 bonus</span></div>
+                <div class="rounded-xl flex items-center justify-center text-[17px] font-semibold text-slate-500">Solo</div>
+              </div>
+            </div>
+          </div>
+          <p class="-mt-3 text-[14px] text-slate-500 text-right">Starts with Study Squad at 7:00 PM. 4 people going.</p>
+          <div class="rounded-2xl border border-slate-200 p-5 flex items-start gap-4">
+            <div class="w-12 h-12 rounded-xl bg-slate-100 flex items-center justify-center shrink-0"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#475569" stroke-width="2"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg></div>
+            <div class="flex-1">
+              <div class="flex items-center justify-between"><p class="text-[18px] font-bold">Focus Tracker</p><div class="w-14 h-8 rounded-full bg-slate-300 p-1"><div class="w-6 h-6 rounded-full bg-white shadow"></div></div></div>
+              <p class="text-[15px] text-slate-500 mt-0.5">Optional. Uses your camera to estimate how focused you were.</p>
+              <p class="mt-2.5 inline-flex items-center gap-1.5 text-[13px] font-semibold text-brand-700 bg-brand-50 px-3 py-1 rounded-full"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>Video never leaves your device</p>
+            </div>
+          </div>
+          <div>
+            <label class="text-[15px] font-bold text-slate-700">Recent topics</label>
+            <div class="mt-2 flex flex-wrap gap-2.5 text-[14px] font-semibold text-slate-600">
+              <span class="px-4 py-2 rounded-full bg-white border border-slate-200">🧪 Rates of reaction</span>
+              <span class="px-4 py-2 rounded-full bg-white border border-slate-200">⚛️ Physics: Newton's laws</span>
+              <span class="px-4 py-2 rounded-full bg-white border border-slate-200">📐 Maths: Indices and logarithms</span>
+              <span class="px-4 py-2 rounded-full bg-white border border-slate-200">📖 English: Summary writing</span>
+            </div>
+          </div>
+        </div>
+        <!-- summary -->
+        <aside class="flex flex-col gap-5">
+          <div class="card p-7">
+            <p class="text-[13px] font-bold uppercase tracking-wider text-slate-500">Session summary</p>
+            <p class="mt-3 text-[22px] font-extrabold text-slate-900 leading-snug">Organic chemistry: alkenes</p>
+            <div class="mt-3 flex flex-wrap gap-2 text-[13px] font-semibold">
+              <span class="px-3 py-1 rounded-full bg-slate-100">🧪 Chemistry</span><span class="px-3 py-1 rounded-full bg-slate-100">SS2</span><span class="px-3 py-1 rounded-full bg-slate-100">45 min</span><span class="px-3 py-1 rounded-full bg-rose-50 text-rose-600">● Live</span>
+            </div>
+            <div class="mt-6 pt-5 border-t border-slate-100">
+              <p class="text-[15px] font-bold text-slate-900">Points you can earn</p>
+              <div class="mt-2 text-[15px] divide-y divide-slate-100">
+                <div class="flex justify-between py-2.5"><span class="text-slate-600">Base (45 min)</span><span class="font-bold">15</span></div>
+                <div class="flex justify-between py-2.5"><span class="text-slate-600">Quiz (up to)</span><span class="font-bold">10</span></div>
+                <div class="flex justify-between py-2.5"><span class="text-slate-600">Improvement (up to)</span><span class="font-bold text-brand-700">+3</span></div>
+                <div class="flex justify-between py-2.5"><span class="text-slate-600">Live bonus</span><span class="font-bold text-amber-600">+5</span></div>
+              </div>
+              <div class="mt-1 pt-3 border-t-2 border-dashed border-slate-200 flex justify-between items-center"><span class="text-[16px] font-bold">Up to</span><span class="text-[30px] font-extrabold text-brand-700 leading-none">33 pts</span></div>
+            </div>
+          </div>
+          <div class="rounded-[24px] p-5 bg-slate-800 text-white flex gap-3">
+            <svg class="shrink-0 mt-0.5" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#34d39f" stroke-width="2.4"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
+            <p class="text-[14px] leading-relaxed text-slate-200"><b class="text-white">Focus Tracker is off.</b> If you turn it on, video is processed on this device only and never uploaded. Only your score is saved.</p>
+          </div>
+          <button class="mt-auto h-14 rounded-2xl bg-brand-600 text-white font-bold text-[18px] shadow-lg shadow-brand-600/30">Join live session</button>
+        </aside>
+      </div>
+    </main>
+  </div>
+</section>
+
+<!-- ============ 3 LIVE ============ -->
+<section>
+  <div class="mb-4 text-base font-bold uppercase tracking-widest text-slate-500">3 · Live session in progress</div>
+  <div class="frame" id="d3" data-active="study">
+    <main class="flex-1 flex">
+      <div class="flex-1 px-10 py-8 flex flex-col">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-2 bg-rose-50 text-rose-600 px-4 py-2 rounded-full text-[15px] font-bold"><span class="w-2.5 h-2.5 rounded-full bg-rose-500"></span>LIVE · Study Squad</div>
+          <div class="flex items-center gap-2 bg-slate-800 text-white px-4 py-2 rounded-full text-[14px] font-semibold"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#34d39f" stroke-width="2.5"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>Focus Tracker: on, private</div>
+        </div>
+        <div class="flex-1 flex flex-col items-center justify-center">
+          <div class="relative w-[400px] h-[400px]">
+            <svg width="400" height="400" viewBox="0 0 248 248" class="-rotate-90">
+              <circle cx="124" cy="124" r="110" fill="none" stroke="#d1fae9" stroke-width="14"/>
+              <circle cx="124" cy="124" r="110" fill="none" stroke="#059669" stroke-width="14" stroke-linecap="round" stroke-dasharray="691" stroke-dashoffset="403"/>
+            </svg>
+            <div class="absolute inset-0 flex flex-col items-center justify-center">
+              <span class="text-[16px] font-semibold text-slate-500 uppercase tracking-wider">Time left</span>
+              <span class="text-[96px] font-extrabold text-slate-900 leading-none mt-1 tabular-nums">18:42</span>
+              <span class="text-[18px] text-slate-500 mt-2">of 45 min</span>
+            </div>
+          </div>
+          <p class="mt-6 text-[26px] font-extrabold text-slate-900">Organic chemistry: alkenes</p>
+          <p class="text-[17px] text-slate-500">Chemistry · SS2</p>
+          <div class="mt-7 flex gap-4">
+            <button class="h-14 w-44 rounded-2xl bg-white border border-slate-200 font-bold text-[17px] text-slate-700">Pause</button>
+            <button class="h-14 w-44 rounded-2xl bg-slate-900 font-bold text-[17px] text-white">End early</button>
+          </div>
+        </div>
+      </div>
+      <aside class="w-[410px] border-l border-slate-200/70 bg-white/60 px-7 py-8 flex flex-col">
+        <p class="text-[20px] font-extrabold text-slate-900">Studying with you</p>
+        <div class="mt-2 flex gap-4 text-[13px] font-semibold text-slate-500">
+          <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-brand-500"></span>Studying</span>
+          <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-sky-500"></span>Finished</span>
+          <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-amber-400"></span>Away</span>
+        </div>
+        <div class="mt-5 space-y-3">
+          <div class="card p-4 flex items-center gap-3"><div class="relative"><div class="av w-12 h-12 bg-rose-400">AO</div><span class="absolute bottom-0 right-0 w-3.5 h-3.5 rounded-full bg-brand-500 ring-2 ring-white"></span></div><div class="flex-1"><p class="text-[16px] font-bold">You</p><p class="text-[13px] text-slate-500">Chemistry · Alkenes</p></div><span class="text-[13px] font-semibold text-brand-700">Studying</span></div>
+          <div class="card p-4 flex items-center gap-3"><div class="relative"><div class="av w-12 h-12 bg-indigo-400">TB</div><span class="absolute bottom-0 right-0 w-3.5 h-3.5 rounded-full bg-brand-500 ring-2 ring-white"></span></div><div class="flex-1"><p class="text-[16px] font-bold">Tunde</p><p class="text-[13px] text-slate-500">Physics · Projectile motion</p></div><span class="text-[13px] font-semibold text-brand-700">Studying</span></div>
+          <div class="card p-4 flex items-center gap-3"><div class="relative"><div class="av w-12 h-12 bg-amber-500">ZM</div><span class="absolute bottom-0 right-0 w-3.5 h-3.5 rounded-full bg-brand-500 ring-2 ring-white"></span></div><div class="flex-1"><p class="text-[16px] font-bold">Zainab</p><p class="text-[13px] text-slate-500">Biology · Cell division</p></div><span class="text-[13px] font-semibold text-brand-700">Studying</span></div>
+          <div class="card p-4 flex items-center gap-3"><div class="relative"><div class="av w-12 h-12 bg-sky-500">CN</div><span class="absolute bottom-0 right-0 w-3.5 h-3.5 rounded-full bg-sky-500 ring-2 ring-white"></span></div><div class="flex-1"><p class="text-[16px] font-bold">Chidi</p><p class="text-[13px] text-slate-500">Mathematics · Quadratics</p></div><span class="text-[13px] font-semibold text-sky-600">Finished</span></div>
+          <div class="card p-4 flex items-center gap-3"><div class="relative"><div class="av w-12 h-12 bg-teal-500">EO</div><span class="absolute bottom-0 right-0 w-3.5 h-3.5 rounded-full bg-amber-400 ring-2 ring-white"></span></div><div class="flex-1"><p class="text-[16px] font-bold">Emeka</p><p class="text-[13px] text-slate-500">Economics · Demand curves</p></div><span class="text-[13px] font-semibold text-amber-600">Away 2 min</span></div>
+        </div>
+        <div class="mt-5 card p-5">
+          <div class="flex items-center justify-between"><p class="text-[14px] font-bold text-slate-900">Study Squad this week</p><span class="text-[14px] font-extrabold text-brand-700">340 / 500</span></div>
+          <div class="mt-3 h-3 rounded-full bg-slate-100 overflow-hidden"><div class="h-full rounded-full bg-gradient-to-r from-amber-300 to-amber-400" style="width:68%"></div></div>
+          <p class="mt-2 text-[13px] text-slate-500">Finish this session to add up to 33 pts.</p>
+        </div>
+        <div class="mt-auto rounded-2xl bg-slate-100 p-4 flex items-center gap-3 text-[14px] text-slate-600">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 12a9 9 0 1 1-6.2-8.6"/></svg>
+          Your alkenes quiz is being prepared
+        </div>
+      </aside>
+    </main>
+  </div>
+</section>
+
+<!-- ============ 4 QUIZ ============ -->
+<section>
+  <div class="mb-4 text-base font-bold uppercase tracking-widest text-slate-500">4 · Quiz</div>
+  <div class="frame" id="d4" data-active="study">
+    <main class="flex-1 flex">
+      <div class="flex-1 px-10 py-8 flex flex-col">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-3 text-[15px] font-semibold text-slate-600"><div class="w-11 h-11 rounded-2xl card flex items-center justify-center"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#334155" stroke-width="2.6" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></div>Exit quiz</div>
+          <span class="text-[15px] font-bold text-amber-700 bg-amber-100 px-4 py-2 rounded-full">⏱ 0:48 left on this question</span>
+        </div>
+        <div class="mx-auto w-full max-w-[640px] flex-1 flex flex-col justify-center">
+          <div class="flex items-center justify-between"><span class="text-[16px] font-bold text-slate-700">Question 4 of 15</span><span class="text-[13px] font-bold uppercase tracking-wider text-brand-700 bg-brand-50 px-3 py-1 rounded-full">Chemistry · Alkenes</span></div>
+          <div class="mt-3 h-3 rounded-full bg-slate-200 overflow-hidden"><div class="h-full rounded-full bg-brand-500" style="width:26.6%"></div></div>
+          <h3 class="mt-8 text-[32px] font-extrabold text-slate-900 leading-snug">Which reagent is used to test for the presence of a C=C double bond in an alkene?</h3>
+          <p class="mt-2 text-[16px] text-slate-500">Choose one answer.</p>
+          <div class="mt-7 space-y-3.5">
+            <div class="h-[68px] rounded-2xl bg-white border-2 border-slate-200 px-5 flex items-center gap-4"><kbd class="!text-[15px] !px-2.5 !py-1">1</kbd><span class="text-[18px] font-semibold text-slate-800">Fehling's solution</span></div>
+            <div class="h-[68px] rounded-2xl bg-brand-50 border-2 border-brand-600 px-5 flex items-center gap-4 ring-4 ring-brand-100"><kbd class="!text-[15px] !px-2.5 !py-1 !bg-brand-600 !text-white !border-brand-700">2</kbd><span class="text-[18px] font-bold text-brand-800 flex-1">Bromine water</span><span class="w-7 h-7 rounded-full bg-brand-600 flex items-center justify-center"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round"><path d="M5 12l5 5L20 7"/></svg></span></div>
+            <div class="h-[68px] rounded-2xl bg-white border-2 border-slate-200 px-5 flex items-center gap-4"><kbd class="!text-[15px] !px-2.5 !py-1">3</kbd><span class="text-[18px] font-semibold text-slate-800">Limewater</span></div>
+            <div class="h-[68px] rounded-2xl bg-white border-2 border-slate-200 px-5 flex items-center gap-4"><kbd class="!text-[15px] !px-2.5 !py-1">4</kbd><span class="text-[18px] font-semibold text-slate-800">Universal indicator</span></div>
+          </div>
+          <div class="mt-8 flex items-center justify-between">
+            <button class="flex items-center gap-2 text-[16px] font-bold text-slate-600"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M5 21V4h11l-2 4 2 4H5"/></svg>Flag question</button>
+            <button class="h-14 px-12 rounded-2xl bg-brand-600 text-white font-bold text-[17px] shadow-lg shadow-brand-600/30 flex items-center gap-2">Next <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
+          </div>
+          <p class="mt-5 text-center text-[14px] text-slate-500">Press <kbd>1</kbd>-<kbd>4</kbd> to answer, <kbd>Enter</kbd> for next</p>
+        </div>
+      </div>
+      <aside class="w-[320px] border-l border-slate-200/70 bg-white/60 px-7 py-8">
+        <p class="text-[18px] font-extrabold text-slate-900">Progress</p>
+        <p class="text-[14px] text-slate-500 mt-0.5">3 answered · 1 flagged</p>
+        <div class="mt-5 grid grid-cols-5 gap-2.5">
+          <span class="h-11 rounded-xl bg-brand-500 text-white font-bold flex items-center justify-center">1</span>
+          <span class="h-11 rounded-xl bg-brand-500 text-white font-bold flex items-center justify-center">2</span>
+          <span class="h-11 rounded-xl bg-rose-100 text-rose-600 font-bold flex items-center justify-center ring-2 ring-rose-300 relative">3<svg class="absolute -top-1.5 -right-1.5" width="14" height="14" viewBox="0 0 24 24" fill="#f43f5e"><path d="M5 21V4h11l-2 4 2 4H5"/></svg></span>
+          <span class="h-11 rounded-xl bg-white text-brand-700 font-extrabold flex items-center justify-center ring-[3px] ring-brand-600">4</span>
+          <span class="h-11 rounded-xl bg-slate-100 text-slate-400 font-bold flex items-center justify-center">5</span>
+          <span class="h-11 rounded-xl bg-slate-100 text-slate-400 font-bold flex items-center justify-center">6</span>
+          <span class="h-11 rounded-xl bg-slate-100 text-slate-400 font-bold flex items-center justify-center">7</span>
+          <span class="h-11 rounded-xl bg-slate-100 text-slate-400 font-bold flex items-center justify-center">8</span>
+          <span class="h-11 rounded-xl bg-slate-100 text-slate-400 font-bold flex items-center justify-center">9</span>
+          <span class="h-11 rounded-xl bg-slate-100 text-slate-400 font-bold flex items-center justify-center">10</span>
+          <span class="h-11 rounded-xl bg-slate-100 text-slate-400 font-bold flex items-center justify-center">11</span>
+          <span class="h-11 rounded-xl bg-slate-100 text-slate-400 font-bold flex items-center justify-center">12</span>
+          <span class="h-11 rounded-xl bg-slate-100 text-slate-400 font-bold flex items-center justify-center">13</span>
+          <span class="h-11 rounded-xl bg-slate-100 text-slate-400 font-bold flex items-center justify-center">14</span>
+          <span class="h-11 rounded-xl bg-slate-100 text-slate-400 font-bold flex items-center justify-center">15</span>
+        </div>
+        <div class="mt-5 space-y-2 text-[13px] font-semibold text-slate-500">
+          <div class="flex items-center gap-2"><span class="w-3.5 h-3.5 rounded bg-brand-500"></span>Answered</div>
+          <div class="flex items-center gap-2"><span class="w-3.5 h-3.5 rounded bg-rose-100 ring-2 ring-rose-300"></span>Flagged for review</div>
+          <div class="flex items-center gap-2"><span class="w-3.5 h-3.5 rounded bg-white ring-2 ring-brand-600"></span>Current</div>
+        </div>
+        <div class="mt-8 card p-5">
+          <p class="text-[14px] font-bold text-slate-900">From your session</p>
+          <p class="text-[14px] text-slate-500 mt-1 leading-relaxed">Questions are built from your topic: Organic chemistry: alkenes. Up to 10 quiz points.</p>
+        </div>
+      </aside>
+    </main>
+  </div>
+</section>
+
+<!-- ============ 5 RESULTS ============ -->
+<section>
+  <div class="mb-4 text-base font-bold uppercase tracking-widest text-slate-500">5 · Results</div>
+  <div class="frame" id="d5" data-active="study">
+    <main class="flex-1 px-10 py-8 flex flex-col">
+      <div class="flex items-end justify-between">
+        <div><p class="text-[16px] font-semibold text-slate-500">Session complete · Chemistry · Organic chemistry: alkenes</p><h2 class="text-[32px] font-extrabold text-slate-900">Brilliant work, Ada 🎉</h2></div>
+        <div class="flex gap-3">
+          <button class="h-12 px-5 rounded-2xl bg-white border border-slate-200 font-bold text-[15px] flex items-center gap-2"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#334155" stroke-width="2.2" stroke-linecap="round"><path d="M4 12v7a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-7M16 6l-4-4-4 4M12 2v13"/></svg>Share</button>
+          <button class="h-12 px-6 rounded-2xl bg-brand-600 text-white font-bold text-[15px] shadow-md shadow-brand-600/30">Back to home</button>
+        </div>
+      </div>
+      <div class="mt-7 grid grid-cols-3 gap-6 flex-1">
+        <!-- col 1 score -->
+        <div class="card px-6 py-8 flex flex-col items-center justify-center text-center">
+          <p class="text-[15px] font-bold uppercase tracking-wider text-slate-500">Quiz score</p>
+          <div class="relative w-[220px] h-[220px] mt-4">
+            <svg width="220" height="220" viewBox="0 0 64 64" class="-rotate-90"><circle cx="32" cy="32" r="27" fill="none" stroke="#d1fae9" stroke-width="6"/><circle cx="32" cy="32" r="27" fill="none" stroke="#059669" stroke-width="6" stroke-linecap="round" stroke-dasharray="169.6" stroke-dashoffset="33.9"/></svg>
+            <div class="absolute inset-0 flex items-baseline justify-center pt-[74px]"><span class="text-[64px] font-extrabold leading-none">12</span><span class="text-[28px] font-bold text-slate-400">/15</span></div>
+          </div>
+          <p class="mt-6 inline-flex items-center gap-2 text-[15px] font-bold text-brand-700 bg-brand-50 px-4 py-2 rounded-full whitespace-nowrap"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M3 17l6-6 4 4 8-8M15 7h6v6"/></svg>You beat your average in Chemistry</p>
+          <p class="mt-3 text-[14px] text-slate-500">Your Chemistry average: 10.4 / 15</p>
+        </div>
+        <!-- col 2 points -->
+        <div class="card p-8 flex flex-col">
+          <p class="text-[18px] font-bold text-slate-900">Points earned</p>
+          <div class="mt-3 text-[17px] divide-y divide-slate-100">
+            <div class="flex justify-between py-4"><span class="text-slate-600">Base (45 min session)</span><span class="font-bold">15</span></div>
+            <div class="flex justify-between py-4"><span class="text-slate-600">Quiz score</span><span class="font-bold">8</span></div>
+            <div class="flex justify-between py-4"><span class="text-slate-600">Improvement</span><span class="font-bold text-brand-700">+2</span></div>
+            <div class="flex justify-between py-4"><span class="text-slate-600">Live bonus</span><span class="font-bold text-amber-600">+5</span></div>
+          </div>
+          <div class="mt-5 rounded-2xl bg-slate-50 p-4">
+            <div class="flex justify-between text-[13px]"><span class="font-bold text-slate-700">Chemistry quiz scores</span><span class="font-semibold text-slate-500">last 6</span></div>
+            <div class="mt-3 flex items-end gap-2.5 h-[100px]"><div class="flex-1 flex flex-col items-center gap-1.5"><div class="w-full rounded-lg bg-slate-200" style="height:52px"></div><span class="text-[11px] font-semibold text-slate-400">Mon</span></div><div class="flex-1 flex flex-col items-center gap-1.5"><div class="w-full rounded-lg bg-slate-200" style="height:60px"></div><span class="text-[11px] font-semibold text-slate-400">Tue</span></div><div class="flex-1 flex flex-col items-center gap-1.5"><div class="w-full rounded-lg bg-slate-200" style="height:48px"></div><span class="text-[11px] font-semibold text-slate-400">Wed</span></div><div class="flex-1 flex flex-col items-center gap-1.5"><div class="w-full rounded-lg bg-slate-200" style="height:66px"></div><span class="text-[11px] font-semibold text-slate-400">Thu</span></div><div class="flex-1 flex flex-col items-center gap-1.5"><div class="w-full rounded-lg bg-slate-200" style="height:58px"></div><span class="text-[11px] font-semibold text-slate-400">Fri</span></div><div class="flex-1 flex flex-col items-center gap-1.5"><div class="w-full rounded-lg bg-brand-500" style="height:80px"></div><span class="text-[11px] font-semibold text-slate-400">Today</span></div></div>
+          </div>
+          <div class="mt-auto pt-5 border-t-2 border-dashed border-slate-200 flex justify-between items-center"><span class="text-[18px] font-bold">Total</span><span class="text-[44px] font-extrabold text-brand-700 leading-none">30 pts</span></div>
+        </div>
+        <!-- col 3 -->
+        <div class="flex flex-col gap-6">
+          <div class="rounded-[24px] p-7 bg-gradient-to-br from-amber-400 to-amber-500 text-white">
+            <div class="w-14 h-14 rounded-2xl bg-white/25 flex items-center justify-center text-3xl">🏆</div>
+            <p class="mt-4 text-[22px] font-extrabold">Daily group goal complete!</p>
+            <p class="text-[15px] text-amber-50 mt-1">Study Squad logged 8 / 8 sessions today</p>
+          </div>
+          <div class="card p-7 flex-1 flex flex-col">
+            <div class="flex items-center gap-2"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2.4"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg><p class="text-[17px] font-bold">Focus Tracker</p><span class="ml-auto text-[12px] font-semibold text-slate-500 bg-slate-100 px-2.5 py-1 rounded-full">Only you can see this</span></div>
+            <div class="mt-5 flex items-center gap-5">
+              <div class="relative w-24 h-24 shrink-0"><svg width="96" height="96" viewBox="0 0 64 64" class="-rotate-90"><circle cx="32" cy="32" r="27" fill="none" stroke="#d1fae9" stroke-width="7"/><circle cx="32" cy="32" r="27" fill="none" stroke="#059669" stroke-width="7" stroke-linecap="round" stroke-dasharray="169.6" stroke-dashoffset="30.5"/></svg><span class="absolute inset-0 flex items-center justify-center text-[22px] font-extrabold">82%</span></div>
+              <div><p class="text-[17px] font-bold text-slate-900 leading-snug">Your focus 82%. Above session median.</p><p class="text-[14px] text-slate-500 mt-1">3 people used Focus Tracker</p></div>
+            </div>
+            <div class="mt-7">
+              <div class="flex justify-between text-[12px] font-semibold text-slate-500"><span>Focus over 45 min</span><span>Dip at 15 min</span></div>
+              <div class="mt-2 h-16 flex items-end gap-1"><div class="flex-1 rounded-sm bg-brand-500" style="height:70%"></div><div class="flex-1 rounded-sm bg-brand-500" style="height:85%"></div><div class="flex-1 rounded-sm bg-brand-500" style="height:90%"></div><div class="flex-1 rounded-sm bg-brand-500" style="height:88%"></div><div class="flex-1 rounded-sm bg-brand-500" style="height:60%"></div><div class="flex-1 rounded-sm bg-amber-300" style="height:45%"></div><div class="flex-1 rounded-sm bg-brand-500" style="height:75%"></div><div class="flex-1 rounded-sm bg-brand-500" style="height:92%"></div><div class="flex-1 rounded-sm bg-brand-500" style="height:95%"></div><div class="flex-1 rounded-sm bg-brand-500" style="height:90%"></div><div class="flex-1 rounded-sm bg-brand-500" style="height:85%"></div><div class="flex-1 rounded-sm bg-brand-500" style="height:80%"></div><div class="flex-1 rounded-sm bg-brand-500" style="height:88%"></div><div class="flex-1 rounded-sm bg-brand-500" style="height:93%"></div><div class="flex-1 rounded-sm bg-brand-500" style="height:90%"></div></div>
+              <p class="mt-3 text-[12px] text-slate-500 flex items-center gap-1.5"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>Video never left your device</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+</section>
+
+<!-- ============ 6 LEADERBOARD ============ -->
+<section>
+  <div class="mb-4 text-base font-bold uppercase tracking-widest text-slate-500">6 · Leaderboard</div>
+  <div class="frame" id="d6" data-active="ranks">
+    <main class="flex-1 px-10 py-8 flex flex-col">
+      <div class="flex items-end justify-between">
+        <div><h2 class="text-[32px] font-extrabold text-slate-900">Leaderboard</h2><p class="text-[15px] text-slate-500">This week · resets Sunday night</p></div>
+        <button class="h-12 px-6 rounded-2xl bg-[#25D366] text-white font-bold text-[16px] flex items-center gap-2.5 shadow-lg shadow-green-500/30">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="#fff"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm0 18.2c-1.5 0-3-.4-4.3-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8-.2-.1-.4-.1-.6.1l-.8 1c-.1.2-.3.2-.5.1a6.7 6.7 0 0 1-3.3-2.9c-.3-.4.2-.4.7-1.3.1-.2 0-.3 0-.4l-.8-1.8c-.2-.5-.4-.4-.6-.4h-.5c-.2 0-.5.1-.7.3-.2.3-.9.9-.9 2.2s.9 2.5 1 2.7c.1.2 1.8 2.8 4.4 3.9 1.6.7 2.3.8 3.1.6.5-.1 1.5-.6 1.7-1.2.2-.6.2-1.1.2-1.2-.1-.1-.3-.2-.5-.3z"/></svg>
+          Invite friends on WhatsApp</button>
+      </div>
+      <div class="mt-7 grid grid-cols-2 gap-6 flex-1">
+        <!-- groups -->
+        <div class="card p-7 flex flex-col">
+          <div class="flex items-center justify-between"><p class="text-[20px] font-extrabold">Groups</p><span class="text-[13px] font-semibold text-slate-500 bg-slate-100 px-3 py-1 rounded-full">Points per member · 38 groups</span></div>
+          <div class="mt-4 grid grid-cols-[40px_1fr_90px_120px] text-[12px] font-bold uppercase tracking-wider text-slate-400 px-3 pb-2 border-b border-slate-100"><span>#</span><span>Group</span><span class="text-right">Members</span><span class="text-right">Pts / member</span></div>
+          <div class="text-[16px]">
+            <div class="grid grid-cols-[40px_1fr_90px_120px] items-center px-3 py-[15px] border-b border-slate-100"><span class="text-xl">🥇</span><span class="font-semibold">Unilag Brainiacs</span><span class="text-right text-slate-500">5</span><span class="text-right font-extrabold">91</span></div>
+            <div class="grid grid-cols-[40px_1fr_90px_120px] items-center px-3 py-[15px] rounded-2xl bg-brand-50 ring-2 ring-brand-200 my-1"><span class="text-xl">🥈</span><span class="font-bold text-brand-800">Study Squad (you)</span><span class="text-right text-slate-500">6</span><span class="text-right font-extrabold text-brand-700">83</span></div>
+            <div class="grid grid-cols-[40px_1fr_90px_120px] items-center px-3 py-[15px] border-b border-slate-100"><span class="text-xl">🥉</span><span class="font-semibold">Kings College SS2B</span><span class="text-right text-slate-500">8</span><span class="text-right font-extrabold">79</span></div>
+            <div class="grid grid-cols-[40px_1fr_90px_120px] items-center px-3 py-[15px] border-b border-slate-100"><span class="font-bold text-slate-400 pl-1.5">4</span><span class="font-semibold">Queen's College Achievers</span><span class="text-right text-slate-500">7</span><span class="text-right font-extrabold">74</span></div>
+            <div class="grid grid-cols-[40px_1fr_90px_120px] items-center px-3 py-[15px] border-b border-slate-100"><span class="font-bold text-slate-400 pl-1.5">5</span><span class="font-semibold">OAU Med Hopefuls</span><span class="text-right text-slate-500">4</span><span class="text-right font-extrabold">70</span></div>
+            <div class="grid grid-cols-[40px_1fr_90px_120px] items-center px-3 py-[15px] border-b border-slate-100"><span class="font-bold text-slate-400 pl-1.5">6</span><span class="font-semibold">Abuja JAMB Crew</span><span class="text-right text-slate-500">9</span><span class="text-right font-extrabold">66</span></div>
+            <div class="grid grid-cols-[40px_1fr_90px_120px] items-center px-3 py-[15px]"><span class="font-bold text-slate-400 pl-1.5">7</span><span class="font-semibold">UNN Engineering 200L</span><span class="text-right text-slate-500">6</span><span class="text-right font-extrabold">61</span></div>
+          </div>
+          <div class="mt-auto rounded-2xl bg-amber-50 border border-amber-100 p-4 flex items-center gap-3"><span class="text-2xl">🎯</span><p class="text-[14px] text-slate-700"><b class="text-slate-900">8 pts per member behind Unilag Brainiacs.</b> About 2 more live sessions each closes the gap.</p></div>
+          <p class="pt-3 text-[13px] text-slate-500">Points per member keeps small and large groups on a fair footing.</p>
+        </div>
+        <!-- in my group -->
+        <div class="card p-7 flex flex-col">
+          <div class="flex items-center justify-between"><p class="text-[20px] font-extrabold">In my group · Study Squad</p></div>
+          <div class="mt-3 flex items-center gap-2 text-[14px] font-semibold text-brand-800 bg-brand-50 border border-brand-100 rounded-xl px-3 py-2"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/></svg>Ranked on improvement, not raw scores</div>
+          <div class="mt-2">
+            <div class="flex items-center gap-4 px-3 py-[17px] border-b border-slate-100"><span class="w-7 text-center text-xl">🥇</span><div class="av w-11 h-11 bg-teal-500 text-sm">EO</div><div class="flex-1"><p class="text-[16px] font-bold">Emeka</p><p class="text-[13px] text-slate-500">Economics · up 6 on his average</p></div><span class="text-[18px] font-extrabold text-brand-700">+14</span></div>
+            <div class="flex items-center gap-4 px-3 py-[17px] rounded-2xl bg-brand-50 ring-2 ring-brand-200 my-1"><span class="w-7 text-center text-xl">🥈</span><div class="av w-11 h-11 bg-rose-400 text-sm">AO</div><div class="flex-1"><p class="text-[16px] font-bold">You (Ada)</p><p class="text-[13px] text-slate-500">Chemistry · up 4 on your average</p></div><span class="text-[18px] font-extrabold text-brand-700">+11</span></div>
+            <div class="flex items-center gap-4 px-3 py-[17px] border-b border-slate-100"><span class="w-7 text-center text-xl">🥉</span><div class="av w-11 h-11 bg-amber-500 text-sm">ZM</div><div class="flex-1"><p class="text-[16px] font-bold">Zainab</p><p class="text-[13px] text-slate-500">Biology · up 3</p></div><span class="text-[18px] font-extrabold text-brand-700">+9</span></div>
+            <div class="flex items-center gap-4 px-3 py-[17px] border-b border-slate-100"><span class="w-7 text-center text-[16px] font-bold text-slate-400">4</span><div class="av w-11 h-11 bg-indigo-400 text-sm">TB</div><div class="flex-1"><p class="text-[16px] font-bold">Tunde</p><p class="text-[13px] text-slate-500">Physics · up 2</p></div><span class="text-[18px] font-extrabold text-brand-700">+6</span></div>
+            <div class="flex items-center gap-4 px-3 py-[17px] border-b border-slate-100"><span class="w-7 text-center text-[16px] font-bold text-slate-400">5</span><div class="av w-11 h-11 bg-sky-500 text-sm">CN</div><div class="flex-1"><p class="text-[16px] font-bold">Chidi</p><p class="text-[13px] text-slate-500">Mathematics · steady</p></div><span class="text-[18px] font-extrabold text-brand-700">+4</span></div>
+            <div class="flex items-center gap-4 px-3 py-[17px]"><span class="w-7 text-center text-[16px] font-bold text-slate-400">6</span><div class="av w-11 h-11 bg-violet-400 text-sm">FA</div><div class="flex-1"><p class="text-[16px] font-bold">Funmi</p><p class="text-[13px] text-slate-500">English · 1 session so far</p></div><span class="text-[18px] font-extrabold text-brand-700">+2</span></div>
+          </div>
+          <div class="mt-auto rounded-2xl bg-slate-50 border border-slate-100 p-4 flex items-center gap-3"><div class="av w-10 h-10 bg-violet-400 text-sm">FA</div><p class="flex-1 text-[14px] text-slate-700">Funmi has 1 session this week. Give her a friendly nudge.</p><button class="h-10 px-4 rounded-xl bg-white border border-slate-200 text-[14px] font-bold text-[#128C7E]">Nudge on WhatsApp</button></div>
+          <p class="pt-3 text-[13px] text-slate-500">Improvement points compare each person with their own past quizzes.</p>
+        </div>
+      </div>
+    </main>
+  </div>
+</section>
+
+  </div>
+</div>
+
+<script>
+const ICONS = {
+  home: '<path d="M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/>',
+  study: '<circle cx="12" cy="13" r="8"/><path d="M12 9v4l2.5 2M9 2h6"/>',
+  ranks: '<path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0zM17 5h3v2a3 3 0 0 1-3 3M7 5H4v2a3 3 0 0 0 3 3"/>',
+  squad: '<circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0M16 4.5a3.5 3.5 0 0 1 0 7M18 14a6 6 0 0 1 3.5 6"/>'
+};
+const LABELS = { home:'Home', study:'Study', ranks:'Ranks', squad:'Squad' };
+document.querySelectorAll('.frame').forEach(f => {
+  const a = f.dataset.active;
+  const items = Object.keys(ICONS).map(k => {
+    const on = k === a;
+    return `<div class="h-12 px-4 rounded-2xl flex items-center gap-3 text-[16px] ${on ? 'bg-brand-50 text-brand-700 font-bold' : 'text-slate-500 font-semibold'}">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="${on?2.4:2}" stroke-linecap="round" stroke-linejoin="round">${ICONS[k]}</svg>${LABELS[k]}
+      ${k==='squad' ? '<span class="ml-auto text-[12px] font-bold bg-amber-100 text-amber-700 px-2 py-0.5 rounded-full">🔥 12</span>' : ''}</div>`;
+  }).join('');
+  f.insertAdjacentHTML('afterbegin', `<nav class="w-[248px] shrink-0 bg-white border-r border-slate-200/70 px-5 py-7 flex flex-col">
+    <div class="flex items-center gap-2.5 px-2"><div class="w-10 h-10 rounded-xl bg-brand-600 flex items-center justify-center"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19V8l8-4 8 4v11"/><path d="M9 19v-6h6v6"/></svg></div><span class="text-[22px] font-extrabold text-slate-900">StudyFlow</span></div>
+    <div class="mt-9 space-y-1.5">${items}</div>
+    <div class="mt-8 mx-1 rounded-2xl bg-amber-50 border border-amber-100 p-4">
+      <p class="text-[13px] font-bold text-amber-800">Next live session</p><p class="text-[15px] font-extrabold text-slate-900">Tonight, 7:00 PM</p>
+    </div>
+    <div class="mt-auto pt-4 border-t border-slate-100 flex items-center gap-3 px-1">
+      <div class="av w-11 h-11 bg-rose-400">AO</div>
+      <div class="flex-1 min-w-0"><p class="text-[15px] font-bold text-slate-900">Ada Okafor</p><p class="text-[13px] text-slate-500">SS2 · Study Squad</p></div>
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>
+    </div>
+  </nav>`);
+});
+</script>
+</body>
+</html>

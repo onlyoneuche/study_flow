@@ -1,0 +1,26 @@
+@import "tailwindcss";
+
+@theme {
+  --color-brand-50: #ecfdf7;
+  --color-brand-100: #d1fae9;
+  --color-brand-500: #10b985;
+  --color-brand-600: #059669;
+  --color-brand-700: #047857;
+  --color-brand-800: #065f46;
+  --color-cream: #fbf8f3;
+  --font-sans: "Plus Jakarta Sans Variable", ui-sans-serif, system-ui, sans-serif;
+}
+
+body { background: var(--color-cream); color: #1e293b; }
+button, a { -webkit-tap-highlight-color: transparent; }
+button:enabled { cursor: pointer; }
+:focus-visible { outline: 3px solid #059669; outline-offset: 4px; }
+.card {
+  background: white;
+  border-radius: 22px;
+  box-shadow: 0 1px 2px rgb(16 24 40 / 4%), 0 4px 14px -6px rgb(16 24 40 / 8%);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; scroll-behavior: auto !important; }
+}
