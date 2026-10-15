@@ -9,6 +9,7 @@ from fastapi.responses import JSONResponse
 from app.api.auth import router as auth_router
 from app.api.groups import router as groups_router
 from app.api.health import router as health_router
+from app.api.points import router as points_router
 from app.api.presence import router as presence_router
 from app.api.quizzes import router as quizzes_router
 from app.api.sessions import router as sessions_router
@@ -80,4 +81,5 @@ def create_app(
     app.include_router(sessions_router, prefix="/api/v1", tags=["sessions"])
     app.include_router(presence_router, tags=["presence"])
     app.include_router(quizzes_router, prefix="/api/v1", tags=["quizzes"])
+    app.include_router(points_router, prefix="/api/v1", tags=["points"])
     return app

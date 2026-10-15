@@ -29,7 +29,7 @@ test("responsive navigation and the real API connection work", async ({ page }, 
 
   for (const [label, heading] of [
     ["Study", "Your squad is waiting"],
-    ["Ranks", "Progress worth celebrating"],
+    ["Ranks", "Your squad is waiting"],
     ["Squad", "Your squad is waiting"],
   ]) {
     await navigation.getByRole("link", { name: label, exact: true }).click();

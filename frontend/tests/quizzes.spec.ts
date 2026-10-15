@@ -80,5 +80,11 @@ engine.dispose()
   const detail = await (await request.get(`/api/v1/groups/${group.id}`, { headers })).json();
   expect(detail.weekly_points).toBeGreaterThan(0);
   expect(detail.completed_today).toBeGreaterThan(0);
+  await page.goto("/ranks");
+  await expect(page.getByRole("heading", { name: "In my group", exact: true })).toBeVisible();
+  await expect(page.getByText("Personal improvement points", { exact: true })).toBeVisible();
+  await page.screenshot({ path: testInfo.outputPath("rankings.png"), fullPage: true });
+  await page.getByRole("link", { name: "See your points history", exact: false }).click();
+  await expect(page.getByRole("heading", { name: "Your points history", exact: true })).toBeVisible();
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBeTruthy();
 });

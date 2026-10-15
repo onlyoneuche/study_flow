@@ -47,7 +47,34 @@ async def complete(db, session, participant, now, attempt=None):
     participant.status = PS.COMPLETED
     participant.completed_at = now
     components = {PC.BASE: round_half_up(session.planned_minutes / 3)}
-    # Step 7 adds quiz/improvement components and counted baseline entries here.
+    if attempt is not None and attempt.submitted_at is not None:
+        history = list(
+            (
+                await db.scalars(
+                    select(QuizAttempt.score_pct)
+                    .join(SessionParticipant, QuizAttempt.participant_id == SessionParticipant.id)
+                    .where(
+                        QuizAttempt.user_id == participant.user_id,
+                        SessionParticipant.subject_norm == participant.subject_norm,
+                        SessionParticipant.level == participant.level,
+                        QuizAttempt.counts_for_baseline.is_(True),
+                        QuizAttempt.submitted_at <= attempt.submitted_at,
+                        QuizAttempt.id != attempt.id,
+                    )
+                    .order_by(QuizAttempt.submitted_at.desc(), QuizAttempt.id.desc())
+                    .limit(3)
+                )
+            ).all()
+        )
+        baseline = sum(history) / len(history) if history else None
+        attempt.baseline_pct = baseline
+        attempt.counts_for_baseline = True
+        components[PC.QUIZ] = round_half_up(attempt.score_pct / 10)
+        components[PC.IMPROVEMENT] = (
+            3
+            if baseline is None
+            else max(0, min(10, round_half_up((attempt.score_pct - baseline) / 5)))
+        )
     for group_id in group_ids:
         awards = (
             {PC.DAILY_CAP: 0}

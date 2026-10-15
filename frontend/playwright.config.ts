@@ -1,4 +1,9 @@
+import { randomUUID } from "node:crypto";
 import { defineConfig } from "@playwright/test";
+
+const database = process.env.DATABASE_URL ?? `sqlite+aiosqlite:////tmp/studyflow-browser-${randomUUID()}.db`;
+if (!database.startsWith("sqlite+aiosqlite:////tmp/studyflow-")) throw new Error("Browser checks require a disposable /tmp/studyflow- database.");
+process.env.DATABASE_URL = database;
 
 export default defineConfig({
   testDir: "./tests",
@@ -18,9 +23,9 @@ export default defineConfig({
   ),
   webServer: [
     {
-      command: "../backend/.venv/bin/uvicorn app.main:create_app --factory --app-dir ../backend --host 127.0.0.1 --port 8000",
+      command: "../backend/.venv/bin/python ../scripts/browser_backend.py",
       url: "http://127.0.0.1:8000/health",
-      reuseExistingServer: !process.env.CI,
+      reuseExistingServer: false,
     },
     {
       command: "npm run start",

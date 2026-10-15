@@ -2,7 +2,7 @@
 
 A local, social study app for the hackathon. Python 3.12 + FastAPI + SQLite, Next.js App Router + TypeScript + Tailwind, and local Ollama. No hosted backend or paid API.
 
-**Current milestone: step 6, local AI quizzes.** Study solo or live, take a validated 15-question quiz, review your own results and flag questions. Quiz/improvement scoring, streak jobs and full demo history arrive in the numbered build order. This is not yet an end-to-end MVP.
+**Current milestone: step 7, quiz scoring and points.** Study solo or live, take a validated quiz, see the points breakdown and group bar update, and compare personal improvement within your squad. Streak jobs, the remaining dashboard polish and full demo history arrive in the numbered build order. This is not yet an end-to-end MVP.
 
 The [full design](docs/studyflow-design.md) is the source of truth. UI references: [mobile](docs/mockups/mobile.html), [desktop](docs/mockups/desktop.html). See [implementation notes and TODOs](docs/implementation-notes.md) for unresolved details.
 
@@ -33,7 +33,7 @@ make build  # frontend production build
 make migration-check  # verify the migrated schema matches the models
 ```
 
-Browser checks use installed Google Chrome and Playwright WebKit at 360, 390, 768 and 1440px. WebKit provides Safari-engine coverage; an actual Safari/device pass is still required for the completed screens in step 9.
+Browser checks use installed Google Chrome and Playwright WebKit at 360, 390, 768 and 1440px. Stop the local app servers/containers first; the browser runner creates a disposable `/tmp/studyflow-…` database, applies migrations and seeds fallback quizzes automatically. WebKit provides Safari-engine coverage; an actual Safari/device pass is still required for the completed screens in step 9.
 
 ```sh
 cd frontend && npx playwright install webkit && cd ..
@@ -92,6 +92,14 @@ At your participant end, open the quiz. GET `/participants/{id}/quiz` or POST `/
 
 If generation fails twice, the worker rechecks exact cache, tries related same-subject/level cache with a visible label, then marks the quiz unavailable. Sufficient active time still earns time-only base/live points; missed quiz deadlines follow the same fallback. Flag questions after submission. Three unique-user flags or one inappropriate flag disables the question and retires its variant; every flagged variant is excluded from new cache assignments. Existing results stay unchanged. Retired history is kept, and rerunning the seed does not bypass flags.
 
+## Points and rankings
+
+Successful quiz submission saves base, quiz and personal-improvement ledger lines. Improvement compares your score with your own last three counted quizzes for the same normalised subject and participant-level snapshot; the first quiz earns +3 welcome improvement points. Valid timely quizzes still update your baseline after the daily points cap; unavailable/expired quizzes never do. Rounding uses half up. Ada’s worked example in the design earns 30 live / 25 solo points.
+
+The first three completed sessions per Lagos session day earn points. Later completions save a zero `daily_cap` entry, still count as completed, and remain eligible for streaks and the shared live goal. Base/quiz/improvement credit goes to each of your current groups (up to three); +5 live goes only to the hosting group. The v2 full-group bonus is not awarded. Identical retries return the saved result and cannot create duplicate ledger awards.
+
+Open **Ranks** to see group points per current member (ties use streak), and your selected squad’s improvement-only ranking (ties use completed sessions). Only your audience band appears; individual raw scores are never compared. **Your points history** shows this week’s immutable credits, separately for each group. API routes: `GET /groups/{id}/points?week=YYYY-MM-DD`, `GET /leaderboard/groups?week=…`, `GET /users/me/ledger?from=…&to=…&limit=…&offset=…`. Weeks use Monday dates in Africa/Lagos; all historical rows remain after a reset or departure. Corrections are new adjustment rows, not edits.
+
 ## Docker
 
 With Docker running and `.env` created:
@@ -109,7 +117,6 @@ The production build includes an install manifest, local app icons and a service
 
 ## Next milestones
 
-7. Scoring and ledger.
 8. Lagos streak/freeze jobs and weekly snapshots.
 9. Full responsive screens against the supplied mockups.
 10. Study Squad seed history.
