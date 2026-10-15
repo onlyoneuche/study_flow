@@ -8,7 +8,10 @@ from app.main import create_app
 
 def config(**overrides) -> Settings:
     return Settings(
-        _env_file=None, auth_secret="test-secret-with-at-least-32-characters", **overrides
+        _env_file=None,
+        environment="test",
+        auth_secret="test-secret-with-at-least-32-characters",
+        **overrides,
     )
 
 
@@ -90,7 +93,7 @@ def test_secrets_are_required_and_masked():
     settings = config()
     assert settings.auth_secret.get_secret_value() not in repr(settings)
     with pytest.raises(ValueError):
-        Settings(_env_file=None, auth_secret="short")
+        Settings(_env_file=None, environment="test", auth_secret="short")
 
 
 def test_cors_accepts_only_configured_origins():

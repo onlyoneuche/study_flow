@@ -90,3 +90,25 @@ Groups and invites use the approved schema without a new migration. Invite codes
 TODO: the design does not define the lifecycle after the last member leaves. Preserve history and mark the empty group inactive, revoking links, until this is specified. The existing account anonymisation TODO stays in the backlog.
 
 Verification: 96 backend tests, lint/format, frontend lint/TypeScript, production build and schema check pass. All 48 browser checks pass in Chrome/WebKit at 360, 390, 768 and 1440px, including invite signup/login auto-join and owner removal. Actual Safari/device verification remains for step 9.
+
+## Step 5
+
+Implemented SOLO and scheduled/immediate LIVE creation, per-participant subject/topic/level snapshots, server-held times, private session state and open-session listing. Runtime transitions use APScheduler at one-second intervals with startup catch-up. No schema change is needed. One backend worker is required while room connections remain in memory.
+
+WebSocket heartbeat accounting uses the documented 120-second grace and 15-second long-gap credit. Whole-second timestamp differences preserve fractional carry between consecutive heartbeats without a new schema field. Duplicate connections share the same persisted heartbeat cursor and cannot double-credit time. An explicit Leave acts as the last presence observation and then stops accumulation; rejoin resets the cursor and preserves the original snapshot. Session end itself does not invent a heartbeat or unobserved tail credit. SOLO early finish requires 80% active time and saves participant end for the later quiz deadline. Insufficient time is incomplete. Quiz/ledger completion remains for steps 6/7.
+
+Late LIVE joins through exactly 10 minutes retain live eligibility and require 80% of remaining time. Later arrivals have no live participation or shared-goal credit; the UI offers SOLO on the same topic, or the member can observe through the socket. Sockets recheck active account/membership and accept only a fixed reaction set. Query credentials are stripped before socket path logging. Hidden tabs keep presence heartbeats; only future tracker sampling pauses, never an away label. Focus Tracker remains off.
+
+TODO: the document does not precisely define the session shared-goal denominator for members who never join or leave the group. The UI labels it **Joined live goal**, counting eligible live participations and excluding late observers, without awarding the v2 full-group bonus. Confirm before expanding this goal. Account anonymisation and the empty-group lifecycle remain in the backlog.
+
+Step 6 integration point: enqueue quiz preparation after participant creation/commit and at a scheduled start, outside SQLite write transactions. Until implemented, quiz status remains pending; sufficient time alone does not fabricate quiz availability, completion or points. The room handles the documented quiz-ready event and has an opt-in browser notification control.
+
+Docker now runs Alembic before starting the API so a fresh volume is migrated before the session startup catch-up reads it. Native startup still requires `make migrate`. Database work on sockets is shielded from disconnect cancellation to ensure SQLite connections return to the pool.
+
+### Verification
+
+- `make test`: 111 backend tests pass, including invite/scoring-storage/streak-storage regressions and 15 session tests; lint/format and frontend lint/TypeScript pass. Only the existing upstream Starlette/httpx deprecation warning remains.
+- `make migration-check`: no schema changes. Native frontend and both Docker images build successfully.
+- All 64 Chrome/WebKit browser checks pass at 360, 390, 768 and 1440px. Coverage includes group invite signup/login auto-join, solo socket/pause-through-leave/rejoin/reload, two live learners on different topics through the Next.js WebSocket proxy, and overflow/navigation/PWA checks. Mobile/desktop session screenshots were visually reviewed. Actual Safari/device verification remains for step 9.
+- Fresh disposable Docker database: automatic Alembic migrations, startup catch-up, health, signup/login, group/invite creation, solo start and authenticated heartbeat socket pass. The test container is removed; the app preview uses the existing persistent volume.
+- A final access regression confirms that a former LIVE host cannot list the room after leaving its group. Active-time tests cover exact 120-second grace, 121-second gaps, fractional carry, multiple sockets, required time, scheduled starts without participants, late joins, Lagos midnight, snapshot preservation, incomplete end and early-finish deadline anchoring.

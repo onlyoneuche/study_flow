@@ -9,8 +9,12 @@ from fastapi.responses import JSONResponse
 from app.api.auth import router as auth_router
 from app.api.groups import router as groups_router
 from app.api.health import router as health_router
+from app.api.presence import router as presence_router
+from app.api.sessions import router as sessions_router
 from app.core.config import Settings, get_settings
 from app.db.database import Database
+from app.db.types import utc_now
+from app.services.presence import Presence, PrivateSocketToken
 
 
 def create_app(
@@ -23,6 +27,7 @@ def create_app(
     async def lifespan(app: FastAPI):
         database = Database(config.database_url)
         app.state.database = database
+        app.state.presence = Presence(app)
         try:
             async with httpx.AsyncClient(
                 base_url=str(config.ollama_base_url).rstrip("/") + "/",
@@ -31,12 +36,17 @@ def create_app(
                 trust_env=False,
             ) as client:
                 app.state.ollama_client = client
+                if config.environment != "test":
+                    await app.state.presence.start()
                 yield
         finally:
+            app.state.presence.stop()
             await database.close()
 
     app = FastAPI(title=config.app_name, version="0.1.0", lifespan=lifespan)
     app.state.settings = config
+    app.state.clock = utc_now
+    app.add_middleware(PrivateSocketToken)
 
     @app.exception_handler(RequestValidationError)
     async def validation_error(_request, error):
@@ -62,4 +72,6 @@ def create_app(
     app.include_router(health_router, prefix="/api/v1")
     app.include_router(auth_router, prefix="/api/v1", tags=["auth"])
     app.include_router(groups_router, prefix="/api/v1", tags=["groups"])
+    app.include_router(sessions_router, prefix="/api/v1", tags=["sessions"])
+    app.include_router(presence_router, tags=["presence"])
     return app

@@ -11,7 +11,10 @@ const nextConfig: NextConfig = {
   output: "standalone",
   poweredByHeader: false,
   async rewrites() {
-    return [{ source: "/api/:path*", destination: `${backend}/api/:path*` }];
+    return [
+      { source: "/api/:path*", destination: `${backend}/api/:path*` },
+      { source: "/ws/:path*", destination: `${backend}/ws/:path*` },
+    ];
   },
   async headers() {
     return [{

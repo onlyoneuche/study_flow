@@ -2,7 +2,7 @@
 
 A local, social study app for the hackathon. Python 3.12 + FastAPI + SQLite, Next.js App Router + TypeScript + Tailwind, and local Ollama. No hosted backend or paid API.
 
-**Current milestone: step 4, groups and invites.** Create an account and an invite-only squad, share a link, join through sign-up/login, manage members and transfer ownership. Sessions, quiz/scoring, streak jobs and demo data arrive in the numbered build order. This is not yet an end-to-end MVP.
+**Current milestone: step 5, timed solo/live sessions.** Create an account and squad, invite friends, then study on your own topic with a server-timed session and live presence. Quiz generation/submission, scoring, streak jobs and demo data arrive in the numbered build order. This is not yet an end-to-end MVP.
 
 The [full design](docs/studyflow-design.md) is the source of truth. UI references: [mobile](docs/mockups/mobile.html), [desktop](docs/mockups/desktop.html). See [implementation notes and TODOs](docs/implementation-notes.md) for unresolved details.
 
@@ -71,13 +71,24 @@ Open **Squad**, create a group (capacity 3–8), then **Create invite**. Copy th
 
 Open the invite in another browser/tab. Create an account or sign in; the return destination survives both screens and membership is accepted automatically. Joining reports expired/disabled/exhausted links, full groups, different audience bands and the three-group limit. Existing membership succeeds without consuming another use, even with an old/full invite. The owner can remove a member; each member can leave. Ownership passes to the longest-standing remaining member. Membership history and earned points remain. Groups below three members pause streaks. An empty group is closed to joins pending the documented lifecycle TODO.
 
+## Sessions demo
+
+Open **Study** for a 25, 45 or 60-minute solo session. Choose a subject and topic; your profile level is saved on the participation. For live sessions, choose a squad and start now or schedule a future start. Other members see the open room under **Study**, join on their own topics, and appear in the members panel. **Study together** on the group page preselects that squad.
+
+The server holds start/end times; countdowns use server time and a monotonic browser timer to correct clock drift. Authenticated WebSockets at `/ws/sessions/{id}?token=JWT` work through the Next.js proxy. Heartbeats run every 15 seconds, even while a tab is hidden. A gap up to 120 seconds counts in full; a longer gap counts 15 seconds. Presence becomes disconnected after 120 seconds without a heartbeat. **Leave session** stops the active clock; **Rejoin session** resumes without counting the break. A solo learner can **Finish early** once 80% active time is saved. Insufficient active time at the end gives no quiz, points or completion.
+
+Live starts run at the server-held scheduled time, even in an empty room. Joining up to 10 minutes late keeps live eligibility and requires 80% of the remaining time. Later arrivals are offered a solo session on the same topic, or can observe the room without live credit. The joined-live goal excludes those observers. TODO: confirm the shared-goal denominator for non-joining/removed members; the UI explicitly labels the current denominator as eligible joined participants.
+
+APScheduler checks due session transitions every second and catches up at startup. Use one backend worker for this MVP, because room connections are in memory. Active seconds and the last heartbeat survive restart. Socket access is authenticated and checked again on every event/broadcast; removals cut off access. Query tokens are removed from socket path logs. Supported reactions are a fixed set; no free-text chat is accepted.
+
+Quiz preparation is the next milestone. For now, the room saves active time and displays study-time completion; no quiz results, points or streak completion are fabricated. The quiz-ready notification handler will activate when step 6 provides ready quizzes. Focus Tracker remains off and uses no camera.
+
 ## Docker
 
 With Docker running and `.env` created:
 
 ```sh
-make docker-up
-docker compose exec backend alembic upgrade head
+make docker-up  # applies Alembic migrations before starting the API
 make docker-down
 ```
 
@@ -89,7 +100,6 @@ The production build includes an install manifest, local app icons and a service
 
 ## Next milestones
 
-5. Server-timed sessions and WebSocket presence.
 6. Validated Ollama quizzes and cached fallback.
 7. Scoring and ledger.
 8. Lagos streak/freeze jobs and weekly snapshots.

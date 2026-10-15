@@ -1,0 +1,5 @@
+import type { EducationLevel } from "@/lib/api";
+export type Participant = { id: number; user_id: number; subject: string; topic: string; level: EducationLevel; active_seconds: number; required_seconds: number; status: string; is_live_credited: boolean; quiz_status: string; ended_at: string | null; time_met: boolean; quiz_unlocked: boolean };
+export type StudySession = { id: number; group_id: number | null; group_name: string | null; host_id: number; mode: "live" | "solo"; planned_minutes: number; scheduled_at: string; started_at: string; end_at: string; status: string; server_now: string; mine: Participant | null; members: { user_id: number; display_name: string; subject: string; status: string }[]; goal: { done: number; total: number }; reactions: string[] };
+export function lagosTime(iso: string) { return new Intl.DateTimeFormat("en-GB", { dateStyle: "medium", timeStyle: "short", timeZone: "Africa/Lagos" }).format(new Date(iso)); }
+export function timeLabel(seconds: number) { const value = Math.max(0, Math.ceil(seconds)); return `${Math.floor(value / 60).toString().padStart(2, "0")}:${(value % 60).toString().padStart(2, "0")}`; }

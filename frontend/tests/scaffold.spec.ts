@@ -28,7 +28,7 @@ test("responsive navigation and the real API connection work", async ({ page }, 
   await page.screenshot({ path: testInfo.outputPath("home.png"), fullPage: true });
 
   for (const [label, heading] of [
-    ["Study", "Your study time"],
+    ["Study", "Your squad is waiting"],
     ["Ranks", "Progress worth celebrating"],
     ["Squad", "Your squad is waiting"],
   ]) {
@@ -64,5 +64,5 @@ test("PWA manifest, icons and public offline fallback work", async ({ page, cont
   await expect(page.getByRole("heading", { name: "You’re offline" })).toBeVisible();
   await context.setOffline(false);
   await page.getByRole("button", { name: "Try again" }).click();
-  await expect(page.getByRole("heading", { name: "Your study time" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Your squad is waiting" })).toBeVisible();
 });

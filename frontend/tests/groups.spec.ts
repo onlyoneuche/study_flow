@@ -46,6 +46,7 @@ test("create squad, share invite, sign up from invite, auto-join and owner remov
   await page.getByRole("button", { name: "Remove Invite Friend" }).click();
   await expect(page.getByText("Invite Friend", { exact: true })).toHaveCount(0);
   await page.getByRole("button", { name: "Regenerate invite", exact: true }).click();
+  await expect(invite).not.toHaveValue(url);
   await friend.goto(`/join/${code}`);
   await expect(friend.getByRole("main").getByRole("alert")).toContainText("disabled");
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBeTruthy();

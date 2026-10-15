@@ -56,6 +56,8 @@ async def get_session(request: Request) -> AsyncIterator[AsyncSession]:
     async with request.app.state.database.session_factory() as session:
         # WAL cannot upgrade a read snapshot after another writer commits (SQLITE_BUSY_SNAPSHOT).
         # Reserve write intent before the first read for mutating HTTP requests.
-        if request.method in {"POST", "PATCH", "PUT", "DELETE"}:
+        if request.method in {"POST", "PATCH", "PUT", "DELETE"} or (
+            request.method == "GET" and request.url.path.startswith("/api/v1/sessions/")
+        ):
             await session.connection(execution_options={"sqlite_transaction_mode": "IMMEDIATE"})
         yield session

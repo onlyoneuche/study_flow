@@ -21,7 +21,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           <BrandMark />StudyFlow
         </Link>
         <nav aria-label="Main navigation" className="mt-9 space-y-1.5">
-          {items.map((item) => <NavItem key={item.href} item={item} active={pathname === item.href} />)}
+          {items.map((item) => <NavItem key={item.href} item={item} active={pathname === item.href || (item.href === "/squad" && (pathname.startsWith("/groups/") || pathname.startsWith("/join/"))) || (item.href === "/study" && pathname.startsWith("/sessions/"))} />)}
         </nav>
         <div className="mt-auto rounded-2xl bg-brand-50 p-4 text-sm leading-relaxed text-brand-800">
           A little progress, together.<br />One session at a time.
@@ -31,7 +31,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         {children}
       </main>
       <nav aria-label="Main navigation" className="fixed inset-x-0 bottom-0 z-20 flex justify-around border-t border-slate-100 bg-white px-3 pt-2 pb-[max(12px,env(safe-area-inset-bottom))] min-[1025px]:hidden">
-        {items.map((item) => <NavItem key={item.href} item={item} active={pathname === item.href} mobile />)}
+        {items.map((item) => <NavItem key={item.href} item={item} active={pathname === item.href || (item.href === "/squad" && (pathname.startsWith("/groups/") || pathname.startsWith("/join/"))) || (item.href === "/study" && pathname.startsWith("/sessions/"))} mobile />)}
       </nav>
     </div>
   );

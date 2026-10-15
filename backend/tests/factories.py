@@ -11,7 +11,7 @@ sequence = count()
 
 def user(db, level=EducationLevel.SS2, **overrides):
     fields = dict(
-        email=f"student-{next(sequence)}@example.test",
+        email=f"student-{next(sequence)}@example.com",
         display_name="Ada",
         hashed_password="test-hash",
         level=level,
