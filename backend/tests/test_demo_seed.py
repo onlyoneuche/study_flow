@@ -8,6 +8,7 @@ from app.core.calendar import lagos_date, latest_evaluable_day
 from app.demo.seed import PASSWORD, banks, email, seed_demo
 from app.models import (
     DemoSeedRun,
+    FocusSummary,
     Group,
     GroupMember,
     GroupStreakDay,
@@ -35,6 +36,14 @@ def test_seed_replays_history_streak_points_and_ready_quiz(auth_client, clock, d
         summary["streak"],
         summary["freezes_remaining"],
     ) == (340, 600, 12, 1)
+    focus_rows = db.scalars(select(FocusSummary)).all()
+    assert len(focus_rows) == 3 and all(row.is_valid and row.opted_in for row in focus_rows)
+    focus_participants = [
+        db.get(SessionParticipant, row.session_participant_id) for row in focus_rows
+    ]
+    assert {p.session_id for p in focus_participants} == {summary["focus_session_id"]}
+    assert db.get(StudySession, summary["focus_session_id"]).mode == "live"
+    assert summary["focus_participant_id"] in {p.id for p in focus_participants}
     users = db.scalars(select(User).where(User.is_active.is_(True))).all()
     assert len(users) == 9
     assert {u.level for u in users} == {"SS2"}

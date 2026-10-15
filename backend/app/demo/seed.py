@@ -42,6 +42,7 @@ from app.models.enums import (
 from app.quizzes.schema import QuizDocument
 from app.quizzes.seed import seed_quizzes_in_session
 from app.quizzes.worker import Job, questions_for, store_quiz
+from app.services.focus import SummaryInput, save_summary
 from app.services.groups import group_view, new_invite
 from app.services.jobs import SingleInstanceLock
 from app.services.quizzes import submit_attempt
@@ -366,6 +367,7 @@ async def seed_demo(database, now=None, frontend_url="http://localhost:3000"):
             rivals = [people[name] for name in RIVAL_NAMES]
             squad = await create_squad(db, "Study Squad", main, first)
             rival = await create_squad(db, "Lagos Brainiacs", rivals, last - timedelta(days=6))
+            focus_demo = None
             for day_offset in range(13):
                 day = first + timedelta(days=day_offset)
                 frozen = day == last - timedelta(days=1)
@@ -376,15 +378,33 @@ async def seed_demo(database, now=None, frontend_url="http://localhost:3000"):
                     else ([11, 9, 10, 11, 10, 9] if day == last else None)
                 )
                 at = start_of(day) + timedelta(hours=9)
-                pair = present[1:3]
-                await replay(
+                pair = present[:3] if day == last else present[1:3]
+                live_participants = await replay(
                     db,
                     pair,
                     squad,
                     at,
                     mode=SessionMode.LIVE,
-                    scores=[scored[1], scored[2]] if scored else None,
+                    scores=[scored[main.index(learner)] for learner in pair] if scored else None,
                 )
+                if day == last:
+                    for participant, attention in zip(live_participants, [90, 80, 70], strict=True):
+                        await save_summary(
+                            db,
+                            await db.get(StudySession, participant.session_id),
+                            participant,
+                            SummaryInput(
+                                opted_in=True,
+                                attentive_pct=attention,
+                                away_seconds=30,
+                                samples=1400,
+                                paused_seconds=90,
+                                sample_fps=1.0,
+                                tracker_version="mp-demo/minimal-v1",
+                            ),
+                            at + timedelta(minutes=29),
+                        )
+                    focus_demo = live_participants[0]
                 for i, learner in enumerate(present):
                     if learner not in pair:
                         await replay(
@@ -447,6 +467,8 @@ async def seed_demo(database, now=None, frontend_url="http://localhost:3000"):
             await db.flush()
             view = await group_view(db, squad, main[0].user.id, str(frontend_url), now)
             summary = dict(
+                focus_session_id=focus_demo.session_id,
+                focus_participant_id=focus_demo.id,
                 group_id=squad.id,
                 quiz_participant_id=prepared.id,
                 session_id=live.id,
@@ -486,6 +508,10 @@ async def main():
         print(
             "Prepared quiz (20-minute timer starts at seed): "
             f"{origin}/participants/{summary['quiz_participant_id']}/quiz"
+        )
+        print(
+            "Synthetic focus comparison (ended live session): "
+            f"{origin}/participants/{summary['focus_participant_id']}/quiz"
         )
         print(
             "Rerun before the presentation to refresh its deadlines. "

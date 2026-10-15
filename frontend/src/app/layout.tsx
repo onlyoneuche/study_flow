@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { AppShell } from "@/components/app-shell";
 import { PwaRegistration } from "@/components/pwa-registration";
+import { FocusFlusher } from "@/components/focus-tracker";
 import { AuthProvider } from "@/components/auth-provider";
 import "@fontsource-variable/plus-jakarta-sans";
 import "./globals.css";
@@ -24,7 +25,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
   return (
     <html lang="en-GB">
       <body className="font-sans antialiased">
-        <AuthProvider><AppShell>{children}</AppShell></AuthProvider>
+        <AuthProvider><FocusFlusher /><AppShell>{children}</AppShell></AuthProvider>
         <PwaRegistration />
       </body>
     </html>

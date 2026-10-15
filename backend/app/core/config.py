@@ -24,6 +24,7 @@ class Settings(BaseSettings):
     ollama_base_url: HttpUrl = HttpUrl("http://localhost:11434")
     ollama_model: str = Field(default="qwen2.5:7b-instruct", min_length=1)
     ollama_health_timeout_seconds: float = Field(default=3, gt=0, le=10)
+    focus_tracker_enabled: bool = False
 
 
 @lru_cache

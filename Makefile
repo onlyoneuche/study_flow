@@ -1,4 +1,4 @@
-.PHONY: setup dev dev-backend dev-frontend migrate migration-check seed seed-quizzes test test-backend test-frontend test-browser test-demo build docker-up docker-down
+.PHONY: setup dev dev-backend dev-frontend migrate migration-check seed seed-quizzes test test-backend test-frontend test-browser test-demo test-focus build docker-up docker-down
 
 export UV_CACHE_DIR ?= $(CURDIR)/.cache/uv
 export npm_config_cache ?= $(CURDIR)/.cache/npm
@@ -55,3 +55,6 @@ seed:
 test-demo: build
 	STUDYFLOW_BROWSER_DEMO=1 npm --prefix frontend run test:browser -- --project=chrome-390 tests/demo.spec.ts
 	STUDYFLOW_BROWSER_DEMO=1 npm --prefix frontend run test:browser -- --project=webkit-1440 tests/demo.spec.ts
+
+test-focus: build
+	FOCUS_TRACKER_ENABLED=true STUDYFLOW_BROWSER_DEMO=1 npm --prefix frontend run test:browser -- --project=chrome-390 --project=webkit-1440 tests/focus.spec.ts

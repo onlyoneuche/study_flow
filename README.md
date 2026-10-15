@@ -2,7 +2,7 @@
 
 Study together on your own subjects, take a topic quiz, and grow a shared weekly bar through study time and personal improvement. The hackathon MVP covers sign-up, groups/invites, solo/live sessions, quizzes, points, streaks and rankings. All services run locally; no paid APIs or hosted backend.
 
-The [design](docs/studyflow-design.md) is the source of truth. UI references: [mobile](docs/mockups/mobile.html) and [desktop](docs/mockups/desktop.html). [Implementation notes](docs/implementation-notes.md) record decisions and verification. For presenting, use the [2–3 minute demo script](docs/demo.md).
+The [design](docs/studyflow-design.md) is the source of truth. UI references: [mobile](docs/mockups/mobile.html) and [desktop](docs/mockups/desktop.html). [Implementation notes](docs/implementation-notes.md) record decisions and verification. For presenting, use the [2–3 minute demo script](docs/demo.md). The optional [minimal Focus Tracker](docs/focus-tracker.md) is now implemented behind a runtime flag.
 
 ## Native setup
 
@@ -31,6 +31,7 @@ Open [StudyFlow](http://localhost:3000). API documentation is at [localhost:8000
 | `FRONTEND_URL` | `http://localhost:3000`; used in invite and console email links |
 | `BACKEND_URL` | Server-only `http://127.0.0.1:8000`; Next.js proxies browser `/api/*` and `/ws/*` |
 | `CORS_ORIGINS` | JSON array of permitted local origins |
+| `FOCUS_TRACKER_ENABLED` | `false`; set `true` and restart the backend to enable the optional per-session camera checkbox |
 | `AUTH_TOKEN_LIFETIME_SECONDS` | 3600; email verification/reset links also default to 3600 seconds |
 
 For another browser-facing hostname, update `FRONTEND_URL` and `CORS_ORIGINS`. Keep the API proxy configured with the reachable backend address. The default development API binds to loopback. Device access also needs an appropriate bind address; installation/camera/notification capabilities generally require HTTPS outside localhost.
@@ -95,7 +96,7 @@ Compose overrides `DATABASE_URL`, `BACKEND_URL` and Ollama’s address to use th
 
 **Groups.** Create a group under Squad; the creator owns it. Group capacity is 3–8, each user can belong to at most three groups, and invites expire after seven days with an owner-selected use limit. Copy or share via the prefilled WhatsApp link. Logged-out invitees return after sign-up/login and auto-join. Expired, disabled, exhausted, full and wrong-band states show clear messages; existing membership does not consume another use. Owners can regenerate/disable invites or remove members. Members can leave; ownership transfers to the longest-standing remaining member. Empty groups archive, preserving points/history.
 
-**Study.** Start solo or live on your own subject/topic. Live members can choose different topics. Scheduled rooms start at server time; join within ten minutes for live eligibility, or observe/start solo afterward. Active time must reach 80% of the required duration. Heartbeats run every 15 seconds, including hidden tabs; gaps up to 120 seconds receive full credit, longer gaps receive 15 seconds. Leave/rejoin preserves earned active time without counting the break. Hidden tabs pause only future Focus Tracker sampling; they are never labelled away. The tracker is currently off and no camera is used.
+**Study.** Start solo or live on your own subject/topic. Live members can choose different topics. Scheduled rooms start at server time; join within ten minutes for live eligibility, or observe/start solo afterward. Active time must reach 80% of the required duration. Heartbeats run every 15 seconds, including hidden tabs; gaps up to 120 seconds receive full credit, longer gaps receive 15 seconds. Leave/rejoin preserves earned active time without counting the break. Hidden tabs pause only future Focus Tracker sampling; they are never labelled away. The tracker is off by default; when enabled globally, each session requires a fresh opt-in. See [Focus Tracker](docs/focus-tracker.md).
 
 **Quiz.** At session start, background work checks cache and calls local Ollama with the documented prompt and JSON schema. It validates exactly 15 questions, retries once, then uses exact/related same-level cache or time-only completion. Correct indices stay on the server until submission. Quiz time is the earlier of **start + 20 minutes** and **participant end + 30 minutes**; reload does not extend it. On desktop, 1–4 chooses and Enter advances. Allow browser notifications from the room to hear when a quiz is ready. Flag questions after submission; flags never change earned scores.
 
@@ -115,11 +116,12 @@ make migration-check  # migrated schema versus models
 (cd frontend && npx playwright install webkit)
 make test-browser     # Chrome + WebKit, 360/390/768/1440px
 make test-demo        # seeded pitch, Chrome 390px + WebKit 1440px
+make test-focus       # optional tracker + synthetic/mocked worker checks
 ```
 
 Google Chrome must be installed for Chrome tests. Browser runners create disposable `/tmp/studyflow-…` databases and migrate them; the seeded demo checks each start with fresh data. Tests cover scoring’s worked example, daily/multi-group caps, all invite acceptance edge cases, streak/freezes/catch-up/idempotency, auth, sessions, quiz retries/timeouts and safe seed resets.
 
-Current verification: **209 backend tests**, backend/frontend checks, production build, migration agreement, repeated native/Docker seed runs, and the seeded end-to-end walkthrough pass. The earlier full responsive suite passed 80 checks. All four widths are covered in Chrome and WebKit. A native Safari desktop visual smoke check passed; full native Safari/device testing at each width remains manual because native input/window automation was intermittent.
+Current verification: **231 backend tests**, backend/frontend checks, production build, migration agreement, repeated native/Docker seed runs, and the seeded end-to-end walkthrough pass. The earlier full responsive suite passed 80 checks. All four widths are covered in Chrome and WebKit. A native Safari desktop visual smoke check passed; full native Safari/device testing at each width remains manual because native input/window automation was intermittent.
 
 For PWA installation, run the production frontend with `make build` then `npm --prefix frontend run start` alongside the backend, or use Docker. The service worker caches only a public offline page. Authenticated data is never cached, and study/quiz actions require connectivity. Development mode does not register the worker. Devices require HTTPS for installation outside localhost.
 
@@ -130,9 +132,9 @@ For PWA installation, run the production frontend with `make build` then `npm --
 - Email delivery is console-only. Guardian consent is a recorded checkbox; guardian email workflows are v2. This is a local hackathon setup with public fictional demo credentials.
 - Browser JWTs use session storage. Sign-out clears the browser token, while an issued token remains valid until expiry; logout/password reset do not revoke it server-side. Reset demo generations are inactive and cannot authenticate.
 - **Account anonymisation:** resolve the conflict between tombstoning user IDs and append-only ledger history before exposing account deletion.
-- **Focus Tracker:** deferred until explicitly approved. No camera sampling, MediaPipe download or comparison flow is enabled; it will never affect points.
+- **Focus Tracker:** the approved minimal version uses local face presence/head pose at 1 fps, 10-second calibration, pause/forgiveness rules and anonymous post-session comparison. It is disabled globally by default and opt-in per session when enabled. Physical-camera accuracy/performance needs manual checking; retention jobs, blink/gaze and adaptive rates remain deferred. [Details and switch-off instructions](docs/focus-tracker.md).
 - **Weekly snapshots:** backlog only. MVP historical weeks are derived from the ledger using Lagos boundaries.
 - **Nudges and RSVPs:** omitted for MVP; nudges are v2.
 - **Full-group live bonus G:** v2; no MVP awards.
 
-Steps 1–11 are complete. Focus Tracker stretch work awaits confirmation.
+Steps 1–11 and the approved minimal Focus Tracker are complete. Further tracker features remain out of scope.

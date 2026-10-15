@@ -489,10 +489,11 @@ Retention: 90 days, then delete. Removed by `DELETE /users/me`. Server sanity ch
 ### 9.13 Minimal hackathon version (stretch)
 
 - MediaPipe Face Landmarker in a Web Worker at a fixed 1 fps; signals: `face_present` and head yaw/pitch only (no eyes, no gaze).
-- 5 s calibration for the neutral pose; disable if detection takes over 500 ms.
+- **10 s calibration** for the neutral pose (user decision, 15 Oct 2026, superseding 5 s); disable if detection takes over 500 ms.
 - The 5 s forgiveness and 20 s away rules; tab hidden = paused.
 - One `POST` at session end, and a result card using `GET focus-comparison` (median and above/around/below, 3+ only).
 - Skip: adaptive frame rate, battery hint, eye closure, gaze, retention job.
+- Runtime `FOCUS_TRACKER_ENABLED` flag gates the feature; off by default, with fresh opt-in per session when enabled (user decision, 15 Oct 2026).
 
 ---
 
