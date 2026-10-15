@@ -83,7 +83,7 @@ She joins her group's 45-minute LIVE session on time, is active 41 minutes (`R` 
 
 **Rules:** the group streak increases by 1 for a Lagos day on which every eligible member completes at least one session (LIVE or SOLO). If not, a freeze is consumed automatically if available (2 per group per week; unused freezes do not roll over). A freeze keeps the streak at its current value (no increment, no points). With no freeze left, the streak resets to 0.
 
-**Eligible member for day D:** joined before D 00:00 Lagos and still a member at D 23:59 Lagos. New members count from their first full day; members removed or leaving during D are ignored for D.
+**Eligible member for day D (decision, 15 Oct 2026):** active at D 00:00 Lagos: `joined_at <= start_of_day` and `left_at IS NULL OR left_at > start_of_day`. New members joining after midnight count from the following day. Later departures or removals do not change D’s eligibility. With fewer than 3 eligible members, record D as paused and leave the streak unchanged.
 
 **Job:** APScheduler cron at **02:00 Lagos** daily, processing D = yesterday. 02:00 leaves room for a session started at 23:59 (60 min max + 30 min quiz window). The job is idempotent: `group_streak_days` has a unique key `(group_id, date)`.
 
@@ -114,7 +114,8 @@ job nightly_streaks(now):
         streak.last_evaluated_date = D
         record(group, D, outcome, completed=len(done), eligible=len(members))
     commit
-    if D is Sunday: snapshot_weekly_leaderboard(wk)               # runs Monday 02:00
+    # Weekly totals switch automatically at Monday 00:00 Lagos via ledger queries.
+    # TODO: specify storage/API for optional immutable weekly leaderboard snapshots.
 ```
 
 Judgement call: freezes are not spent on a streak that is already 0, so they are kept for when they matter. The cursor `last_evaluated_date` always advances after evaluating a day, including paused days, in the same transaction as its unique day record.
@@ -148,9 +149,9 @@ Judgement call: freezes are not spent on a streak that is already 0, so they are
 **Justification:** studying is personal; making people choose a group or study twice would be penalising them for having more friends. Farming is not possible because the daily cap is per user, not per group, and groups are ranked per-member, so a member's identical contribution to each group is fair to all of them.
 
 ### 3.5 Member removed or leaves
-- Only the group owner can remove members. Removal is effective immediately; the member is ignored for that day's streak (see eligibility).
+- Only the group owner can remove members. Removal is effective immediately for group access; streak eligibility remains the membership snapshot at the start of that day.
 - Ledger rows already earned stay (append-only history). This avoids "kick to protect the streak" disputes.
-- If membership drops below 3, the streak is paused (not broken) until the group is back to 3.
+- A day with fewer than 3 members at its start is paused (not broken); later membership changes apply to the next day.
 - If the owner leaves, ownership passes to the longest-standing member.
 - If the last member leaves, archive the group (`is_active = false`), disable its invites and retain membership history and ledger (decision, 15 Oct 2026).
 

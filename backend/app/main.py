@@ -17,6 +17,7 @@ from app.core.config import Settings, get_settings
 from app.db.database import Database
 from app.db.types import utc_now
 from app.quizzes.worker import QuizWorker
+from app.services.jobs import ScheduledJobs
 from app.services.presence import Presence, PrivateSocketToken
 
 
@@ -32,6 +33,7 @@ def create_app(
         app.state.database = database
         app.state.presence = Presence(app)
         app.state.quizzes = QuizWorker(app)
+        app.state.jobs = ScheduledJobs(app)
         try:
             async with httpx.AsyncClient(
                 base_url=str(config.ollama_base_url).rstrip("/") + "/",
@@ -42,10 +44,12 @@ def create_app(
                 app.state.ollama_client = client
                 if config.environment != "test":
                     await app.state.quizzes.start()
+                    await app.state.jobs.start()
                     await app.state.presence.start()
                 yield
         finally:
             app.state.presence.stop()
+            await app.state.jobs.stop()
             await app.state.quizzes.stop()
             await database.close()
 

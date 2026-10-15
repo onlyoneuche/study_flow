@@ -53,7 +53,9 @@ async def my_groups(request: Request, db: DB, user: Learner):
         )
     ).all()
     return [
-        await group_view(db, g, user.id, str(request.app.state.settings.frontend_url))
+        await group_view(
+            db, g, user.id, str(request.app.state.settings.frontend_url), request.app.state.clock()
+        )
         for g in groups
     ]
 
@@ -76,13 +78,17 @@ async def create_group(data: CreateGroup, request: Request, db: DB, user: Learne
     db.add(GroupMember(group_id=group.id, user_id=user.id, role=MemberRole.OWNER))
     await db.flush()
     await db.commit()
-    return await group_view(db, group, user.id, str(request.app.state.settings.frontend_url))
+    return await group_view(
+        db, group, user.id, str(request.app.state.settings.frontend_url), request.app.state.clock()
+    )
 
 
 @router.get("/groups/{group_id}")
 async def get_group(group_id: int, request: Request, db: DB, user: Learner):
     group = await require_group(db, group_id, user.id)
-    return await group_view(db, group, user.id, str(request.app.state.settings.frontend_url))
+    return await group_view(
+        db, group, user.id, str(request.app.state.settings.frontend_url), request.app.state.clock()
+    )
 
 
 @router.post("/groups/{group_id}/invites", status_code=201)

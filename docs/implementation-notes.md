@@ -152,3 +152,15 @@ Migration 0003 corrects the archive/profile edge: historical ownership of an ina
 - All 72 Chrome/WebKit browser checks pass at 360, 390, 768 and 1440px, including quiz reload/shortcuts, results/reporting, saved group points, rankings and points history. Native/Docker production builds and schema checks pass; rankings screenshots were visually reviewed. Actual Safari/device verification remains for step 9.
 - A fresh disposable Docker database migrated through revision 0003 and seeded fallback quizzes automatically. The real API passed signup/login, cached quiz preparation, server-held attempt, submission, full B/Q/I awards, group bar, improvement ranking, ledger and inappropriate-flag retirement while preserving the submitted result. The disposable container is removed and the app preview is restored using its existing persistent volume.
 - Local Ollama is offline, so generated response/retry/timeout cases use a mocked Ollama transport; the real-browser/container demo exercises curated local fallback. No paid or hosted service is used.
+
+## Step 8
+
+Implemented nightly Lagos streak evaluation and chronological startup catch-up. The user's latest decision replaces the original end-of-day eligibility rule: membership is fixed at day-start, including later departures/removals, excluding later joins. The design now reflects that decision. Live, solo, capped and time-only completions share the documented completed status; streaks never read quiz scores, ledger amounts or focus summaries.
+
+Each day's streak, best, freeze, audit counts and cursor commit atomically under SQLite write intent. Paused days advance the cursor. A fresh group's first evaluated date is its creation date, so there are no pre-creation records. Startup settles overdue participations before evaluating days. APScheduler uses explicit Africa/Lagos cron triggers (daily 02:00 and Monday 00:00), coalescing/misfire recovery, and a database-adjacent OS lock that rejects a second runtime owner. Per-job async locking and unique day records protect reruns as well.
+
+Weekly reset is a ledger query boundary, with no destructive updates; group views now use the same injected server clock as points endpoints. Sunday evaluations use Sunday's freeze week even though the job runs Monday. No schema change was needed.
+
+TODO: the design's optional `snapshot_weekly_leaderboard` pseudocode does not specify storage or API. Historical ledger queries work; no snapshot table or ranking rules were invented. Account anonymisation remains in the backlog.
+
+Verification: `make test` passes all 189 backend tests and frontend lint/TypeScript. The 24 new streak tests cover kept/frozen/broken/paused days, zero-streak conservation, day-start membership boundaries, mixed live/solo and duplicate completions, multi-day catch-up, 02:00 restart boundaries, DST-free Lagos dates, Monday allowance/bar switching without ledger loss, archived/new groups, transaction rollback, concurrent catch-up, lock ownership/release and cron scheduling.

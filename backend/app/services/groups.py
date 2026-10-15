@@ -120,11 +120,11 @@ async def new_invite(db: AsyncSession, group: Group, user_id: int, max_uses: int
     return invite
 
 
-async def group_view(db: AsyncSession, group: Group, user_id: int, frontend_url: str):
+async def group_view(db: AsyncSession, group: Group, user_id: int, frontend_url: str, now=None):
     members = await active_members(db, group.id)
     users = (await db.scalars(select(User).where(User.id.in_([m.user_id for m in members])))).all()
     names = {u.id: u for u in users}
-    now = utc_now()
+    now = now or utc_now()
     week = lagos_week_start(now)
     points = await db.scalar(
         select(func.coalesce(func.sum(PointsLedger.points), 0)).where(

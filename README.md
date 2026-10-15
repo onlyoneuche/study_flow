@@ -64,7 +64,7 @@ Set `FRONTEND_URL` to the browser-facing app URL when running on a different hos
 
 API routes are under `/api/v1`: `POST /auth/register`, `/auth/jwt/login` (form fields `username` and `password`), `/auth/jwt/logout`, `/auth/request-verify-token`, `/auth/verify`, `/auth/forgot-password`, `/auth/reset-password`; `GET/PATCH /users/me`. Profile updates accept display name and level, plus the appropriate confirmation when crossing audience bands without prior consent. Existing group constraints prevent a cross-band level change. Account deletion is deferred pending the documented anonymisation decision.
 
-The award guard uses `(participant_id, group_id, component)`, equivalent to `(user_id, group_id, session_id, award_type)` because participation is unique per user/session and migration 0002 enforces the ledger-user match. A regression test awards one session to three groups and rejects a duplicate within a group. Freeze buckets are Monday dates derived in Africa/Lagos; their boundary is Sunday 23:00 UTC. The scheduled streak/freeze job remains step 8.
+The award guard uses `(participant_id, group_id, component)`, equivalent to `(user_id, group_id, session_id, award_type)` because participation is unique per user/session and migration 0002 enforces the ledger-user match. A regression test awards one session to three groups and rejects a duplicate within a group. Freeze buckets are Monday dates derived in Africa/Lagos; their boundary is Sunday 23:00 UTC. Scheduled jobs use these same Lagos boundaries.
 
 ## Groups and invites demo
 
@@ -100,6 +100,16 @@ The first three completed sessions per Lagos session day earn points. Later comp
 
 Open **Ranks** to see group points per current member (ties use streak), and your selected squad’s improvement-only ranking (ties use completed sessions). Only your audience band appears; individual raw scores are never compared. **Your points history** shows this week’s immutable credits, separately for each group. API routes: `GET /groups/{id}/points?week=YYYY-MM-DD`, `GET /leaderboard/groups?week=…`, `GET /users/me/ledger?from=…&to=…&limit=…&offset=…`. Weeks use Monday dates in Africa/Lagos; all historical rows remain after a reset or departure. Corrections are new adjustment rows, not edits.
 
+## Streaks and Lagos weeks
+
+At 02:00 Africa/Lagos, APScheduler evaluates the previous Lagos day. Every member active at that day’s midnight must have a completed live or solo session dated that day. Joining later starts eligibility the next day; leaving or being removed later does not change the historical denominator. Fewer than three eligible members pauses the day without changing the streak.
+
+A missed day consumes a freeze only for a positive streak, at most two per group per Lagos week; otherwise the streak resets. Freezes preserve rather than increment it. Each result, freeze and catch-up cursor commits atomically. Startup first settles overdue sessions, then processes every due day in order. Before 02:00 Lagos it stops at the day before yesterday; from 02:00 it includes yesterday. A new group starts its audit trail on its creation day (normally paused because nobody belonged at midnight). Archived groups retain their existing history.
+
+Use one backend instance/worker per SQLite database. An operating-system lock beside the database (`.jobs.lock`) rejects a second scheduler owner and is automatically released if the process exits. SQLite write reservations and unique day records also protect against overlapping evaluations. Keep the lock file in the same shared local volume as SQLite; do not remove it while the server runs. APScheduler coalesces missed cron firings; every run catches up from the stored cursor.
+
+Weekly bars and freeze allowances switch at Monday 00:00 Lagos (Sunday 23:00 UTC), through date-filtered queries. The weekly cron records that boundary without deleting or rewriting history; Sunday is still evaluated at Monday 02:00 using Sunday’s week. Historical ledger queries remain available. Optional weekly leaderboard snapshot storage is unspecified in the design and stays a TODO.
+
 ## Docker
 
 With Docker running and `.env` created:
@@ -117,7 +127,6 @@ The production build includes an install manifest, local app icons and a service
 
 ## Next milestones
 
-8. Lagos streak/freeze jobs and weekly snapshots.
 9. Full responsive screens against the supplied mockups.
 10. Study Squad seed history.
 11. Complete setup and end-to-end demo instructions.
