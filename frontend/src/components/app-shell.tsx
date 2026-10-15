@@ -12,6 +12,7 @@ const items = [
 
 export function AppShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
+  if (pathname.startsWith("/auth/")) return <main id="main" className="min-h-dvh px-5 py-7 md:py-12"><Link href="/" className="mx-auto mb-10 flex min-h-12 max-w-lg items-center gap-3 text-2xl font-extrabold"><BrandMark />StudyFlow</Link>{children}</main>;
   return (
     <div className="min-h-dvh min-[1025px]:pl-62">
       <a href="#main" className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-50 focus:rounded-xl focus:bg-white focus:p-4">Skip to content</a>

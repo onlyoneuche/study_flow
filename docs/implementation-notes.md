@@ -63,4 +63,22 @@ The installed Next.js lint configuration pulls in `braces` via `fast-glob`/`micr
 
 Implementation references: [SQLAlchemy SQLite transactions and foreign keys](https://docs.sqlalchemy.org/en/20/dialects/sqlite.html), [Alembic asyncio integration](https://alembic.sqlalchemy.org/en/latest/cookbook.html#using-asyncio-with-alembic), [fastapi-users SQLAlchemy adapter](https://fastapi-users.github.io/fastapi-users/latest/configuration/databases/sqlalchemy/).
 
+## Step 3
+
+- Confirmed award identity: `(participant_id, group_id, component)` represents `(user_id, group_id, session_id, award_type)`, because each participation is unique per user/session. Migration 0002 rejects a mismatched ledger user. The regression test credits one participation to three groups and rejects a repeat component in the same group; adjustments remain appendable.
+- Added shared Lagos date/week and latest-due-day helpers. Regression tests cover Monday 00:00 Lagos (Sunday 23:00 UTC), independent freeze buckets, and the 02:00 catch-up boundary. Step 8 will use these helpers for jobs; there is no UTC-based reset.
+- Added fastapi-users bearer JWT authentication, verification and password reset, console email delivery, and private profile read/update routes. No admin/user-list or deletion routes are exposed. Expired/reused email links are rejected, and response validation errors omit inputs to avoid echoing credentials.
+- Sign-up derives the audience band from the level and checks the submitted band. Every tertiary level requires 18+ confirmation, every secondary level requires guardian consent including mention of the optional device-only camera feature. Confirmation timestamps come from the server. Profile band changes require any missing confirmation and must satisfy existing group constraints.
+- Added responsive sign-up/sign-in, verification/reset, account/profile and sign-out screens, styled with the existing mockup tokens. Browser tokens use session storage; logout clears local credentials. JWT revocation remains the standard fastapi-users stateless behavior (valid until expiry).
+- Infrastructure choices: passwords 8–128 characters, Argon2 hashing, one-hour configurable access/email tokens, email links use URL fragments, console delivery only. Verification is available without adding an undocumented sign-in gate.
+- Concurrent browser sign-ups exposed SQLite's stale-read-snapshot upgrade failure. Mutating HTTP requests now reserve write intent with `BEGIN IMMEDIATE` before their first database read; read requests keep ordinary transactions. A four-way simultaneous registration regression test covers the fix. Keep future write transactions short and run LLM work outside them.
+
+Auth references: [fastapi-users UserManager](https://fastapi-users.github.io/fastapi-users/latest/configuration/user-manager/), [JWT strategy](https://fastapi-users.github.io/fastapi-users/latest/configuration/authentication/strategies/jwt/).
+
+### Verification
+
+- `make test`: 84 backend tests passed, plus backend lint/format and frontend lint/TypeScript. Coverage includes every education level, missing/forged consent, Argon2 storage, duplicate email, bearer login/profile/logout, console email tokens, expired/reused verification/reset links, protected profile updates and four concurrent registrations.
+- Award/freeze regression tests confirm three-group crediting, rejection of mismatched ledger users, Monday 00:00 Lagos buckets and the 02:00 catch-up boundary. Migration checks and round-trip tests pass at revision 0002.
+- Production frontend and both Docker images build successfully. All 40 Chrome/WebKit checks pass at 360, 390, 768 and 1440px against an isolated temporary database, covering registration, consent, login persistence, profile edits, logout, reset requests, invalid links, safe return URLs, tap sizes, navigation and PWA/offline behavior. WebKit's native select needed explicit styling for a 48px tap target. Actual Safari/device verification remains for step 9.
+
 Technical references: [Next.js installation](https://nextjs.org/docs/app/getting-started/installation), [Next.js PWA guide](https://nextjs.org/docs/app/guides/progressive-web-apps), [Ollama model-list API](https://docs.ollama.com/api/tags).

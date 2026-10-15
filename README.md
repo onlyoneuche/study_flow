@@ -2,7 +2,7 @@
 
 A local, social study app for the hackathon. Python 3.12 + FastAPI + SQLite, Next.js App Router + TypeScript + Tailwind, and local Ollama. No hosted backend or paid API.
 
-**Current milestone: step 2, data model and migrations.** Accounts, groups, sessions, quiz/scoring, streak jobs and demo data arrive in the numbered build order. This is not yet an end-to-end MVP.
+**Current milestone: step 3, email/password authentication.** Create an account, sign in, edit your profile, verify your email and reset your password locally. Groups, sessions, quiz/scoring, streak jobs and demo data arrive in the numbered build order. This is not yet an end-to-end MVP.
 
 The [full design](docs/studyflow-design.md) is the source of truth. UI references: [mobile](docs/mockups/mobile.html), [desktop](docs/mockups/desktop.html). See [implementation notes and TODOs](docs/implementation-notes.md) for unresolved details.
 
@@ -47,9 +47,23 @@ Tests cover migrations, UTC timestamps, WAL/foreign keys, membership/band constr
 
 `make migrate` applies Alembic migrations and is safe to rerun. Relative `DATABASE_URL` paths are always resolved from `backend/`, consistently across the API, scripts and migrations. The default is `backend/data/studyflow.db` (ignored by Git). Connections enable WAL, foreign keys and a 10-second busy timeout. Application timestamps must be timezone-aware; storage and returned values use UTC.
 
-The initial migration creates all 15 design tables, including `focus_summaries` without enabling camera tracking. Database triggers reject ledger updates, deletes and replacements; corrections are appended adjustment rows. They also enforce membership caps, audience bands and the two-freezes-per-week limit. `OTHER` maps to `tertiary` and requires recorded 18+ confirmation. API consent collection arrives in step 3.
+The initial migration creates all 15 design tables, including `focus_summaries` without enabling camera tracking. Database triggers reject ledger updates, deletes and replacements; corrections are appended adjustment rows. They also enforce membership caps, audience bands and the two-freezes-per-week limit. `OTHER` maps to `tertiary` and requires recorded 18+ confirmation. Sign-up collects the required confirmations.
 
 Schema changes use a new Alembic revision, never application-startup `create_all`. After editing models, generate a revision from `backend/` with `uv run alembic revision --autogenerate -m "describe change"`, review it (triggers need manual review), then run `make migrate`, `make migration-check` and `make test` from the repository root. Tests downgrade and re-upgrade disposable databases; never downgrade a database whose history you need to retain.
+
+## Authentication demo
+
+Open [Create account](http://localhost:3000/auth/sign-up). Enter your display name, email, password and level. The audience band is derived from the level: JSS/SS requires guardian consent; university/postgraduate/OTHER requires confirmation that you are 18+. Consent timestamps are set by the server. The guardian checkbox also mentions the optional on-device Focus Tracker, which is not enabled yet.
+
+Verification emails print automatically in the backend console. For Docker, use `docker compose logs -f backend`; with `make dev`, use the server terminal. Open the printed `/auth/verify#token=...` link and tap **Verify email**. You can sign in before verification; no additional verification gate has been added to the design. Your account page can resend the email.
+
+**Forgot password?** on sign-in requests a reset email, also printed in the backend console. Open its `/auth/reset-password#token=...` link and set a new password. Email tokens expire after one hour by default; a successful reset invalidates that reset link. Unknown-email requests return the same response. Tokens appear in URL fragments so they are not sent in page-request URLs. No real emails or external mail services are used.
+
+Set `FRONTEND_URL` to the browser-facing app URL when running on a different host. `AUTH_TOKEN_LIFETIME_SECONDS` and `AUTH_EMAIL_TOKEN_LIFETIME_SECONDS` default to 3600. Passwords use Argon2 hashing and must contain 8–128 characters. Browser bearer tokens are kept in session storage and removed on sign-out; fastapi-users JWTs remain valid until expiry and are not revoked server-side by logout or a password reset.
+
+API routes are under `/api/v1`: `POST /auth/register`, `/auth/jwt/login` (form fields `username` and `password`), `/auth/jwt/logout`, `/auth/request-verify-token`, `/auth/verify`, `/auth/forgot-password`, `/auth/reset-password`; `GET/PATCH /users/me`. Profile updates accept display name and level, plus the appropriate confirmation when crossing audience bands without prior consent. Existing group constraints prevent a cross-band level change. Account deletion is deferred pending the documented anonymisation decision.
+
+The award guard uses `(participant_id, group_id, component)`, equivalent to `(user_id, group_id, session_id, award_type)` because participation is unique per user/session and migration 0002 enforces the ledger-user match. A regression test awards one session to three groups and rejects a duplicate within a group. Freeze buckets are Monday dates derived in Africa/Lagos; their boundary is Sunday 23:00 UTC. The scheduled streak/freeze job remains step 8.
 
 ## Docker
 
@@ -69,7 +83,6 @@ The production build includes an install manifest, local app icons and a service
 
 ## Next milestones
 
-3. fastapi-users authentication.
 4. Groups and invites.
 5. Server-timed sessions and WebSocket presence.
 6. Validated Ollama quizzes and cached fallback.

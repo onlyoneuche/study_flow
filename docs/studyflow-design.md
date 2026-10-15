@@ -201,7 +201,7 @@ All tables have `id` (int PK) and `created_at` (UTC) unless stated. FK = foreign
 
 | Table | Key columns | Notes |
 |---|---|---|
-| `users` | email (unique), hashed_password, is_active, is_verified, display_name, level, age_band (`under_18` / `18_plus`), guardian_consent_at (nullable), adult_confirmed_at (nullable), is_superuser | fastapi-users base table. `OTHER` requires `18_plus` and recorded 18+ confirmation. No DOB, phone, photo or school name. |
+| `users` | email (unique), hashed_password, is_active, is_verified, display_name, level, age_band (`under_18` / `18_plus`), guardian_consent_at (nullable), adult_confirmed_at (nullable), is_superuser | fastapi-users base table. Sign-up at every university/postgraduate/OTHER level requires `18_plus` confirmation; JSS/SS requires guardian consent. Timestamps are server-held. No DOB, phone, photo or school name. |
 | `groups` | name, owner_id FK users, audience_band (`secondary` / `tertiary`), max_members (default 8), is_active | |
 | `group_members` | group_id FK, user_id FK, role (`owner`/`member`), joined_at, left_at (nullable), removed_by (nullable) | Unique (group_id, user_id) where left_at is null. Max 3 active groups per user. |
 | `invites` | group_id FK, code (8 chars, unique), created_by FK, expires_at (7 days), max_uses, uses, revoked_at | Link: `/join/{code}`, WhatsApp share via `https://wa.me/?text=...` |
@@ -228,6 +228,7 @@ Prefix `/api/v1`. Auth is a bearer JWT from fastapi-users unless marked public.
 
 **Auth and profile**
 - `POST /auth/register`, `POST /auth/jwt/login`, `POST /auth/jwt/logout`, `POST /auth/forgot-password`, `POST /auth/reset-password` (fastapi-users)
+- `POST /auth/request-verify-token`, `POST /auth/verify` (fastapi-users). Verification and password-reset emails are printed to the local server console for the hackathon; no external delivery. Verification is requested automatically after sign-up.
 - `GET /users/me`, `PATCH /users/me` (display_name, level)
 
 **Groups and invites**
@@ -335,7 +336,7 @@ Rules:
 
 ## 8. Safety note: under-18 and university users
 
-- **Two audience bands.** Users at JSS/SS levels are `secondary` (assumed under 18); 100L and above and `OTHER` are `tertiary` (university/adult band). Users selecting `OTHER` must confirm they are 18+, recorded as `age_band = 18_plus` and `adult_confirmed_at` (decision, 15 Oct 2026). No cross-band groups are allowed. A group's band is set from the creator's level, and only users of the same band can join it. Under-18s and adults are therefore never in a group together. The group leaderboard is also split by band. (Judgement call: this blocks a university sibling tutoring a secondary student inside the app; acceptable for v1.)
+- **Two audience bands.** Users at JSS/SS levels are `secondary` (assumed under 18); 100L and above and `OTHER` are `tertiary` (university/adult band). Users selecting any university/postgraduate/OTHER level must confirm they are 18+, recorded as `age_band = 18_plus` and `adult_confirmed_at` (step 3 decision). No cross-band groups are allowed. A group's band is set from the creator's level, and only users of the same band can join it. Under-18s and adults are therefore never in a group together. The group leaderboard is also split by band. (Judgement call: this blocks a university sibling tutoring a secondary student inside the app; acceptable for v1.)
 - **Data minimisation.** Collect only email, password hash, display name and level. No date of birth, phone number, photo, school name or location. Display names are shown to group members only; there are no public profiles or search.
 - **Invite-only.** Groups cannot be discovered; joining needs a code or link that expires after 7 days and can be revoked. The public invite preview shows only the group name and member count.
 - **No free-text chat in v1.** Presence and a fixed set of emoji reactions only, so there is nothing to moderate between members. Flag notes are seen only by the operator.

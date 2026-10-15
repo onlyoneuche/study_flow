@@ -1,5 +1,6 @@
 import { BrandMark } from "@/components/app-shell";
 import { HealthStatus } from "@/components/health-status";
+import { AccountEntry } from "@/components/account-entry";
 
 export default function Home() {
   return <>
@@ -13,11 +14,12 @@ export default function Home() {
       <h2 className="relative mt-3 max-w-xl text-3xl leading-tight font-extrabold tracking-tight md:text-4xl">Your topic. Your pace.<br />Your study squad.</h2>
       <p className="relative mt-4 max-w-lg text-sm leading-relaxed text-brand-50 md:text-base">Make time for what you’re learning, reflect with a quiz, and build a study habit with friends.</p>
     </section>
+    <AccountEntry />
     <div className="mt-5 grid items-start gap-5 md:grid-cols-2">
       <section className="card p-5 md:p-6">
         <span className="inline-flex rounded-full bg-amber-50 px-3 py-1 text-xs font-bold text-amber-800">Taking shape</span>
         <h2 className="mt-4 text-xl font-bold text-slate-900">Good things start small.</h2>
-        <p className="mt-2 text-sm leading-relaxed text-slate-500">We’re getting your study space ready. Accounts, squads and timed sessions are coming next.</p>
+        <p className="mt-2 text-sm leading-relaxed text-slate-500">Your account is ready to create. Squads and timed sessions are coming next.</p>
         <p className="mt-5 rounded-xl bg-brand-50 p-3 text-sm font-semibold text-brand-800">Personal progress. Shared encouragement.</p>
       </section>
       <HealthStatus />

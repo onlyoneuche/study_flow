@@ -16,6 +16,9 @@ class Settings(BaseSettings):
     app_name: str = "StudyFlow"
     environment: Literal["development", "test", "production"] = "development"
     auth_secret: SecretStr = Field(min_length=32)
+    auth_token_lifetime_seconds: int = Field(default=3600, gt=0)
+    auth_email_token_lifetime_seconds: int = Field(default=3600, gt=0)
+    frontend_url: HttpUrl = HttpUrl("http://localhost:3000")
     database_url: str = "sqlite+aiosqlite:///./data/studyflow.db"
     cors_origins: list[str] = ["http://localhost:3000", "http://127.0.0.1:3000"]
     ollama_base_url: HttpUrl = HttpUrl("http://localhost:11434")

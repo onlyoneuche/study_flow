@@ -2,8 +2,11 @@ from contextlib import asynccontextmanager
 
 import httpx
 from fastapi import FastAPI
+from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
 
+from app.api.auth import router as auth_router
 from app.api.health import router as health_router
 from app.core.config import Settings, get_settings
 from app.db.database import Database
@@ -33,6 +36,20 @@ def create_app(
 
     app = FastAPI(title=config.app_name, version="0.1.0", lifespan=lifespan)
     app.state.settings = config
+
+    @app.exception_handler(RequestValidationError)
+    async def validation_error(_request, error):
+        # Validation errors must not echo passwords or email-link tokens back to clients.
+        return JSONResponse(
+            status_code=422,
+            content={
+                "detail": [
+                    {"loc": list(item["loc"]), "msg": item["msg"], "type": item["type"]}
+                    for item in error.errors()
+                ]
+            },
+        )
+
     app.add_middleware(
         CORSMiddleware,
         allow_origins=config.cors_origins,
@@ -42,4 +59,5 @@ def create_app(
     )
     app.include_router(health_router)
     app.include_router(health_router, prefix="/api/v1")
+    app.include_router(auth_router, prefix="/api/v1", tags=["auth"])
     return app

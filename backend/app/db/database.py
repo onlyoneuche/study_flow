@@ -36,12 +36,15 @@ def configure_sqlite(engine: Engine) -> None:
 
     @event.listens_for(engine, "begin")
     def begin(connection):
-        connection.exec_driver_sql("BEGIN")
+        immediate = connection.get_execution_options().get("sqlite_transaction_mode") == "IMMEDIATE"
+        connection.exec_driver_sql("BEGIN IMMEDIATE" if immediate else "BEGIN")
 
 
 class Database:
     def __init__(self, url: str):
-        self.engine = create_async_engine(database_url(url), connect_args={"timeout": 10})
+        self.engine = create_async_engine(
+            database_url(url), connect_args={"timeout": 10}, hide_parameters=True
+        )
         configure_sqlite(self.engine.sync_engine)
         self.session_factory = async_sessionmaker(self.engine, expire_on_commit=False)
 
@@ -51,4 +54,8 @@ class Database:
 
 async def get_session(request: Request) -> AsyncIterator[AsyncSession]:
     async with request.app.state.database.session_factory() as session:
+        # WAL cannot upgrade a read snapshot after another writer commits (SQLITE_BUSY_SNAPSHOT).
+        # Reserve write intent before the first read for mutating HTTP requests.
+        if request.method in {"POST", "PATCH", "PUT", "DELETE"}:
+            await session.connection(execution_options={"sqlite_transaction_mode": "IMMEDIATE"})
         yield session
