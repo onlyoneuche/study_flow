@@ -1,0 +1,53 @@
+import { test, expect } from "@playwright/test";
+
+test("create squad, share invite, sign up from invite, auto-join and owner removes", async ({ page, context, request }, testInfo) => {
+  const password = "studyflow-browser-password";
+  const createAccount = async (email: string, name: string) => {
+    const result = await request.post("/api/v1/auth/register", { data: { email, password, display_name: name, level: "SS2", audience_band: "secondary", guardian_consent: true } });
+    expect(result.status()).toBe(201);
+    const signed = await request.post("/api/v1/auth/jwt/login", { form: { username: email, password } });
+    return (await signed.json()).access_token as string;
+  };
+  const token = await createAccount(`owner-${crypto.randomUUID()}@example.com`, "Squad Owner");
+  await page.goto("/");
+  await page.evaluate(token => sessionStorage.setItem("studyflow-token", token), token);
+  await page.goto("/squad");
+  await page.getByLabel("Group name", { exact: true }).fill("Browser Study Squad");
+  await page.getByRole("button", { name: "Create group", exact: true }).click();
+  await expect(page.getByRole("heading", { name: "Browser Study Squad", exact: true })).toBeVisible();
+  await page.getByRole("button", { name: "Create invite", exact: true }).click();
+  const invite = page.getByLabel("Invite link", { exact: true });
+  await expect(invite).toHaveValue(/\/join\/[A-Z2-9]{8}$/);
+  const url = await invite.inputValue();
+  const code = url.split("/").pop()!;
+  await expect(page.getByRole("link", { name: "Share on WhatsApp" })).toHaveAttribute("href", /^https:\/\/wa.me\/\?text=/);
+  await page.screenshot({ path: testInfo.outputPath("squad.png"), fullPage: true });
+  const friend = await context.newPage();
+  // Session storage belongs to each tab; the invite must show a public preview here.
+  await friend.goto(`/join/${code}`);
+  await expect(friend.getByRole("heading", { name: "Join Browser Study Squad" })).toBeVisible();
+  await expect(friend.getByText("Squad Owner")).toHaveCount(0);
+  await friend.getByRole("link", { name: "Create account to join" }).click();
+  const email = `friend-${crypto.randomUUID()}@example.com`;
+  await friend.getByLabel("Display name", { exact: true }).fill("Invite Friend");
+  await friend.getByLabel("Email", { exact: true }).fill(email);
+  await friend.getByLabel("Password", { exact: true }).fill(password);
+  await friend.getByRole("checkbox").check();
+  await friend.getByRole("button", { name: "Create account", exact: true }).click();
+  await expect(friend.getByRole("status")).toContainText("Account created");
+  await friend.getByRole("link", { name: "Sign in", exact: true }).click();
+  await expect(friend.getByRole("heading", { name: "Welcome back", exact: true })).toBeVisible();
+  await friend.getByLabel("Email", { exact: true }).fill(email);
+  await friend.getByLabel("Password", { exact: true }).fill(password);
+  await friend.getByRole("button", { name: "Sign in", exact: true }).click();
+  await expect(friend.getByRole("heading", { name: "Browser Study Squad", exact: true })).toBeVisible();
+  await expect(friend.getByRole("button", { name: "Remove Squad Owner" })).toHaveCount(0);
+  await page.reload();
+  await page.getByRole("button", { name: "Remove Invite Friend" }).click();
+  await expect(page.getByText("Invite Friend", { exact: true })).toHaveCount(0);
+  await page.getByRole("button", { name: "Regenerate invite", exact: true }).click();
+  await friend.goto(`/join/${code}`);
+  await expect(friend.getByRole("main").getByRole("alert")).toContainText("disabled");
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBeTruthy();
+  await friend.close();
+});

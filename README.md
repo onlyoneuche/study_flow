@@ -2,7 +2,7 @@
 
 A local, social study app for the hackathon. Python 3.12 + FastAPI + SQLite, Next.js App Router + TypeScript + Tailwind, and local Ollama. No hosted backend or paid API.
 
-**Current milestone: step 3, email/password authentication.** Create an account, sign in, edit your profile, verify your email and reset your password locally. Groups, sessions, quiz/scoring, streak jobs and demo data arrive in the numbered build order. This is not yet an end-to-end MVP.
+**Current milestone: step 4, groups and invites.** Create an account and an invite-only squad, share a link, join through sign-up/login, manage members and transfer ownership. Sessions, quiz/scoring, streak jobs and demo data arrive in the numbered build order. This is not yet an end-to-end MVP.
 
 The [full design](docs/studyflow-design.md) is the source of truth. UI references: [mobile](docs/mockups/mobile.html), [desktop](docs/mockups/desktop.html). See [implementation notes and TODOs](docs/implementation-notes.md) for unresolved details.
 
@@ -41,7 +41,7 @@ make test-browser
 
 Health checks call Ollama's `/api/tags` with a bounded timeout and verify the configured model is installed, without generating text. HTTP 200 means the API is alive; JSON `status` is `ok` or `degraded`. Ollama details distinguish `ready`, `model_missing`, `unreachable` and `invalid_response`. A missing quiz service does not prevent startup: cached-quiz fallback is part of step 6. Neither database readiness nor generation quality is asserted by this scaffold health check.
 
-Tests cover migrations, UTC timestamps, WAL/foreign keys, membership/band constraints, invite storage constraints, append-only ledger enforcement and streak/focus storage invariants. Full scoring, streak-job and invite-acceptance tests arrive with those services. Seed commands arrive in step 10.
+Tests cover migrations, UTC timestamps, WAL/foreign keys, membership/band constraints, invite storage constraints, append-only ledger enforcement and streak/focus storage invariants. Invite acceptance tests cover every rejection state, idempotency, ownership and concurrent capacity/use limits. Full scoring and streak-job tests arrive with those services. Seed commands arrive in step 10.
 
 ## Database and migrations
 
@@ -65,6 +65,12 @@ API routes are under `/api/v1`: `POST /auth/register`, `/auth/jwt/login` (form f
 
 The award guard uses `(participant_id, group_id, component)`, equivalent to `(user_id, group_id, session_id, award_type)` because participation is unique per user/session and migration 0002 enforces the ledger-user match. A regression test awards one session to three groups and rejects a duplicate within a group. Freeze buckets are Monday dates derived in Africa/Lagos; their boundary is Sunday 23:00 UTC. The scheduled streak/freeze job remains step 8.
 
+## Groups and invites demo
+
+Open **Squad**, create a group (capacity 3–8), then **Create invite**. Copy the link or use **Share on WhatsApp**. New links expire in exactly 7 days; the owner chooses the use limit. **Regenerate invite** disables older links; **Disable invite** closes the current link. Eight-character codes omit ambiguous characters. Public previews reveal only group name and member count.
+
+Open the invite in another browser/tab. Create an account or sign in; the return destination survives both screens and membership is accepted automatically. Joining reports expired/disabled/exhausted links, full groups, different audience bands and the three-group limit. Existing membership succeeds without consuming another use, even with an old/full invite. The owner can remove a member; each member can leave. Ownership passes to the longest-standing remaining member. Membership history and earned points remain. Groups below three members pause streaks. An empty group is closed to joins pending the documented lifecycle TODO.
+
 ## Docker
 
 With Docker running and `.env` created:
@@ -83,7 +89,6 @@ The production build includes an install manifest, local app icons and a service
 
 ## Next milestones
 
-4. Groups and invites.
 5. Server-timed sessions and WebSocket presence.
 6. Validated Ollama quizzes and cached fallback.
 7. Scoring and ledger.

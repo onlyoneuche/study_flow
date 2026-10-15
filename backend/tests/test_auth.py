@@ -4,31 +4,15 @@ from datetime import UTC, datetime, timedelta
 
 import jwt
 import pytest
-from fastapi.testclient import TestClient
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from app.core.config import Settings
-from app.main import create_app
 from app.models import User
 from app.models.enums import EducationLevel, audience_for_level
 from tests.factories import group
 
 PASSWORD = "study-flow-test-password"
 EMAIL = "ada@example.com"
-
-
-@pytest.fixture
-def auth_client(db_path):
-    settings = Settings(
-        _env_file=None,
-        environment="test",
-        auth_secret="test-secret-with-at-least-32-characters",
-        database_url=f"sqlite+aiosqlite:///{db_path}",
-        frontend_url="http://127.0.0.1:3000",
-    )
-    with TestClient(create_app(settings)) as client:
-        yield client
 
 
 def registration(level=EducationLevel.SS2, **changes):

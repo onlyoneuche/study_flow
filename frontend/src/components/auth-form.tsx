@@ -32,6 +32,7 @@ export function AuthForm({ action }: { action: AuthAction }) {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
+  const returnQuery = search.get("next") ? `?next=${encodeURIComponent(search.get("next")!)}` : "";
   const secondary = bandFor(level) === "secondary";
 
   async function submit(event: FormEvent<HTMLFormElement>) {
@@ -84,9 +85,9 @@ export function AuthForm({ action }: { action: AuthAction }) {
         {!message && <button disabled={busy || !ready} className="min-h-13 w-full rounded-2xl bg-brand-600 px-5 font-bold text-white hover:bg-brand-700 disabled:opacity-50">{busy ? "One moment…" : action === "sign-up" ? "Create account" : action === "sign-in" ? "Sign in" : action === "forgot-password" ? "Send reset link" : action === "verify" ? "Verify email" : "Set new password"}</button>}
       </form>
       <div className="mt-5 flex flex-wrap gap-x-5 gap-y-2 text-sm font-semibold text-brand-700">
-        {action !== "sign-in" && <Link className="inline-flex min-h-11 items-center" href="/auth/sign-in">Sign in</Link>}
-        {action === "sign-in" && <><Link className="inline-flex min-h-11 items-center" href="/auth/sign-up">Create account</Link><Link className="inline-flex min-h-11 items-center" href="/auth/forgot-password">Forgot password?</Link></>}
-        {action === "reset-password" && <Link className="inline-flex min-h-11 items-center" href="/auth/forgot-password">Request a new link</Link>}
+        {action !== "sign-in" && <Link className="inline-flex min-h-11 items-center" href={`/auth/sign-in${returnQuery}`}>Sign in</Link>}
+        {action === "sign-in" && <><Link className="inline-flex min-h-11 items-center" href={`/auth/sign-up${returnQuery}`}>Create account</Link><Link className="inline-flex min-h-11 items-center" href={`/auth/forgot-password${returnQuery}`}>Forgot password?</Link></>}
+        {action === "reset-password" && <Link className="inline-flex min-h-11 items-center" href={`/auth/forgot-password${returnQuery}`}>Request a new link</Link>}
       </div>
     </div>
   </div>;

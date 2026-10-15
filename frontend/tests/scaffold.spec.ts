@@ -30,7 +30,7 @@ test("responsive navigation and the real API connection work", async ({ page }, 
   for (const [label, heading] of [
     ["Study", "Your study time"],
     ["Ranks", "Progress worth celebrating"],
-    ["Squad", "Your study squad"],
+    ["Squad", "Your squad is waiting"],
   ]) {
     await navigation.getByRole("link", { name: label, exact: true }).click();
     await expect(page.getByRole("heading", { name: heading })).toBeVisible();

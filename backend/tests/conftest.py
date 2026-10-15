@@ -1,13 +1,22 @@
+from datetime import timedelta
 from pathlib import Path
 from shutil import copyfile
+from types import SimpleNamespace
 
+import jwt
 import pytest
 from alembic.config import Config
+from fastapi.testclient import TestClient
 from sqlalchemy import create_engine
 from sqlalchemy.orm import Session
 
 from alembic import command
+from app.core.config import Settings
 from app.db.database import configure_sqlite
+from app.db.types import utc_now
+from app.main import create_app
+from app.models.enums import EducationLevel
+from tests.factories import user
 
 BACKEND = Path(__file__).resolve().parents[1]
 
@@ -45,3 +54,33 @@ def db_engine(db_path):
 def db(db_engine):
     with Session(db_engine, expire_on_commit=False) as session:
         yield session
+
+
+@pytest.fixture
+def auth_client(db_path):
+    settings = Settings(
+        _env_file=None,
+        environment="test",
+        auth_secret="test-secret-with-at-least-32-characters",
+        database_url=f"sqlite+aiosqlite:///{db_path}",
+        frontend_url="http://127.0.0.1:3000",
+    )
+    with TestClient(create_app(settings)) as client:
+        yield client
+
+
+@pytest.fixture
+def actor(auth_client, db_engine):
+    def make(level=EducationLevel.SS2, name="Ada"):
+        with Session(db_engine) as db:
+            learner = user(db, level=level, display_name=name)
+            db.commit()
+            uid = learner.id
+        token = jwt.encode(
+            {"sub": str(uid), "aud": "fastapi-users:auth", "exp": utc_now() + timedelta(hours=1)},
+            auth_client.app.state.settings.auth_secret.get_secret_value(),
+            algorithm="HS256",
+        )
+        return SimpleNamespace(id=uid, headers={"Authorization": f"Bearer {token}"})
+
+    return make

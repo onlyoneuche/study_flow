@@ -82,3 +82,11 @@ Auth references: [fastapi-users UserManager](https://fastapi-users.github.io/fas
 - Production frontend and both Docker images build successfully. All 40 Chrome/WebKit checks pass at 360, 390, 768 and 1440px against an isolated temporary database, covering registration, consent, login persistence, profile edits, logout, reset requests, invalid links, safe return URLs, tap sizes, navigation and PWA/offline behavior. WebKit's native select needed explicit styling for a 48px tap target. Actual Safari/device verification remains for step 9.
 
 Technical references: [Next.js installation](https://nextjs.org/docs/app/getting-started/installation), [Next.js PWA guide](https://nextjs.org/docs/app/guides/progressive-web-apps), [Ollama model-list API](https://docs.ollama.com/api/tags).
+
+## Step 4
+
+Groups and invites use the approved schema without a new migration. Invite codes are eight unambiguous uppercase characters. Existing membership is an idempotent success without consuming an invite use. New acceptance and invite regeneration are serialised with SQLite write intent. Public previews expose only name/count.
+
+TODO: the design does not define the lifecycle after the last member leaves. Preserve history and mark the empty group inactive, revoking links, until this is specified. The existing account anonymisation TODO stays in the backlog.
+
+Verification: 96 backend tests, lint/format, frontend lint/TypeScript, production build and schema check pass. All 48 browser checks pass in Chrome/WebKit at 360, 390, 768 and 1440px, including invite signup/login auto-join and owner removal. Actual Safari/device verification remains for step 9.
