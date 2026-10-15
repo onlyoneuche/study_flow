@@ -12,6 +12,7 @@ from app.models import (
     Group,
     GroupMember,
     GroupStreak,
+    GroupStreakDay,
     Invite,
     PointsLedger,
     SessionParticipant,
@@ -136,16 +137,28 @@ async def group_view(db: AsyncSession, group: Group, user_id: int, frontend_url:
         .select_from(StreakFreeze)
         .where(StreakFreeze.group_id == group.id, StreakFreeze.week_start == week)
     )
-    completed = await db.scalar(
-        select(func.count())
-        .select_from(SessionParticipant)
-        .where(
-            SessionParticipant.user_id.in_(list(names)),
-            SessionParticipant.session_date == lagos_date(now),
-            SessionParticipant.status == ParticipantStatus.COMPLETED,
+    completed_rows = (
+        await db.execute(
+            select(SessionParticipant.user_id, func.count())
+            .where(
+                SessionParticipant.user_id.in_(list(names)),
+                SessionParticipant.session_date == lagos_date(now),
+                SessionParticipant.status == ParticipantStatus.COMPLETED,
+            )
+            .group_by(SessionParticipant.user_id)
         )
-    )
+    ).all()
+    completed_by_user = dict(completed_rows)
+    completed = sum(completed_by_user.values())
     streak = await db.scalar(select(GroupStreak).where(GroupStreak.group_id == group.id))
+    days = (
+        await db.scalars(
+            select(GroupStreakDay)
+            .where(GroupStreakDay.group_id == group.id)
+            .order_by(GroupStreakDay.date.desc())
+            .limit(7)
+        )
+    ).all()
     invite = None
     if group.owner_id == user_id:
         invite = await db.scalar(
@@ -168,6 +181,7 @@ async def group_view(db: AsyncSession, group: Group, user_id: int, frontend_url:
                 level=names[m.user_id].level,
                 role=m.role,
                 joined_at=m.joined_at,
+                completed_today=completed_by_user.get(m.user_id, 0),
             )
             for m in members
         ],
@@ -176,6 +190,8 @@ async def group_view(db: AsyncSession, group: Group, user_id: int, frontend_url:
         week_start=week,
         streak=streak.current if streak else 0,
         streak_paused=len(members) < 3,
+        last_evaluated_date=streak.last_evaluated_date if streak else None,
+        streak_history=[dict(date=d.date, outcome=d.outcome) for d in reversed(days)],
         freezes_remaining=2 - freezes,
         completed_today=completed,
         invite=invite_view(invite, group, frontend_url) if invite else None,

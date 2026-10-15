@@ -68,7 +68,18 @@ engine.dispose()
   await expect(page.getByRole("heading", { name: "Nice work!", exact: true })).toBeVisible();
   await expect(page.getByRole("heading", { name: "Review your answers", exact: true })).toBeVisible();
   await expect(page.getByRole("heading", { name: "Points saved to your groups", exact: true })).toBeVisible();
-  await page.screenshot({ path: testInfo.outputPath("results.png"), fullPage: true });
+  const scoreBox = await page.getByRole("heading", { name: "Your quiz result", exact: true }).boundingBox();
+  const pointsBox = await page.getByRole("heading", { name: "Points saved to your groups", exact: true }).boundingBox();
+  const progress = page.getByRole("region", { name: "Current group progress", exact: true });
+  await expect(progress).toBeVisible();
+  if ((page.viewportSize()?.width ?? 0) > 1024) {
+    const progressBox = await progress.boundingBox();
+    expect(pointsBox!.x).toBeGreaterThan(scoreBox!.x);
+    expect(progressBox!.x).toBeGreaterThan(pointsBox!.x);
+    expect(Math.abs(progressBox!.y - pointsBox!.y)).toBeLessThan(60);
+  }
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBeTruthy();
+  await page.screenshot({ path: testInfo.outputPath("results.png") });
   if (testInfo.project.name === "chrome-390") {
     const review = page.getByRole("article").first();
     await review.getByRole("button", { name: "Flag question", exact: true }).click();
@@ -80,6 +91,12 @@ engine.dispose()
   const detail = await (await request.get(`/api/v1/groups/${group.id}`, { headers })).json();
   expect(detail.weekly_points).toBeGreaterThan(0);
   expect(detail.completed_today).toBeGreaterThan(0);
+  await page.goto("/");
+  await expect(page.getByRole("heading", { name: "Quiz Learner", exact: false })).toBeVisible();
+  await expect(page.getByRole("progressbar", { name: "Weekly group points", exact: true })).toHaveAttribute("aria-valuenow", String(detail.weekly_points));
+  await expect(page.getByRole("region", { name: "Today's group goal", exact: true })).toContainText(`${detail.completed_today} / 1`);
+  await page.getByRole("link", { name: "View result", exact: true }).click();
+  await expect(page.getByRole("heading", { name: "Nice work!", exact: true })).toBeVisible();
   await page.goto("/ranks");
   await expect(page.getByRole("heading", { name: "In my group", exact: true })).toBeVisible();
   await expect(page.getByText("Personal improvement points", { exact: true })).toBeVisible();

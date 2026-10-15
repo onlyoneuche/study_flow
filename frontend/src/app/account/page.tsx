@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState, type FormEvent } from "react";
 import { useAuth } from "@/components/auth-provider";
+import { HealthStatus } from "@/components/health-status";
 import { Consent } from "@/components/auth-form";
 import { api, bandFor, levels, levelLabel, type EducationLevel, type User } from "@/lib/api";
 
@@ -11,7 +12,7 @@ export default function Account() {
   const { user, ready, signOut, refresh, token } = useAuth();
   const router = useRouter();
   if (!ready) return <p role="status">Loading your account…</p>;
-  if (!user) return <section className="card mx-auto max-w-lg p-6"><h1 className="text-2xl font-extrabold">Your study space awaits</h1><Link href="/auth/sign-in?next=/account" className="mt-5 inline-flex min-h-12 items-center rounded-2xl bg-brand-600 px-5 font-bold text-white">Sign in</Link></section>;
+  if (!user) return <section className="card mx-auto max-w-lg p-6"><h1 className="text-2xl font-extrabold">Your study space awaits</h1><Link prefetch={false} href="/auth/sign-in?next=/account" className="mt-5 inline-flex min-h-12 items-center rounded-2xl bg-brand-600 px-5 font-bold text-white">Sign in</Link></section>;
   return <Profile key={user.id} user={user} token={token!} refresh={refresh} signOut={async () => { await signOut(); router.replace("/auth/sign-in"); }} />;
 }
 
@@ -52,7 +53,8 @@ function Profile({ user, token, refresh, signOut }: { user: User; token: string;
         {message && <p role="status" className="rounded-xl bg-brand-50 p-3 text-sm text-brand-800">{message}</p>}
         <button disabled={busy} className="min-h-12 rounded-2xl bg-brand-600 px-5 font-bold text-white disabled:opacity-50">{busy ? "One moment…" : "Save profile"}</button>
       </form>
-      <div className="mt-6 flex flex-wrap gap-4 border-t border-slate-100 pt-4 text-sm font-bold text-brand-700"><Link href="/auth/forgot-password" className="inline-flex min-h-11 items-center">Reset password</Link><button onClick={() => void signOut()} className="min-h-11">Sign out</button></div>
+      <div className="mt-6 flex flex-wrap gap-4 border-t border-slate-100 pt-4 text-sm font-bold text-brand-700"><Link prefetch={false} href="/auth/forgot-password" className="inline-flex min-h-11 items-center">Reset password</Link><button onClick={() => void signOut()} className="min-h-11">Sign out</button></div>
     </section>
+    <div className="mt-6"><HealthStatus /></div>
   </div>;
 }

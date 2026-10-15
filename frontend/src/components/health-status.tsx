@@ -57,7 +57,7 @@ export function HealthStatus() {
 
   return <section className="card p-5 md:p-6" aria-label="Connection status">
     <div className="flex flex-wrap items-center justify-between gap-3">
-      <h2 className="text-lg font-bold text-slate-900">Ready to connect</h2>
+      <h2 className="text-lg font-bold text-slate-900">Connection status</h2>
       <button type="button" onClick={() => void refresh()} disabled={loading} className="min-h-11 rounded-xl border border-slate-200 px-4 text-sm font-bold text-brand-700 disabled:opacity-50">{loading ? "Checking…" : "Check again"}</button>
     </div>
     <div role="status" aria-live="polite" className="mt-4 space-y-3 text-sm text-slate-600">

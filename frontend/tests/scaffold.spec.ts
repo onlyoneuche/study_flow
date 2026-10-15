@@ -5,14 +5,11 @@ test("responsive navigation and the real API connection work", async ({ page }, 
   page.on("pageerror", (error) => errors.push(error.message));
   await page.goto("/");
   await expect(page.getByRole("heading", { name: "Welcome to StudyFlow" })).toBeVisible();
-  await expect(page.getByText("StudyFlow is online")).toBeVisible();
   const health = await page.request.get("/api/v1/health");
   expect(health.ok()).toBeTruthy();
   expect(["ok", "degraded"]).toContain((await health.json()).status);
-  const retry = page.getByRole("button", { name: "Check again" });
-  await retry.click();
-  await expect(retry).toBeEnabled();
-  await expect(page.getByText("StudyFlow is online")).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Grow together", exact: true })).toBeVisible();
+  await expect(page.getByText("Taking shape", { exact: true })).toHaveCount(0);
 
   const navigation = page.getByRole("navigation", { name: "Main navigation" }).filter({ visible: true });
   await expect(navigation).toHaveCount(1);

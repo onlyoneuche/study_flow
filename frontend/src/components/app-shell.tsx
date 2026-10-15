@@ -1,6 +1,8 @@
 "use client";
 
 import Link from "next/link";
+import { useAuth } from "@/components/auth-provider";
+import { levelLabel } from "@/lib/api";
 import { usePathname } from "next/navigation";
 
 const items = [
@@ -12,12 +14,13 @@ const items = [
 
 export function AppShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-  if (pathname.startsWith("/auth/")) return <main id="main" className="min-h-dvh px-5 py-7 md:py-12"><Link href="/" className="mx-auto mb-10 flex min-h-12 max-w-lg items-center gap-3 text-2xl font-extrabold"><BrandMark />StudyFlow</Link>{children}</main>;
+  const { user } = useAuth();
+  if (pathname.startsWith("/auth/")) return <main id="main" className="min-h-dvh px-5 py-7 md:py-12"><Link prefetch={false} href="/" className="mx-auto mb-10 flex min-h-12 max-w-lg items-center gap-3 text-2xl font-extrabold"><BrandMark />StudyFlow</Link>{children}</main>;
   return (
-    <div className="min-h-dvh min-[1025px]:pl-62">
+    <div className="min-h-dvh min-[64.0625rem]:pl-62">
       <a href="#main" className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-50 focus:rounded-xl focus:bg-white focus:p-4">Skip to content</a>
-      <aside className="fixed inset-y-0 left-0 hidden w-62 flex-col border-r border-slate-200/70 bg-white px-5 py-7 min-[1025px]:flex">
-        <Link href="/" className="flex min-h-12 items-center gap-2.5 px-2 text-[22px] font-extrabold tracking-tight text-slate-900">
+      <aside className="fixed inset-y-0 left-0 hidden w-62 flex-col border-r border-slate-200/70 bg-white px-5 py-7 min-[64.0625rem]:flex">
+        <Link prefetch={false} href="/" className="flex min-h-12 items-center gap-2.5 px-2 text-[22px] font-extrabold tracking-tight text-slate-900">
           <BrandMark />StudyFlow
         </Link>
         <nav aria-label="Main navigation" className="mt-9 space-y-1.5">
@@ -26,11 +29,12 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         <div className="mt-auto rounded-2xl bg-brand-50 p-4 text-sm leading-relaxed text-brand-800">
           A little progress, together.<br />One session at a time.
         </div>
+        <Link prefetch={false} href={user ? "/account" : "/auth/sign-in"} className="mt-5 flex min-h-14 items-center gap-3 border-t border-slate-100 pt-5"><span aria-hidden="true" className="flex size-10 shrink-0 items-center justify-center rounded-full bg-rose-400 text-sm font-bold text-white">{user?.display_name.slice(0,2).toUpperCase() ?? "→"}</span><span className="min-w-0"><span className="block text-sm font-bold wrap-anywhere">{user?.display_name ?? "Sign in"}</span><span className="text-xs text-slate-500">{user ? `${levelLabel(user.level)} · Your account` : "Your study space awaits"}</span></span></Link>
       </aside>
-      <main id="main" className="mx-auto max-w-7xl px-5 pt-7 pb-28 md:px-8 md:pt-10 min-[1025px]:px-10 min-[1025px]:pb-10">
+      <main id="main" className="mx-auto max-w-7xl px-5 pt-7 pb-28 md:px-8 md:pt-10 min-[64.0625rem]:px-10 min-[64.0625rem]:pb-10">
         {children}
       </main>
-      <nav aria-label="Main navigation" className="fixed inset-x-0 bottom-0 z-20 flex justify-around border-t border-slate-100 bg-white px-3 pt-2 pb-[max(12px,env(safe-area-inset-bottom))] min-[1025px]:hidden">
+      <nav aria-label="Main navigation" className="fixed inset-x-0 bottom-0 z-20 flex justify-around border-t border-slate-100 bg-white px-3 pt-2 pb-[max(12px,env(safe-area-inset-bottom))] min-[64.0625rem]:hidden">
         {items.map((item) => <NavItem key={item.href} item={item} active={pathname === item.href || (item.href === "/squad" && (pathname.startsWith("/groups/") || pathname.startsWith("/join/"))) || (item.href === "/study" && (pathname.startsWith("/sessions/") || pathname.startsWith("/participants/")))} mobile />)}
       </nav>
     </div>
@@ -38,7 +42,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 }
 
 function NavItem({ item, active, mobile = false }: { item: typeof items[number]; active: boolean; mobile?: boolean }) {
-  return <Link href={item.href} aria-current={active ? "page" : undefined} className={`flex min-h-12 items-center rounded-2xl font-semibold ${mobile ? "min-w-16 flex-col justify-center gap-1 text-[11px]" : "gap-3 px-4 text-base"} ${active ? `text-brand-700 ${mobile ? "" : "bg-brand-50"}` : "text-slate-500 hover:text-brand-700"}`}>
+  return <Link prefetch={false} href={item.href} aria-current={active ? "page" : undefined} className={`flex min-h-12 items-center rounded-2xl font-semibold ${mobile ? "min-w-16 flex-col justify-center gap-1 text-[11px]" : "gap-3 px-4 text-base"} ${active ? `text-brand-700 ${mobile ? "" : "bg-brand-50"}` : "text-slate-500 hover:text-brand-700"}`}>
     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d={item.path} /></svg>
     {item.label}
   </Link>;

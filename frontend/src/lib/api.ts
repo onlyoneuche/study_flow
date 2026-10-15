@@ -12,6 +12,8 @@ const messages: Record<string, string> = {
   RESET_PASSWORD_BAD_TOKEN: "This reset link is invalid, expired or already used. Request a new link.",
 };
 
+export class APIError extends Error { constructor(message: string, public status: number) { super(message); this.name = "APIError"; } }
+
 export async function api<T>(path: string, options: { method?: string; body?: unknown; token?: string; form?: URLSearchParams } = {}): Promise<T> {
   let response: Response;
   try {
@@ -25,7 +27,7 @@ export async function api<T>(path: string, options: { method?: string; body?: un
     const body = await response.json().catch(() => ({}));
     const detail = body.detail;
     const message = Array.isArray(detail) ? detail.map((entry: { msg: string }) => entry.msg.replace(/^Value error, /, "")).join(". ") : typeof detail === "object" && detail?.reason ? detail.reason : messages[detail] ?? (typeof detail === "string" ? detail : "Something went wrong. Please try again.");
-    throw new Error(message);
+    throw new APIError(message, response.status);
   }
   return response.status === 204 ? undefined as T : await response.json().catch(() => undefined) as T;
 }

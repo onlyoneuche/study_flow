@@ -52,6 +52,9 @@ def completed(db, person, day, mode=SessionMode.SOLO):
         host_id=person.id,
         mode=mode,
         planned_minutes=25,
+        status="ended",
+        started_at=midnight(day) + timedelta(hours=20),
+        end_at=midnight(day) + timedelta(hours=21),
         group_id=db.scalar(select(GroupMember.group_id).where(GroupMember.user_id == person.id))
         if mode == SessionMode.LIVE
         else None,

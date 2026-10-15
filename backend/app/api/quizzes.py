@@ -74,6 +74,21 @@ async def awards(db, participant):
 
 async def result(db, participant, attempt, now):
     questions = await questions_for(db, attempt.quiz_id)
+    history = (
+        await db.execute(
+            select(QuizAttempt.score_pct, SessionParticipant.session_date)
+            .join(SessionParticipant, QuizAttempt.participant_id == SessionParticipant.id)
+            .where(
+                QuizAttempt.user_id == participant.user_id,
+                SessionParticipant.subject_norm == participant.subject_norm,
+                SessionParticipant.level == participant.level,
+                QuizAttempt.counts_for_baseline.is_(True),
+                QuizAttempt.submitted_at <= attempt.submitted_at,
+            )
+            .order_by(QuizAttempt.submitted_at.desc(), QuizAttempt.id.desc())
+            .limit(6)
+        )
+    ).all()
     flagged = set(
         (
             await db.scalars(
@@ -97,6 +112,7 @@ async def result(db, participant, attempt, now):
         submitted_at=attempt.submitted_at,
         server_now=now,
         points=await awards(db, participant),
+        score_history=[dict(score_pct=score, date=day) for score, day in reversed(history)],
         questions=[
             dict(
                 id=q.id,
@@ -219,6 +235,30 @@ async def start_quiz(
     participant_id: int, request: Request, db: DB, user: Learner, background_tasks: BackgroundTasks
 ):
     return await open_quiz(participant_id, request, db, user, background_tasks)
+
+
+@router.get("/participants/{participant_id}/result")
+async def completed_result(participant_id: int, request: Request, db: DB, user: Learner):
+    now = request.app.state.clock()
+    participant, _session = await own_participant(db, participant_id, user.id, now)
+    attempt = await db.scalar(
+        select(QuizAttempt).where(QuizAttempt.participant_id == participant.id)
+    )
+    if attempt and attempt.submitted_at:
+        return await result(db, participant, attempt, now)
+    if participant.status != ParticipantStatus.COMPLETED:
+        fail("results_pending", "Complete your session before viewing its result.")
+    return dict(
+        status="time_only",
+        participant_id=participant.id,
+        session_id=participant.session_id,
+        subject=participant.subject,
+        topic=participant.topic,
+        level=participant.level,
+        message="Your active study time counts. The quiz was unavailable or its deadline passed; "
+        "time-only points are saved without quiz or improvement points.",
+        points=await awards(db, participant),
+    )
 
 
 @router.post("/participants/{participant_id}/quiz/submit")

@@ -5,7 +5,7 @@ The source of truth is [studyflow-design.md](studyflow-design.md). The user's nu
 ## Scope decisions from the source
 
 - Group full-live bonus `G` is v2 (§1.2 and §10), so the MVP will not award it.
-- Session heartbeats continue while a tab is hidden (§3.3). Only Focus Tracker sampling pauses on a hidden tab (§9.3, §9.5). Hidden-tab pauses must never be labelled away. TODO: ensure the later session UI distinguishes tracker pause from server presence.
+- Session heartbeats continue while a tab is hidden (§3.3). Only Focus Tracker sampling pauses on a hidden tab (§9.3, §9.5). Hidden-tab pauses must never be labelled away. The session UI keeps these separate; camera tracking remains off for MVP.
 - Focus Tracker implementation follows steps 1–11; its table belongs in step 2 as requested. Scoring and streak code must never read it.
 - Missing Ollama is a degraded dependency, not an API outage (§3.7). `/health` and `/api/v1/health` return HTTP 200 with detailed dependency state; this avoids blocking startup or Docker liveness when cached quizzes can serve the app. This is an infrastructure choice, not a scoring rule.
 
@@ -164,3 +164,17 @@ Weekly reset is a ledger query boundary, with no destructive updates; group view
 TODO: the design's optional `snapshot_weekly_leaderboard` pseudocode does not specify storage or API. Historical ledger queries work; no snapshot table or ranking rules were invented. Account anonymisation remains in the backlog.
 
 Verification: `make test` passes all 189 backend tests and frontend lint/TypeScript. The 24 new streak tests cover kept/frozen/broken/paused days, zero-streak conservation, day-start membership boundaries, mixed live/solo and duplicate completions, multi-day catch-up, 02:00 restart boundaries, DST-free Lagos dates, Monday allowance/bar switching without ledger loss, archived/new groups, transaction rollback, concurrent catch-up, lock ownership/release and cron scheduling.
+
+## Step 9
+
+Completed the mockup-based responsive screens with real data: authenticated Home/dashboard and empty state; group selection, weekly bar, streak audit, freeze allowance, daily session goal, studied-today members and scheduled/running live rooms; session creation with recent topics; centred room timer and members/weekly bar; quiz and review tracker; three-column desktop results with per-group ledger totals and private score history; side-by-side desktop group/improvement leaderboards. Auth, invites, profile, ledger and PWA flows remain integrated. Removed the unused scaffold placeholder route. RSVP counts, nudges and cross-person raw-score badges remain omitted.
+
+Added a private dashboard aggregation route and owner-only completed-result read route. The latter allows time-only results after a rejected late quiz start without extending either deadline. Group views expose documented completion counts per current member and the last seven recorded streak outcomes. The results chart uses only the learner's same-subject/level counted quizzes through that completion. No schema or scoring changes.
+
+Navigation disables automatic prefetching to reduce background requests on slow connections. Assets/fonts stay local, no camera/model bundle is loaded in the browser, and the service worker still caches only the public offline fallback. Quiz-ready notifications use the service worker when available and show clear feedback when notifications are unsupported/denied. Long names/topics wrap, controls remain large, and breakpoint units are consistent so tablet styles cannot override the desktop three-column layout.
+
+Verification: all 195 backend tests, lint/format, frontend lint/TypeScript, production build, migration agreement and both Docker builds pass. The full 80-check production-browser suite passed, followed by 32 targeted session/dashboard/quiz checks after the final display and result-link refinements, in installed Chrome and Playwright WebKit at 360, 390, 768 and 1440px. Coverage includes account/consent flows, invite redirect/auto-join, solo and multi-person live sockets, timer/reload, quiz keyboard controls, option privacy, submission/flags, results-to-dashboard progress, leaderboard/ledger, responsive layouts and PWA/offline recovery. Screenshots of Home, session, quiz and results were reviewed. The API-failure injection test blocks service workers only in that test file so WebKit routing reaches Playwright; the separate PWA tests keep workers enabled.
+
+Native Safari: the user opened a window after the tool initially reported none. Public Home and sign-up/guardian-consent rendering were visually checked in desktop Safari against the local production preview. Native web-element clicks/window resizing repeatedly failed with `elementHasNoFrame` / `noWindowsAvailable`; the full native Safari width matrix and physical-device pass remain manual. All four sizes are covered by WebKit automation; do not label that as a full native Safari/device pass.
+
+No new game-rule ambiguities. Optional weekly snapshot storage and account anonymisation remain TODOs. Focus Tracker remains stretch work after steps 10–11.

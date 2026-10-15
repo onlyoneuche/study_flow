@@ -12,6 +12,7 @@
 }
 
 body { background: var(--color-cream); color: #1e293b; }
+h1, h2, h3 { overflow-wrap: anywhere; }
 button, a { -webkit-tap-highlight-color: transparent; }
 button:enabled { cursor: pointer; }
 :focus-visible { outline: 3px solid #059669; outline-offset: 4px; }

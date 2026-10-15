@@ -7,6 +7,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
 from app.api.auth import router as auth_router
+from app.api.dashboard import router as dashboard_router
 from app.api.groups import router as groups_router
 from app.api.health import router as health_router
 from app.api.points import router as points_router
@@ -86,4 +87,5 @@ def create_app(
     app.include_router(presence_router, tags=["presence"])
     app.include_router(quizzes_router, prefix="/api/v1", tags=["quizzes"])
     app.include_router(points_router, prefix="/api/v1", tags=["points"])
+    app.include_router(dashboard_router, prefix="/api/v1", tags=["dashboard"])
     return app

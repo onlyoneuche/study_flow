@@ -31,9 +31,9 @@ test("adult signup, sign-in, profile and sign-out work", async ({ page }, testIn
   await expect(page.getByLabel("Display name", { exact: true })).toHaveValue("Ada Browser");
   await page.getByLabel("Display name", { exact: true }).fill("Ada Updated");
   await page.getByRole("button", { name: "Save profile", exact: true }).click();
-  await expect(page.getByRole("status")).toContainText("Profile saved");
+  await expect(page.getByRole("status").filter({ hasText: "Profile saved" })).toContainText("Profile saved");
   await page.getByRole("button", { name: "Resend verification email", exact: true }).click();
-  await expect(page.getByRole("status")).toContainText("verification link");
+  await expect(page.getByRole("status").filter({ hasText: "verification link" })).toContainText("verification link");
   await page.getByRole("button", { name: "Sign out", exact: true }).click();
   await expect(page.getByRole("heading", { name: "Welcome back", exact: true })).toBeVisible();
   await page.goto("/account");

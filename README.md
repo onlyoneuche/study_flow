@@ -2,7 +2,7 @@
 
 A local, social study app for the hackathon. Python 3.12 + FastAPI + SQLite, Next.js App Router + TypeScript + Tailwind, and local Ollama. No hosted backend or paid API.
 
-**Current milestone: step 7, quiz scoring and points.** Study solo or live, take a validated quiz, see the points breakdown and group bar update, and compare personal improvement within your squad. Streak jobs, the remaining dashboard polish and full demo history arrive in the numbered build order. This is not yet an end-to-end MVP.
+**Current milestone: step 9, responsive screens and Lagos streak jobs.** Sign up, invite friends, study solo or live, take a quiz and see points, group progress and rankings. Nightly streak evaluation and restart catch-up are active. The full Study Squad seed history and final hackathon demo guide remain steps 10–11.
 
 The [full design](docs/studyflow-design.md) is the source of truth. UI references: [mobile](docs/mockups/mobile.html), [desktop](docs/mockups/desktop.html). See [implementation notes and TODOs](docs/implementation-notes.md) for unresolved details.
 
@@ -33,16 +33,16 @@ make build  # frontend production build
 make migration-check  # verify the migrated schema matches the models
 ```
 
-Browser checks use installed Google Chrome and Playwright WebKit at 360, 390, 768 and 1440px. Stop the local app servers/containers first; the browser runner creates a disposable `/tmp/studyflow-…` database, applies migrations and seeds fallback quizzes automatically. WebKit provides Safari-engine coverage; an actual Safari/device pass is still required for the completed screens in step 9.
+Browser checks use installed Google Chrome and Playwright WebKit at 360, 390, 768 and 1440px. Stop the local app servers/containers first; the browser runner creates a disposable `/tmp/studyflow-…` database, applies migrations and seeds fallback quizzes automatically. WebKit provides Safari-engine coverage at all four widths. A native Safari desktop rendering smoke check also passed; full native Safari/device testing at each size remains manual because native window/input automation was intermittent.
 
 ```sh
 cd frontend && npx playwright install webkit && cd ..
 make test-browser
 ```
 
-Health checks call Ollama's `/api/tags` with a bounded timeout and verify the configured model is installed, without generating text. HTTP 200 means the API is alive; JSON `status` is `ok` or `degraded`. Ollama details distinguish `ready`, `model_missing`, `unreachable` and `invalid_response`. A missing quiz service does not prevent startup: cached-quiz fallback is part of step 6. Neither database readiness nor generation quality is asserted by this scaffold health check.
+Health checks call Ollama's `/api/tags` with a bounded timeout and verify the configured model is installed, without generating text. HTTP 200 means the API is alive; JSON `status` is `ok` or `degraded`. Ollama details distinguish `ready`, `model_missing`, `unreachable` and `invalid_response`. A missing quiz service does not prevent startup: cached-quiz fallback is part of step 6. Neither database readiness nor generation quality is asserted by this health check.
 
-Tests cover migrations, UTC timestamps, WAL/foreign keys, membership/band constraints, invite storage constraints, append-only ledger enforcement and streak/focus storage invariants. Invite acceptance tests cover every rejection state, idempotency, ownership and concurrent capacity/use limits. Full scoring and streak-job tests arrive with those services. Seed commands arrive in step 10.
+Tests cover migrations, UTC timestamps, WAL/foreign keys, membership/band constraints, invite storage constraints, append-only ledger enforcement and streak/focus storage invariants. Invite acceptance tests cover every rejection state, idempotency, ownership and concurrent capacity/use limits. Scoring tests cover the worked example, caps, live/multi-group credit and quiz fallback. Streak tests cover membership snapshots, freezes, catch-up, Lagos boundaries, atomicity and idempotency. Full demo history seeding arrives in step 10.
 
 ## Database and migrations
 
@@ -70,7 +70,7 @@ The award guard uses `(participant_id, group_id, component)`, equivalent to `(us
 
 Open **Squad**, create a group (capacity 3–8), then **Create invite**. Copy the link or use **Share on WhatsApp**. New links expire in exactly 7 days; the owner chooses the use limit. **Regenerate invite** disables older links; **Disable invite** closes the current link. Eight-character codes omit ambiguous characters. Public previews reveal only group name and member count.
 
-Open the invite in another browser/tab. Create an account or sign in; the return destination survives both screens and membership is accepted automatically. Joining reports expired/disabled/exhausted links, full groups, different audience bands and the three-group limit. Existing membership succeeds without consuming another use, even with an old/full invite. The owner can remove a member; each member can leave. Ownership passes to the longest-standing remaining member. Membership history and earned points remain. Groups below three members pause streaks. An empty group is archived with invites disabled; history and ledger remain.
+Open the invite in another browser/tab. Create an account or sign in; the return destination survives both screens and membership is accepted automatically. Joining reports expired/disabled/exhausted links, full groups, different audience bands and the three-group limit. Existing membership succeeds without consuming another use, even with an old/full invite. The owner can remove a member; each member can leave. Ownership passes to the longest-standing remaining member. Membership history and earned points remain. Days starting with fewer than three eligible members pause streaks. An empty group is archived with invites disabled; history and ledger remain.
 
 ## Sessions demo
 
@@ -110,6 +110,16 @@ Use one backend instance/worker per SQLite database. An operating-system lock be
 
 Weekly bars and freeze allowances switch at Monday 00:00 Lagos (Sunday 23:00 UTC), through date-filtered queries. The weekly cron records that boundary without deleting or rewriting history; Sunday is still evaluated at Monday 02:00 using Sunday’s week. Historical ledger queries remain available. Optional weekly leaderboard snapshot storage is unspecified in the design and stays a TODO.
 
+## Responsive screens
+
+Home shows your selected squad’s weekly bar, streak and freezes, today’s group session goal, studied-today members and the next real live room. With no squad, it offers group creation/joining and solo study. Recent study links resume active sessions, open unfinished quizzes or review saved results, including time-only completions. Refresh or return to Home for current progress; visible dashboards also refresh every 30 seconds. There are no RSVP counts, nudges or other people’s raw quiz scores.
+
+Below 768px, screens stack around the bottom navigation and large controls. From 768px, the timer and members, or quiz and tracker, sit beside one another. Above 1024px, the left sidebar replaces the bottom navigation, Home becomes a dashboard grid, Results uses three columns and both leaderboards sit side by side. The quiz stays about 640px wide with a separate step tracker; 1–4 selects answers and Enter advances. Saved points show separate totals for each group. Charts show only your own subject/level history. The streak card names its last evaluated Lagos day rather than promising an immediate streak increment.
+
+Assets and fonts are local, camera tracking stays off, and links load pages when opened instead of automatically prefetching them. Authenticated responses are not cached. Connection errors have a retry path. Your account page contains the local connection/model status.
+
+Supporting private routes: `GET /users/me/dashboard` combines your accessible groups/open rooms and your latest eight participations; `GET /participants/{id}/result` reads your completed result, including time-only points after a quiz deadline. The quiz start/submit deadlines remain enforced.
+
 ## Docker
 
 With Docker running and `.env` created:
@@ -127,7 +137,6 @@ The production build includes an install manifest, local app icons and a service
 
 ## Next milestones
 
-9. Full responsive screens against the supplied mockups.
 10. Study Squad seed history.
 11. Complete setup and end-to-end demo instructions.
 

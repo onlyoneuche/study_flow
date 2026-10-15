@@ -234,6 +234,7 @@ Prefix `/api/v1`. Auth is a bearer JWT from fastapi-users unless marked public.
 - `POST /auth/register`, `POST /auth/jwt/login`, `POST /auth/jwt/logout`, `POST /auth/forgot-password`, `POST /auth/reset-password` (fastapi-users)
 - `POST /auth/request-verify-token`, `POST /auth/verify` (fastapi-users). Verification and password-reset emails are printed to the local server console for the hackathon; no external delivery. Verification is requested automatically after sign-up.
 - `GET /users/me`, `PATCH /users/me` (display_name, level)
+- `GET /users/me/dashboard` (private: accessible groups/open rooms, own weekly completion count and latest eight participations; no other learners’ quiz scores)
 
 **Groups and invites**
 - `POST /groups` | `GET /groups` (mine) | `GET /groups/{id}` (members, streak, freezes left, weekly bar)
@@ -253,6 +254,7 @@ Prefix `/api/v1`. Auth is a bearer JWT from fastapi-users unless marked public.
 - `POST /participants/{id}/quiz/start` (explicit, idempotent alternative to opening via GET)
 - `POST /participants/{id}/quiz/submit` (`answers: [int x15]`) -> score, explanations, points breakdown
 - `POST /questions/{id}/flags` (reason, note)
+- `GET /participants/{id}/result` (owner only: saved completed result, including time-only completion after a quiz deadline; does not extend the quiz window). Submitted results include only the owner’s last six counted quiz scores for the same subject/level at completion.
 
 **Points and leaderboards**
 - `GET /groups/{id}/points?week=YYYY-MM-DD` (bar, per-member improvement ranking)
