@@ -14,7 +14,7 @@ Designed by me and developed with [OpenAI Codex](https://openai.com/codex/) as m
 
 ## Why StudyFlow
 
-Most learners don't quit because the material is too hard. They quit because it's hard to keep showing up alone. StudyFlow tackles this with three things that research links to persistence: social accountability, regular routines and visible personal progress.
+Most learners don't quit because the material is too hard. They quit because it's hard to keep showing up alone. StudyFlow tackles this with three things that research links to persistence: [social accountability](https://doi.org/10.3102/0162373713500523), [regular routines](https://doi.org/10.1073/pnas.1921417117) and [visible personal progress](https://doi.org/10.1007/s10648-019-09498-w).
 
 ## How it works
 
