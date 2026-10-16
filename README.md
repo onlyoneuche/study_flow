@@ -7,7 +7,7 @@
 <img width="1437" height="903" alt="Screenshot 2026-10-16 at 01 22 29" src="https://github.com/user-attachments/assets/cb667fbd-63cd-4cce-9ad8-e21b07939731" />
 
 ---
-StudyFlow is a research-backed, gamified social study app built for the hackathon theme *Engagement & Staying in the Learning Journey*. It helps students stay motivated and keep learning over time instead of dropping off.
+StudyFlow is a research-backed, gamified social study app built for the hackathon theme `Engagement & Staying in the Learning Journey`. It helps students stay motivated and keep learning over time instead of dropping off.
 
 Built local-first with FastAPI, Next.js, SQLite and Ollama. It uses no paid APIs and no hosted backend.
 Designed by me and developed with [OpenAI Codex](https://openai.com/codex/) as my coding agent.
