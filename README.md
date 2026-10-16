@@ -1,6 +1,7 @@
 # StudyFlow
 
 **Study together. Improve together. Keep showing up.**
+
 ![Uploading Screenshot 2026-10-16 at 01.03.46.png…]()
 
 StudyFlow is a research-backed, gamified social study app built for the hackathon theme *Engagement & Staying in the Learning Journey*. It helps students stay motivated and keep learning over time instead of dropping off.
