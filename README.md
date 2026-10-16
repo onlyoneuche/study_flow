@@ -12,6 +12,11 @@ StudyFlow is a research-backed, gamified social study app built for the hackatho
 Built local-first with FastAPI, Next.js, SQLite and Ollama. It uses no paid APIs and no hosted backend.
 Designed by me and developed with [OpenAI Codex](https://openai.com/codex/) as my coding agent.
 
+<p align="center">
+  <img src="docs/images/architecture.svg" alt="StudyFlow architecture" width="850">
+</p>
+
+
 ## Why StudyFlow
 
 Most learners don't quit because the material is too hard. They quit because it's hard to keep showing up alone. StudyFlow tackles this with three things that research links to [persistence](https://doi.org/10.1007/s11423-010-9177-y): [social accountability](https://doi.org/10.3102/0162373713500523), [regular routines](https://doi.org/10.1073/pnas.1921417117) and [visible personal progress](https://doi.org/10.1007/s10648-019-09498-w).
@@ -19,6 +24,9 @@ Most learners don't quit because the material is too hard. They quit because it'
 StudyFlow turns studying into a shared daily habit. Friends hold each other accountable through live sessions and a squad streak, a short quiz after every session shows each learner what they've retained, and points reward getting better rather than being the best, so everyone has a reason to come back tomorrow.
 
 ## How it works
+<p align="center">
+  <img src="docs/images/how-it-works.svg" alt="How StudyFlow works" width="750">
+</p>
 
 1. **Form a squad.** Create a squad of 3–8 friends and invite them with a link you can share on WhatsApp.
 2. **Study together, each on your own subject.** Join a timed live session with your squad. If you can't make it, do a solo session later. It still counts, but joining live earns bonus points.

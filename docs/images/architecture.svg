@@ -1,0 +1,81 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 460" width="900" height="460" font-family="Inter,Segoe UI,Arial,sans-serif">
+<style>
+.box{fill:#ffffff;stroke:#c7d2fe;stroke-width:2;rx:14}
+.t{font-size:16px;font-weight:700;fill:#1e1b4b}
+.s{font-size:12px;fill:#475569}
+.l{font-size:11px;fill:#6366f1;font-weight:600}
+.flow{fill:none;stroke:#818cf8;stroke-width:2.5;stroke-dasharray:6 8;animation:dash 1.2s linear infinite}
+.flow2{fill:none;stroke:#34d399;stroke-width:2.5;stroke-dasharray:6 8;animation:dash 1.2s linear infinite}
+@keyframes dash{to{stroke-dashoffset:-28}}
+.dot{fill:#6366f1}.dot2{fill:#10b981}
+</style>
+<rect width="900" height="460" fill="#f8fafc" rx="18"/>
+<text x="450" y="34" text-anchor="middle" class="t" font-size="20">StudyFlow architecture</text>
+
+<!-- Browser -->
+<rect class="box" x="30" y="70" width="230" height="330" rx="14"/>
+<text x="145" y="98" text-anchor="middle" class="t">Browser (PWA)</text>
+<text x="145" y="116" text-anchor="middle" class="s">Next.js + Tailwind</text>
+<rect x="50" y="135" width="190" height="50" rx="10" fill="#eef2ff"/>
+<text x="145" y="157" text-anchor="middle" class="s" font-weight="700">Squad dashboard</text>
+<text x="145" y="173" text-anchor="middle" class="s">streak · points · ranks</text>
+<rect x="50" y="200" width="190" height="50" rx="10" fill="#eef2ff"/>
+<text x="145" y="222" text-anchor="middle" class="s" font-weight="700">Live session + quiz</text>
+<text x="145" y="238" text-anchor="middle" class="s">timer · presence · 15 MCQs</text>
+<rect x="50" y="265" width="190" height="115" rx="10" fill="#ecfdf5" stroke="#6ee7b7" stroke-dasharray="4 3"/>
+<text x="145" y="288" text-anchor="middle" class="s" font-weight="700">Focus Tracker (opt-in)</text>
+<text x="145" y="305" text-anchor="middle" class="s">MediaPipe in a Web Worker</text>
+<text x="145" y="322" text-anchor="middle" class="s">camera → focus score</text>
+<text x="145" y="345" text-anchor="middle" class="s" fill="#059669">video never leaves device</text>
+<text x="145" y="362" text-anchor="middle" class="s" fill="#059669">only a number is sent</text>
+
+<!-- FastAPI -->
+<rect class="box" x="340" y="130" width="220" height="200" rx="14"/>
+<text x="450" y="160" text-anchor="middle" class="t">FastAPI backend</text>
+<text x="450" y="182" text-anchor="middle" class="s">auth (fastapi-users)</text>
+<text x="450" y="200" text-anchor="middle" class="s">squads · sessions · quizzes</text>
+<text x="450" y="218" text-anchor="middle" class="s">scoring on improvement</text>
+<text x="450" y="236" text-anchor="middle" class="s">WebSocket presence</text>
+<rect x="365" y="262" width="170" height="48" rx="10" fill="#fef3c7"/>
+<text x="450" y="282" text-anchor="middle" class="s" font-weight="700">APScheduler</text>
+<text x="450" y="298" text-anchor="middle" class="s">nightly streaks · weekly reset</text>
+
+<!-- SQLite -->
+<rect class="box" x="640" y="70" width="230" height="130" rx="14"/>
+<text x="755" y="102" text-anchor="middle" class="t">SQLite (WAL)</text>
+<text x="755" y="125" text-anchor="middle" class="s">users · squads · sessions</text>
+<text x="755" y="143" text-anchor="middle" class="s">quiz attempts</text>
+<text x="755" y="161" text-anchor="middle" class="s">append-only points ledger</text>
+
+<!-- Ollama -->
+<rect class="box" x="640" y="260" width="230" height="140" rx="14"/>
+<text x="755" y="292" text-anchor="middle" class="t">Ollama (local LLM)</text>
+<text x="755" y="315" text-anchor="middle" class="s">qwen2.5:7b-instruct</text>
+<text x="755" y="333" text-anchor="middle" class="s">topic → 15 MCQs (JSON)</text>
+<text x="755" y="351" text-anchor="middle" class="s">cached fallback quizzes</text>
+<text x="755" y="378" text-anchor="middle" class="s" fill="#059669">no paid API</text>
+
+<!-- flows -->
+<path id="p1" class="flow" d="M260 180 C300 180,300 190,340 190"/>
+<path id="p2" class="flow" d="M340 250 C300 250,300 230,260 230"/>
+<path id="p3" class="flow2" d="M240 320 C300 320,300 290,340 290"/>
+<path id="p4" class="flow" d="M560 170 C600 170,600 140,640 140"/>
+<path id="p5" class="flow" d="M560 260 C600 260,600 320,640 320"/>
+<path id="p6" class="flow" d="M640 350 C590 350,590 300,560 290"/>
+
+<text x="300" y="168" text-anchor="middle" class="l">REST</text>
+<text x="300" y="262" text-anchor="middle" class="l">WS live</text>
+<text x="290" y="338" text-anchor="middle" class="l" fill="#059669">score</text>
+<text x="600" y="140" text-anchor="middle" class="l">read/write</text>
+<text x="612" y="282" text-anchor="middle" class="l">prompt</text>
+<text x="606" y="368" text-anchor="middle" class="l">quiz</text>
+
+<circle r="5" class="dot"><animateMotion dur="2s" repeatCount="indefinite"><mpath href="#p1"/></animateMotion></circle>
+<circle r="5" class="dot"><animateMotion dur="2s" begin="0.6s" repeatCount="indefinite"><mpath href="#p2"/></animateMotion></circle>
+<circle r="5" class="dot2"><animateMotion dur="2.4s" repeatCount="indefinite"><mpath href="#p3"/></animateMotion></circle>
+<circle r="5" class="dot"><animateMotion dur="1.8s" begin="0.3s" repeatCount="indefinite"><mpath href="#p4"/></animateMotion></circle>
+<circle r="5" class="dot"><animateMotion dur="2.2s" begin="0.9s" repeatCount="indefinite"><mpath href="#p5"/></animateMotion></circle>
+<circle r="5" class="dot"><animateMotion dur="2.2s" begin="1.6s" repeatCount="indefinite"><mpath href="#p6"/></animateMotion></circle>
+
+<text x="450" y="440" text-anchor="middle" class="s">Runs locally with Docker Compose · everything on your own machine</text>
+</svg>

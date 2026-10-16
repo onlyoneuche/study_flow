@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 540" width="900" height="540" font-family="Inter,Segoe UI,Arial,sans-serif">
+<style>.t{font-size:15px;font-weight:700;fill:#1e1b4b}.s{font-size:12px;fill:#475569}
+.ring{fill:none;stroke:#a5b4fc;stroke-width:3;stroke-dasharray:8 10;animation:d 1.5s linear infinite}@keyframes d{to{stroke-dashoffset:-36}}</style>
+<rect width="900" height="540" rx="18" fill="#f8fafc"/>
+<path id="ring" class="ring" d="M450 85 A175 175 0 1 1 449.9 85 Z"/>
+<text x="450" y="300" text-anchor="middle" font-size="22" font-weight="800" fill="#4f46e5">Keep showing up</text>
+<text x="450" y="324" text-anchor="middle" class="s">every day, as a squad</text>
+<circle r="8" fill="#10b981"><animateMotion dur="5s" repeatCount="indefinite"><mpath href="#ring"/></animateMotion></circle>
+<g>
+<rect x="365" y="49" width="170" height="72" rx="14" fill="#fff" stroke="#c7d2fe" stroke-width="2">
+<animate attributeName="stroke" values="#c7d2fe;#c7d2fe;#6366f1;#6366f1;#c7d2fe;#c7d2fe" keyTimes="0;0.000;0.001;0.160;0.161;1" dur="5s" repeatCount="indefinite"/>
+<animate attributeName="stroke-width" values="2;2;4;4;2;2" keyTimes="0;0.000;0.001;0.160;0.161;1" dur="5s" repeatCount="indefinite"/>
+</rect>
+<circle cx="388" cy="73" r="13" fill="#6366f1"/><text x="388" y="78" text-anchor="middle" fill="#fff" font-size="13" font-weight="700">1</text>
+<text x="460" y="78" text-anchor="middle" class="t">Form a squad</text>
+<text x="450" y="105" text-anchor="middle" class="s">3–8 friends · WhatsApp link</text></g><g>
+<rect x="531" y="170" width="170" height="72" rx="14" fill="#fff" stroke="#c7d2fe" stroke-width="2">
+<animate attributeName="stroke" values="#c7d2fe;#c7d2fe;#6366f1;#6366f1;#c7d2fe;#c7d2fe" keyTimes="0;0.199;0.201;0.360;0.361;1" dur="5s" repeatCount="indefinite"/>
+<animate attributeName="stroke-width" values="2;2;4;4;2;2" keyTimes="0;0.199;0.201;0.360;0.361;1" dur="5s" repeatCount="indefinite"/>
+</rect>
+<circle cx="554" cy="194" r="13" fill="#6366f1"/><text x="554" y="199" text-anchor="middle" fill="#fff" font-size="13" font-weight="700">2</text>
+<text x="626" y="199" text-anchor="middle" class="t">Study together</text>
+<text x="616" y="226" text-anchor="middle" class="s">own subject · live or solo</text></g><g>
+<rect x="468" y="366" width="170" height="72" rx="14" fill="#fff" stroke="#c7d2fe" stroke-width="2">
+<animate attributeName="stroke" values="#c7d2fe;#c7d2fe;#6366f1;#6366f1;#c7d2fe;#c7d2fe" keyTimes="0;0.399;0.401;0.560;0.561;1" dur="5s" repeatCount="indefinite"/>
+<animate attributeName="stroke-width" values="2;2;4;4;2;2" keyTimes="0;0.399;0.401;0.560;0.561;1" dur="5s" repeatCount="indefinite"/>
+</rect>
+<circle cx="491" cy="390" r="13" fill="#6366f1"/><text x="491" y="395" text-anchor="middle" fill="#fff" font-size="13" font-weight="700">3</text>
+<text x="563" y="395" text-anchor="middle" class="t">Take a quiz</text>
+<text x="553" y="422" text-anchor="middle" class="s">15 MCQs · local AI</text></g><g>
+<rect x="262" y="366" width="170" height="72" rx="14" fill="#fff" stroke="#c7d2fe" stroke-width="2">
+<animate attributeName="stroke" values="#c7d2fe;#c7d2fe;#6366f1;#6366f1;#c7d2fe;#c7d2fe" keyTimes="0;0.599;0.601;0.760;0.761;1" dur="5s" repeatCount="indefinite"/>
+<animate attributeName="stroke-width" values="2;2;4;4;2;2" keyTimes="0;0.599;0.601;0.760;0.761;1" dur="5s" repeatCount="indefinite"/>
+</rect>
+<circle cx="285" cy="390" r="13" fill="#6366f1"/><text x="285" y="395" text-anchor="middle" fill="#fff" font-size="13" font-weight="700">4</text>
+<text x="357" y="395" text-anchor="middle" class="t">Earn points</text>
+<text x="347" y="422" text-anchor="middle" class="s">beat your own average</text></g><g>
+<rect x="199" y="170" width="170" height="72" rx="14" fill="#fff" stroke="#c7d2fe" stroke-width="2">
+<animate attributeName="stroke" values="#c7d2fe;#c7d2fe;#6366f1;#6366f1;#c7d2fe;#c7d2fe" keyTimes="0;0.799;0.801;0.960;0.961;1" dur="5s" repeatCount="indefinite"/>
+<animate attributeName="stroke-width" values="2;2;4;4;2;2" keyTimes="0;0.799;0.801;0.960;0.961;1" dur="5s" repeatCount="indefinite"/>
+</rect>
+<circle cx="222" cy="194" r="13" fill="#6366f1"/><text x="222" y="199" text-anchor="middle" fill="#fff" font-size="13" font-weight="700">5</text>
+<text x="294" y="199" text-anchor="middle" class="t">Keep the streak</text>
+<text x="284" y="226" text-anchor="middle" class="s">daily streak · weekly bar</text></g>
+<text x="450" y="528" text-anchor="middle" class="s">Optional Focus Tracker runs in your browser and never affects points</text>
+</svg>
